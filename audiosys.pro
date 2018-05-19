@@ -8,7 +8,9 @@ CONFIG(debug, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lporta
 SOURCES += main.cpp \
     Io/StdStream.cpp \
     Io/SoundFile.cpp \
-    Audio/Samplerate.cpp
+    Audio/Samplerate.cpp \
+    Audio/AudioStream.cpp \
+    Audio/AudioInputBuffer.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -17,4 +19,6 @@ HEADERS += \
     Io/SoundFile.hpp \
     Io/sndfile.hh \
     Io/Global.hpp \
-    Audio/Samplerate.hpp
+    Audio/Samplerate.hpp \
+    Audio/AudioStream.hpp \
+    Audio/AudioInputBuffer.hpp

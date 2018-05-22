@@ -1,33 +1,25 @@
 #ifndef AUDIOCONTEXT_HPP
 #define AUDIOCONTEXT_HPP
 #include "Samplerate.hpp"
-#include "AudioPlayable.hpp"
+#include "AudioMixer.hpp"
 #include <vector>
 
 namespace Audio {
 
-class Context : public Playable
+class Context : public Mixer
 {
 private:
 	PaStream *stream;
-	Samplerate samplerateConverter;
-	SRC_DATA samplerateConversionData;
-	std::vector<float> mixingBuffer;
-	void mixDown();
 protected:
-	virtual long pullAudio(float* output, long maxFrameNum, long channelNum);
+	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 public:
-	const int framerate;
-	const int numChannels;
-	Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize, int conversionQuality);
+	Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize);
 	~Context();
 	void suspend();
 	void unsuspend();
 	void abort();
 	bool isStopped();
 	bool isActive();
-	virtual bool isPlaying() = 0;
-	virtual int getChannelNumber() = 0;
 };
 
 }

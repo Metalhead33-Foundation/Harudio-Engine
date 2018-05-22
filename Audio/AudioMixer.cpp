@@ -1,5 +1,6 @@
 #include "AudioMixer.hpp"
 #include <cstring>
+#include <stdexcept>
 
 namespace Audio {
 
@@ -40,7 +41,14 @@ long Mixer::pullAudio(float* output, long maxFrameNum, int channelNum, int frame
 {
 	mixDown();
 	long maxFrames = std::min(maxFrameNum,frameCount);
-	mixChannels(buffer.data(),output,channelNum,channelNumber,volume,maxFrames);
+	if(channelNum != channelNumber) throw std::runtime_error("Mixer - I/O Channel number mismatch! Please use a panner or channel mixer!");
+	if(frameRate != this->frameRate) throw std::runtime_error("Mixer - I/O Framerate mismatch! Please use a samplerate converter!");
+	for(long curFrame = 0; curFrame < maxFrames;++curFrame)
+	{
+		long frameCursor = curFrame * channelNum;
+		for(int i = 0; i < channelNum; ++i) output[frameCursor+i] += buffer[frameCursor+i];
+	}
+	return maxFrames;
 }
 bool Mixer::isPlaying()
 {

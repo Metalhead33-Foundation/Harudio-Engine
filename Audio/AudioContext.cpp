@@ -4,17 +4,16 @@
 
 namespace Audio {
 
-Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize, int conversionQuality)
-	: framerate(intendedBufferSize), numChannels(intendedBumChannels),
-	  mixingBuffer(intendedBufferSize), stream(nullptr), samplerateConverter(conversionQuality, intendedBumChannels)
+Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize)
+	: Mixer(intendedBumChannels,intendedFramerate,intendedBufferSize), stream(nullptr)
 {
 	PaError err;
 	err = Pa_OpenDefaultStream( &stream,
 								0,          /* no input channels */
-								numChannels,          /* stereo output */
+								channelNumber,          /* stereo output */
 								paFloat32,  /* 32 bit floating point output */
-								framerate,
-								intendedBufferSize,        /* frames per buffer, i.e. the number
+								frameRate,
+								frameCount,        /* frames per buffer, i.e. the number
 												   of sample frames that PortAudio will
 												   request from the callback. Many apps
 												   may want to use
@@ -27,6 +26,15 @@ Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBu
 	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
 }
 
+long Context::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
+{
+	mixDown();
+	long maxFrames = std::min(maxFrameNum,frameCount);
+	if(channelNum != channelNumber) throw std::runtime_error("Context - I/O Channel number mismatch! Please use a panner or channel mixer!");
+	if(frameRate != this->frameRate) throw std::runtime_error("Context - I/O Framerate mismatch! Please use a samplerate converter!");
+	memcpy(output,buffer.data(),maxFrames * channelNum * sizeof(float));
+	return maxFrames;
+}
 Context::~Context()
 {
 	if(stream) Pa_CloseStream(stream);

@@ -24,7 +24,7 @@ void Playable::setVolume(float nVolume)
 {
 	volume = nVolume;
 }
-void Playable::mixChannels(const float* frameIn, float* frameOut, int chanIn, int chanOut, float vol,size_t frameCount)
+/*void Playable::mixChannels(const float* frameIn, float* frameOut, int chanIn, int chanOut, float vol,size_t frameCount)
 {
 	MixingType mixType;
 	float channelRatio = float(chanOut) / float(chanIn);
@@ -63,6 +63,6 @@ void Playable::mixChannels(const float* frameIn, float* frameOut, int chanIn, in
 			}
 		}
 	}
-}
+}*/
 
 }

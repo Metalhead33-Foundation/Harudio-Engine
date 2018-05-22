@@ -5,6 +5,10 @@
 #include <cstdint>
 #include <thread>
 
+#define MIN(a,b)             (((a) < (b)) ? (a) : (b)) // min: Choose smaller of two scalars.
+#define MAX(a,b)             (((a) > (b)) ? (a) : (b)) // max: Choose greater of two scalars.
+#define CLAMP(a, mi,ma)      min(max(a,mi),ma)         // clamp: Clamp value into set range.
+
 #ifndef _MSC_VER
 #define __enforce_inlining __attribute__((always_inline))
 #elif

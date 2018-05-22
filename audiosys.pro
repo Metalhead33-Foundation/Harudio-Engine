@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     Io/SoundFile.cpp \
     Audio/Samplerate.cpp \
     Audio/AudioStream.cpp \
-    Audio/AudioInputBuffer.cpp
+    Audio/AudioInputBuffer.cpp \
+    Audio/AudioContext.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -21,4 +22,5 @@ HEADERS += \
     Io/Global.hpp \
     Audio/Samplerate.hpp \
     Audio/AudioStream.hpp \
-    Audio/AudioInputBuffer.hpp
+    Audio/AudioInputBuffer.hpp \
+    Audio/AudioContext.hpp

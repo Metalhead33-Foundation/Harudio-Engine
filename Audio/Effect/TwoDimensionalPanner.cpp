@@ -37,7 +37,6 @@ long TwoDimensionalPanner::process(float* inBuffer, float* outBuffer, long maxFr
 			outBuffer[outputCursor+1] = inBuffer[outputCursor+1] * (balance + compensator);
 		}
 	}
-
 	else if(inputChannelCount > 2)
 	{
 		float fChannelCount = float(inputChannelCount);

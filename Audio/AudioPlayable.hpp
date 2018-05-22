@@ -26,15 +26,15 @@ protected:
 	float volume;
 public:
 	virtual ~Playable() = default;
-	virtual bool isPlaying() = 0;
+	virtual bool isPlaying() const = 0;
 	static int patestCallback( const void *inputBuffer, void *outputBuffer,
 							   unsigned long framesPerBuffer,
 							   const PaStreamCallbackTimeInfo* timeInfo,
 							   PaStreamCallbackFlags statusFlags,
 							   void *userData );
-	virtual int getFramerate() = 0;
-	virtual int getChannelCount() = 0;
-	float getVolume();
+	virtual int getFramerate() const = 0;
+	virtual int getChannelCount() const = 0;
+	float getVolume() const;
 	void setVolume(float nVolume);
 	/*static void mixChannels(const float* frameIn, float* frameOut, int chanIn, int chanOut, float vol, size_t frameCount=1);
 	enum MixingType : uint8_t

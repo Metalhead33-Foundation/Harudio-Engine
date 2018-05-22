@@ -50,15 +50,15 @@ long Mixer::pullAudio(float* output, long maxFrameNum, int channelNum, int frame
 	}
 	return maxFrames;
 }
-bool Mixer::isPlaying()
+bool Mixer::isPlaying() const
 {
 	return true;
 }
-int Mixer::getFramerate()
+int Mixer::getFramerate() const
 {
 	return frameRate;
 }
-int Mixer::getChannelCount()
+int Mixer::getChannelCount() const
 {
 	return channelNumber;
 }

@@ -8,17 +8,17 @@ AuxiliaryEffectSlot::AuxiliaryEffectSlot(int intendedChannelNumber, int intended
 	  frameCount(intendedBufferSize), dryBuffer(intendedBufferSize * intendedChannelNumber),
 	  wetBuffer(intendedBufferSize * intendedChannelNumber)
 {
-
+	;
 }
-int AuxiliaryEffectSlot::getFramerate()
+int AuxiliaryEffectSlot::getFramerate() const
 {
 	return frameRate;
 }
-int AuxiliaryEffectSlot::getChannelCount()
+int AuxiliaryEffectSlot::getChannelCount() const
 {
 	return channelNumber;
 }
-sPlayable AuxiliaryEffectSlot::getSource()
+const sPlayable AuxiliaryEffectSlot::getSource() const
 {
 	return source;
 }

@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     Audio/AudioContext.cpp \
     Audio/AudioPlayable.cpp \
     Audio/AudioMixer.cpp \
-    Audio/AuxiliaryEffectSlot.cpp
+    Audio/AuxiliaryEffectSlot.cpp \
+    Audio/Effect/Resampler.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -26,4 +27,5 @@ HEADERS += \
     Audio/AudioPlayable.hpp \
     Audio/AudioMixer.hpp \
     Audio/AuxiliaryEffectSlot.hpp \
-    Audio/AudioEffect.hpp
+    Audio/AudioEffect.hpp \
+    Audio/Effect/Resampler.hpp

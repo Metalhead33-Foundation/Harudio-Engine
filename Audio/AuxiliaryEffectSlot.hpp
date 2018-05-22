@@ -21,9 +21,9 @@ private:
 	sPlayable source;
 public:
 	AuxiliaryEffectSlot(int intendedChannelNumber, int intendedFramerate, long intendedBufferSize);
-	int getFramerate();
-	int getChannelCount();
-	sPlayable getSource();
+	int getFramerate() const;
+	int getChannelCount() const;
+	const sPlayable getSource() const;
 	void setSource(sPlayable nSource);
 };
 

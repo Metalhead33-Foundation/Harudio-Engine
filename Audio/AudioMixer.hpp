@@ -19,9 +19,9 @@ protected:
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 public:
 	Mixer(int intendedChannelNumber, int intendedFramerate, long intendedBufferSize);
-	bool isPlaying();
-	int getFramerate();
-	int getChannelCount();
+	bool isPlaying() const;
+	int getFramerate() const;
+	int getChannelCount() const;
 };
 
 }

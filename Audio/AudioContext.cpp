@@ -1,39 +1,60 @@
 #include "AudioContext.hpp"
+#include <stdexcept>
 #include <cstring>
 
 namespace Audio {
 
-Context::Context(size_t bufferSize, int nChannelNum, int nSampleRate, int conversionQuality)
-	: samplerateConverter(conversionQuality, nChannelNum), tempBuffer(bufferSize),
-	  channelNum(nChannelNum), sampleRate(nSampleRate)
+Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize, int conversionQuality)
+	: framerate(intendedBufferSize), numChannels(intendedBumChannels),
+	  mixingBuffer(intendedBufferSize), stream(nullptr), samplerateConverter(conversionQuality, intendedBumChannels)
 {
-	;
+	PaError err;
+	err = Pa_OpenDefaultStream( &stream,
+								0,          /* no input channels */
+								numChannels,          /* stereo output */
+								paFloat32,  /* 32 bit floating point output */
+								framerate,
+								intendedBufferSize,        /* frames per buffer, i.e. the number
+												   of sample frames that PortAudio will
+												   request from the callback. Many apps
+												   may want to use
+												   paFramesPerBufferUnspecified, which
+												   tells PortAudio to pick the best,
+												   possibly changing, buffer size.*/
+								patestCallback, /* this is your callback function */
+								this); /*This is a pointer that will be passed to
+												   your callback*/
+	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
 }
-long Context::process(long frameNum, const float* input, float* output, int inputSamplerate)
+
+Context::~Context()
 {
-	if(inputSamplerate != sampleRate) {
-	// Prepare for process
-	converter.data_in = input;
-	converter.data_out = tempBuffer.data();
-	converter.src_ratio = double(inputSamplerate) / double(sampleRate);
-	long maxFrameNum = long(double(tempBuffer.size()) / converter.src_ratio);
-	maxFrameNum = MIN(maxFrameNum,frameNum);
-	converter.input_frames = maxFrameNum;
-
-	// Now we process
-	samplerateConverter.process(&converter);
-
-	// Okay, now that we are done converting the samples...
-	memcpy(output,tempBuffer.data(),sizeof(float) * maxFrameNum);
-
-	// Reset everything, as we are finished with processing!
-	memset(&converter, 0, sizeof(SRC_DATA));
-	return maxFrameNum;
-	} else {
-		long maxFrameNum = MIN(frameNum,tempBuffer.size());
-		memcpy(output,input,sizeof(float) * maxFrameNum);
-		return maxFrameNum;
-	}
+	if(stream) Pa_CloseStream(stream);
+}
+void Context::suspend()
+{
+	PaError err = Pa_StopStream(stream);
+	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
+}
+void Context::unsuspend()
+{
+	PaError err = Pa_StartStream(stream);
+	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
+}
+void Context::abort()
+{
+	PaError err = Pa_AbortStream(stream);
+	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
+}
+bool Context::isStopped()
+{
+	PaError err = Pa_IsStreamStopped(stream);
+	return err != 0;
+}
+bool Context::isActive()
+{
+	PaError err = Pa_IsStreamActive(stream);
+	return err != 0;
 }
 
 }

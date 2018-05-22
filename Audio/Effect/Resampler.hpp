@@ -12,6 +12,7 @@ private:
 	Samplerate converter;
 	SRC_DATA convertData;
 	int inputFramerate;
+	const int channelNumber;
 protected:
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 public:

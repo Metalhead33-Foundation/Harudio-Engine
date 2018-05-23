@@ -22,7 +22,6 @@ public:
 	friend class Mixer;
 	friend class AuxiliaryEffectSlot;
 protected:
-	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;
 	float volume;
 public:
 	virtual ~Playable() = default;
@@ -36,6 +35,7 @@ public:
 	virtual int getChannelCount() const = 0;
 	float getVolume() const;
 	void setVolume(float nVolume);
+	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;
 };
 
 }

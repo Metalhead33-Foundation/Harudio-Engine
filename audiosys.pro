@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     Audio/AudioSource.cpp \
     Audio/AudioBuffer.cpp \
     Sound/SoundSource.cpp \
-    Sound/SoundStreamer.cpp
+    Sound/SoundStreamer.cpp \
+    Audio/AudioPluginPlayable.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -35,9 +36,9 @@ HEADERS += \
     Audio/Effect/Resampler.hpp \
     Audio/Effect/Panner.hpp \
     Audio/Effect/DimensionalPanner.hpp \
-    Audio/Effect/MatrixPanner.hpp \
     Audio/AudioSource.hpp \
     Audio/AudioSource.hpp \
     Audio/AudioBuffer.hpp \
     Sound/SoundSource.hpp \
-    Sound/SoundStreamer.hpp
+    Sound/SoundStreamer.hpp \
+    Audio/AudioPluginPlayable.hpp

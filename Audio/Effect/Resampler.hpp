@@ -1,27 +1,21 @@
 #ifndef RESAMPLER_HPP
 #define RESAMPLER_HPP
-#include "../AudioEffect.hpp"
+#include "../AudioPluginPlayable.hpp"
 #include "../Samplerate.hpp"
 
 namespace Audio {
-namespace FX {
-
-class Resampler : public Effect
+class Resampler : public PluginPlayable
 {
 private:
-	Samplerate converter;
+	sSamplerate converter;
 	SRC_DATA convertData;
-	int inputFramerate;
-	const int channelNumber;
-protected:
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
+	int converterType;
 public:
-	Resampler(int intendedChannelNumber, int converterType);
-	void setInputFramerate(int newFramerate);
-	int getInputFramerate() const;
+	Resampler(int converterType);
+	virtual void onChangedInput();
+	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 };
 
-}
 }
 
 #endif // RESAMPLER_HPP

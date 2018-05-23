@@ -19,7 +19,6 @@ protected:
 	long frameCursor;
 	BufferOutput out;
 	std::mutex locker;
-	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 	virtual void onBufferRequest() = 0;
 public:
 	Source();
@@ -33,6 +32,7 @@ public:
 
 	float getSpeed() const;
 	void setSpeed(float nSpeed);
+	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 
 	virtual const sBuffer getBuffer() const = 0;
 };

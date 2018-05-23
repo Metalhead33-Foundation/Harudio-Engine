@@ -1,12 +1,10 @@
 #ifndef PANNER_HPP
 #define PANNER_HPP
-#include "../AudioEffect.hpp"
+#include "../AudioPlayable.hpp"
 #include <stdexcept>
 
 namespace Audio {
-namespace FX {
-
-template <int outputChannelCount> class Panner : public Effect
+template <int outputChannelCount> class Panner : public Playable
 {
 private:
 	enum MixingType : uint8_t
@@ -73,7 +71,6 @@ public:
 
 typedef Panner<2> StereoPanner;
 
-}
 }
 
 #endif // PANNER_HPP

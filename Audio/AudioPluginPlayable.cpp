@@ -1,12 +1,7 @@
 #include "AudioPluginPlayable.hpp"
-#include <cstring>
 
 namespace Audio {
 
-void PluginPlayable::cleanBuffer()
-{
-	memset(ownBuffer,0,TINYBUFF * sizeof(float));
-}
 bool PluginPlayable::isPlaying() const
 {
 	if(input.expired()) return false;

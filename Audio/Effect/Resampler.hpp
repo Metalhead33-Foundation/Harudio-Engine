@@ -10,6 +10,9 @@ private:
 	sSamplerate converter;
 	SRC_DATA convertData;
 	int converterType;
+	float inputBuffer[TINYBUFF];
+	float outputBuffer[TINYBUFF];
+	void cleanBuffers();
 public:
 	Resampler(int converterType);
 	virtual void onChangedInput();

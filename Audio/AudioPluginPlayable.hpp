@@ -11,8 +11,6 @@ class PluginPlayable : public Playable
 protected:
 	wPlayable input;
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;
-	float ownBuffer[TINYBUFF];
-	void cleanBuffer();
 public:
 	virtual ~PluginPlayable() = default;
 	bool isPlaying() const;

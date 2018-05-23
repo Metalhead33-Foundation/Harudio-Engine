@@ -15,7 +15,9 @@ SOURCES += main.cpp \
     Audio/AuxiliaryEffectSlot.cpp \
     Audio/Effect/Resampler.cpp \
     Audio/AudioSource.cpp \
-    Audio/AudioBuffer.cpp
+    Audio/AudioBuffer.cpp \
+    Sound/SoundSource.cpp \
+    Sound/SoundStreamer.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -36,4 +38,6 @@ HEADERS += \
     Audio/Effect/MatrixPanner.hpp \
     Audio/AudioSource.hpp \
     Audio/AudioSource.hpp \
-    Audio/AudioBuffer.hpp
+    Audio/AudioBuffer.hpp \
+    Sound/SoundSource.hpp \
+    Sound/SoundStreamer.hpp

@@ -13,14 +13,14 @@ public:
 		PAUSED,
 		STOPPED
 	};
-private:
+protected:
 	Status state;
 	float speed;
 	long frameCursor;
 	BufferOutput out;
 	std::mutex locker;
-protected:
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
+	virtual void onBufferRequest() = 0;
 public:
 	Source();
 	virtual int getFramerate() const;

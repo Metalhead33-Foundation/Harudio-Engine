@@ -24,45 +24,5 @@ void Playable::setVolume(float nVolume)
 {
 	volume = nVolume;
 }
-/*void Playable::mixChannels(const float* frameIn, float* frameOut, int chanIn, int chanOut, float vol,size_t frameCount)
-{
-	MixingType mixType;
-	float channelRatio = float(chanOut) / float(chanIn);
-	if(chanOut == chanIn) mixType = EQUAL_MIX;
-	else if(chanOut < chanIn) mixType = DOWNMIX;
-	else mixType = UPMIX;
-	for(size_t frameCursor = 0; frameCursor < frameCount; ++frameCursor)
-	{
-		size_t inCursor = frameCursor * chanIn;
-		size_t outCursor = frameCursor * chanOut;
-		switch(mixType)
-		{
-			case EQUAL_MIX:
-			{
-				for(int i = 0; i < chanIn; ++i)
-				{
-					frameOut[outCursor+i] += frameIn[inCursor+i] * vol;
-				}
-				break;
-			}
-			case UPMIX:
-			{
-				for(int i = 0; i < chanOut; ++i)
-				{
-					frameOut[outCursor+i] += frameIn[inCursor+ (i%chanIn)] * vol;
-				}
-				break;
-			}
-			case DOWNMIX:
-			{
-				for(int i = 0; i < chanIn; ++i)
-				{
-					frameOut[outCursor+(i%chanOut)] += frameIn[inCursor+i] * channelRatio * vol;
-				}
-				break;
-			}
-		}
-	}
-}*/
 
 }

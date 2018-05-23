@@ -13,8 +13,7 @@ SOURCES += main.cpp \
     Audio/AudioPlayable.cpp \
     Audio/AudioMixer.cpp \
     Audio/AuxiliaryEffectSlot.cpp \
-    Audio/Effect/Resampler.cpp \
-    Audio/Effect/TwoDimensionalPanner.cpp
+    Audio/Effect/Resampler.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -30,4 +29,5 @@ HEADERS += \
     Audio/AuxiliaryEffectSlot.hpp \
     Audio/AudioEffect.hpp \
     Audio/Effect/Resampler.hpp \
-    Audio/Effect/TwoDimensionalPanner.hpp
+    Audio/Effect/Panner.hpp \
+    Audio/Effect/DimensionalPanner.hpp

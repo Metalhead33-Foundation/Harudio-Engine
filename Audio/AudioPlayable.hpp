@@ -36,13 +36,6 @@ public:
 	virtual int getChannelCount() const = 0;
 	float getVolume() const;
 	void setVolume(float nVolume);
-	/*static void mixChannels(const float* frameIn, float* frameOut, int chanIn, int chanOut, float vol, size_t frameCount=1);
-	enum MixingType : uint8_t
-	{
-		EQUAL_MIX,
-		DOWNMIX,
-		UPMIX
-	};*/
 };
 
 }

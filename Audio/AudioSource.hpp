@@ -17,7 +17,6 @@ private:
 	Status state;
 	float speed;
 	long frameCursor;
-	sBuffer buff;
 	BufferOutput out;
 	std::mutex locker;
 protected:
@@ -35,8 +34,7 @@ public:
 	float getSpeed() const;
 	void setSpeed(float nSpeed);
 
-	const sBuffer getBuffer() const;
-	void setbuffer(sBuffer nBuffer);
+	virtual const sBuffer getBuffer() const = 0;
 };
 
 }

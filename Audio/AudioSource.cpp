@@ -8,12 +8,12 @@ Source::Source()
 }
 int Source::getFramerate() const
 {
-	if(buff) return buff->getFrameRate();
+	if(getBuffer()) return getBuffer()->getFrameRate();
 	else return 0;
 }
 int Source::getChannelCount() const
 {
-	if(buff) return buff->getChannelNum();
+	if(getBuffer()) return getBuffer()->getChannelNum();
 	else return 0;
 }
 bool Source::isPlaying() const
@@ -28,7 +28,7 @@ void Source::play()
 {
 	std::unique_lock<std::mutex> locker(this->locker);
 	if(state != PAUSED) frameCursor = 0;
-	if(buff) state = PLAYING;
+	if(getBuffer()) state = PLAYING;
 }
 void Source::pause()
 {
@@ -49,15 +49,6 @@ void Source::setSpeed(float nSpeed)
 {
 	speed = nSpeed;
 }
-const sBuffer Source::getBuffer() const
-{
-	return buff;
-}
-void Source::setbuffer(sBuffer nBuffer)
-{
-	std::unique_lock<std::mutex> locker(this->locker);
-	buff = nBuffer;
-}
 long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
 	std::unique_lock<std::mutex> locker(this->locker);
@@ -66,7 +57,7 @@ long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int fram
 	{
 		if(getFramerate() > frameRate) maxFrameNum = long(float(maxFrameNum) * (float(getFramerate()) / float(frameRate)));
 	}
-	buff->getAudioData(&out,frameCursor);
+	getBuffer()->getAudioData(&out,frameCursor);
 	long framedFrames = std::min(out.numberOfRemainingFrames,maxFrameNum);
 	for(long i = 0; i < framedFrames; ++i)
 	{

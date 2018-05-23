@@ -31,7 +31,8 @@ void AuxiliaryEffectSlot::processEffects()
 	memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
 	for(auto it = effects.begin(); it != effects.end(); ++it)
 	{
-		it->process(dryBuffer.data(),wetBuffer.data(),frameCount,channelNumber,frameRate);
+		pEffect eff = it->get();
+		eff->process(dryBuffer.data(),wetBuffer.data(),frameCount,channelNumber,frameRate);
 		memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
 		memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
 	}

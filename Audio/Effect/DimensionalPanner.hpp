@@ -25,8 +25,8 @@ private:
 		for(int i = 0; i < dimensions;++i)
 		{
 			int volumeCursor = dimensions * 2;
-			volumeLevel[volumeCursor] = inverseBalance[i] + compensator;
-			volumeLevel[volumeCursor+1] = balance[i] + compensator;
+			setVolumeLevel(volumeCursor,inverseBalance[i] + compensator);
+			setVolumeLevel(volumeCursor+1,balance[i] + compensator);
 		}
 	}
 public:
@@ -50,6 +50,8 @@ public:
 		updateVolumes();
 	}
 };
+typedef DimensionalPanner<2> StereoDimensionalPanner;
+typedef DimensionalPanner<4> QuadDimensionalPanner;
 
 }
 }

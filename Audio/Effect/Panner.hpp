@@ -8,7 +8,7 @@ namespace FX {
 
 template <int outputChannelCount> class Panner : public Effect
 {
-protected:
+private:
 	enum MixingType : uint8_t
 	{
 		EQUAL_MIX,

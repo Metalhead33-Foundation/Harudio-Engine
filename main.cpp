@@ -53,10 +53,13 @@
 
 #define COLOUR(A,B) BG(A) << FG(B)
 
+#include "Audio/Effect/DimensionalPanner.hpp"
+
 using namespace std;
 
 int main()
 {
+	Audio::FX::QuadDimensionalPanner panner;
 	cout << UNDERLINE << BOLD << "Le Classical Greentext Story" << ANSI_COLOUR_RESET << endl;
 	cout << FG(GREEN) << ">Be me" << ANSI_COLOUR_RESET << endl;
 	cout << FG(GREEN) << ">C++ programmer" << ANSI_COLOUR_RESET << endl;

@@ -12,7 +12,7 @@ class AuxiliaryEffectSlot : public Playable
 private:
 	std::vector<float> dryBuffer;
 	std::vector<float> wetBuffer;
-	std::list<Effect> effects;
+	std::list<sEffect> effects;
 	const int channelNumber;
 	const int frameRate;
 	const long frameCount;

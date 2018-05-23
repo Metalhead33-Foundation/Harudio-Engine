@@ -13,7 +13,7 @@ public:
 protected:
 	virtual long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate) = 0;
 public:
-	virtual ~Effect() = 0;
+	virtual ~Effect() = default;
 };
 
 }

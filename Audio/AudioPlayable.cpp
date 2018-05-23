@@ -12,7 +12,7 @@ int Playable::patestCallback( const void *inputBuffer, void *outputBuffer,
 	if(userData) {
 	pPlayable data = reinterpret_cast<pPlayable>(userData);
 	float *out = reinterpret_cast<float*>(outputBuffer);
-	data->pullAudio(out, framesPerBuffer, data->getChannelCount(), data->getFramerate());
+	if(data->isPlaying()) data->pullAudio(out, framesPerBuffer, data->getChannelCount(), data->getFramerate());
 	return paContinue;
 	} else return paAbort;
 }

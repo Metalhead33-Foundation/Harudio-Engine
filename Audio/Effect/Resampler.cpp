@@ -2,6 +2,8 @@
 #include <cstring>
 namespace Audio {
 
+float inputBuffer[TINYBUFF];
+
 float Resampler::getSpeed() const
 {
 	return speed;
@@ -10,7 +12,7 @@ void Resampler::setSpeed(float newSpeed)
 {
 	speed = newSpeed;
 }
-double Resampler::getRatio() const
+double Resampler::getRatio(int outputFramerate) const
 {
 	if(input.expired()) return 0;
 	else
@@ -26,14 +28,9 @@ long Resampler::converterCallback(void *self, float **data)
 		if(sampler->input.expired()) return 0;
 		sPlayable input = sampler->input.lock();
 		long inFrames = long(TINYBUFF/input->getChannelCount());
-		double ratio = sampler->getRatio();
-		if(ratio >= 1.00) // If we are upsampling, we need to put fewer frames in the buffer
-		{
-			inFrames = long(double(inFrames) / ratio);
-		}
-		inFrames = input->pullAudio(sampler->inputBuffer,inFrames,
+		inFrames = input->pullAudio(inputBuffer,inFrames,
 									input->getChannelCount(),input->getFramerate());
-		*data = sampler->inputBuffer;
+		*data = inputBuffer;
 		return inFrames;
 	} else return 0;
 }
@@ -61,12 +58,12 @@ long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int f
 	if(input.expired()) return 0;
 	if(channelNum != getChannelCount()) throw std::runtime_error("Resampler - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	cleanBuffers();
-	outputFramerate = frameRate;
+	double ratio = getRatio(frameRate);
 	long processedFrames = 0;
 	long readFrames = 0;
 	do {
-		long framesToRead = std::min(long(TINYBUFF/channelNum),maxFrameNum-processedFrames);
-		readFrames = src_callback_read(converter,ratio,framesToRead,outputBuffer);
+		readFrames = std::min(long(TINYBUFF/channelNum),maxFrameNum-processedFrames);
+		readFrames = src_callback_read(converter,ratio,readFrames,outputBuffer);
 		for(long frameCursor = 0; frameCursor < readFrames; ++frameCursor,++processedFrames)
 		{
 			long inputCursor = frameCursor*channelNum;

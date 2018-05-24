@@ -8,21 +8,15 @@ namespace Sound {
 DEFINE_CLASS(Streamer)
 class Streamer : public Audio::Source
 {
-public:
-	struct BufferQueueElement {
-		Audio::sBuffer buff;
-		bool isSpent;
-	};
 private:
-	std::vector<BufferQueueElement> bufferQueue;
+	const Audio::sBuffer buff;
 	const Audio::sSoundFile soundfile;
-	const sf_count_t buffsize;
-	int bufferIndex;
 	sf_count_t frameCursor;
+	size_t bufferLoad;
 protected:
-	virtual void onBufferRequest();
+	virtual void onBufferRequest(long requestedSize);
 public:
-	Streamer(Abstract::sFIO readah, sf_count_t bufferSize, sf_count_t bufferCount);
+	Streamer(Abstract::sFIO readah, sf_count_t bufferSize);
 	const Audio::sBuffer getBuffer() const;
 };
 

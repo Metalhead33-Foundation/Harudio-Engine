@@ -15,11 +15,10 @@ public:
 	};
 protected:
 	Status state;
-	float speed;
 	long frameCursor;
 	BufferOutput out;
 	std::mutex locker;
-	virtual void onBufferRequest() = 0;
+	virtual void onBufferRequest(long requestedSize) = 0;
 public:
 	Source();
 	virtual int getFramerate() const;
@@ -30,8 +29,6 @@ public:
 	void pause();
 	void stop();
 
-	float getSpeed() const;
-	void setSpeed(float nSpeed);
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 
 	virtual const sBuffer getBuffer() const = 0;

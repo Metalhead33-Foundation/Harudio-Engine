@@ -16,9 +16,9 @@ void Source::setBuffer(Audio::sBuffer nBuffer)
 	std::unique_lock<std::mutex> locker(this->locker);
 	buff = nBuffer;
 }
-void Source::onBufferRequest()
+void Source::onBufferRequest(long requestedSize)
 {
-	;
+	(void)requestedSize;
 }
 
 }

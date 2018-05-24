@@ -9,15 +9,13 @@ class Resampler : public PluginPlayable
 {
 private:
 	int converterType;
-	float inputBuffer[TINYBUFF];
 	float outputBuffer[TINYBUFF];
 	SRC_STATE* converter;
 	float speed;
-	int outputFramerate;
 	void cleanBuffers();
 	static long converterCallback(void *self, float **data);
 
-	double getRatio() const;
+	double getRatio(int outputFramerate) const;
 public:
 	Resampler(int converterType);
 	virtual void onChangedInput();

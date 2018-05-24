@@ -10,7 +10,7 @@ class Source : public Audio::Source
 private:
 	Audio::sBuffer buff;
 protected:
-	virtual void onBufferRequest();
+	virtual void onBufferRequest(long requestedSize);
 public:
 	Source(Audio::sBuffer nBuffer=nullptr);
 	const Audio::sBuffer getBuffer() const;

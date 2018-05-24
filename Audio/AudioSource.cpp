@@ -3,7 +3,7 @@
 namespace Audio {
 
 Source::Source()
-	: frameCursor(0), state(STOPPED), speed(1.0f)
+	: frameCursor(0), state(STOPPED)
 {
 
 }
@@ -42,18 +42,10 @@ void Source::stop()
 	state = STOPPED;
 	frameCursor = 0;
 }
-float Source::getSpeed() const
-{
-	return speed;
-}
-void Source::setSpeed(float nSpeed)
-{
-	speed = nSpeed;
-}
 long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
 	std::unique_lock<std::mutex> locker(this->locker);
-	onBufferRequest();
+	onBufferRequest(maxFrameNum * channelNum);
 	if(channelNum != getChannelCount()) throw std::runtime_error("Source - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	if(frameRate != getFramerate())
 	{

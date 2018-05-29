@@ -34,9 +34,9 @@ public:
 	static sBuffer create(Abstract::sFIO readah);
 	static sBuffer create(sSoundFile file, sf_count_t offset = 0, sf_count_t frameNum=0);
 	static sBuffer create(const float* input, size_t frameNum, int frameRate, int channelNum);
-	void bufferData(const float* input, size_t frameNum, int frameRate, int channelNum, size_t bufferOffset=0, bool forceResize=false);
-	void bufferData(const sSoundFile file, sf_count_t offset = 0, sf_count_t frameNum=0, size_t bufferOffset=0, bool forceResize=false);
-	void bufferData(Abstract::sFIO readah);
+	long bufferData(const float* input, size_t frameNum, int frameRate, int channelNum, size_t bufferOffset=0, bool forceResize=false);
+	long bufferData(const sSoundFile file, sf_count_t offset = 0, sf_count_t frameNum=0, size_t bufferOffset=0, bool forceResize=false);
+	long bufferData(Abstract::sFIO readah);
 };
 
 }

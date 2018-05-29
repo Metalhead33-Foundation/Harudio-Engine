@@ -9,20 +9,15 @@ namespace Sound {
 DEFINE_CLASS(Streamer)
 class Streamer : public Audio::Source
 {
-public:
-	typedef std::pair<const Audio::sBuffer,bool> BufferQueueElement;
-	typedef std::list<BufferQueueElement> BufferQueue;
-	typedef BufferQueue::iterator BufferIterator;
 private:
 	const Audio::sSoundFile soundfile;
-	size_t curBufferCursor; // How far are we in the current buffer?
-	BufferIterator mWrite, mRead;
-	BufferQueue queue;
+	const Audio::sBuffer buff;
+	size_t readPtr, writePtr;
 protected:
 	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);
 	virtual void onBufferEnd(bool looping);
 public:
-	Streamer(Abstract::sFIO readah, int buffNum, size_t bufferSize);
+	Streamer(Abstract::sFIO readah, size_t bufferSize);
 	const Audio::sBuffer getBuffer() const;
 	void checkQueue();
 };

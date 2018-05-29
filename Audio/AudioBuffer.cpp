@@ -68,7 +68,7 @@ size_t Buffer::getSampleCount() const
 {
 	return  buff.size();
 }
-void Buffer::bufferData(const float* input, size_t frameNum, int frameRate, int channelNum,  size_t bufferOffset, bool forceResize)
+long Buffer::bufferData(const float* input, size_t frameNum, int frameRate, int channelNum,  size_t bufferOffset, bool forceResize)
 {
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	this->frameRate = frameRate;
@@ -76,8 +76,9 @@ void Buffer::bufferData(const float* input, size_t frameNum, int frameRate, int 
 	if(forceResize) buff.resize(frameNum*channelNum);
 	else if((frameNum * channelNum) > buff.size()) buff.resize(frameNum*channelNum);
 	memcpy(&buff[bufferOffset],input,buff.size() * sizeof(float));
+	return frameNum;
 }
-void Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t frameNum, size_t bufferOffset, bool forceResize)
+long Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t frameNum, size_t bufferOffset, bool forceResize)
 {
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	if(file)
@@ -96,18 +97,18 @@ void Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t fra
 		this->channelNum = file->channels();
 		if(forceResize) buff.resize(readingFrames * file->channels());
 		else if(readingFrames > (buff.size() / file->channels())) buff.resize(readingFrames * file->channels());
-		file->readf(&buff[bufferOffset],readingFrames);
+		return file->readf(&buff[bufferOffset],readingFrames);
 	}
+	return 0;
 }
-void Buffer::bufferData(Abstract::sFIO readah)
+long Buffer::bufferData(Abstract::sFIO readah)
 {
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	sSoundFile sndfile = SoundFile::createSoundFile(readah);
 	this->frameRate = sndfile->samplerate();
 	this->channelNum = sndfile->channels();
 	buff.resize(sndfile->frames() * sndfile->channels());
-	sndfile->readf(buff.data(),sndfile->frames());
-
+	return sndfile->readf(buff.data(),sndfile->frames());
 }
 sBuffer Buffer::create(sf_count_t buffsize)
 {

@@ -2,6 +2,8 @@
 #define AUDIOSOURCE_HPP
 #include "AudioPlayable.hpp"
 #include "AudioBuffer.hpp"
+#include <mutex>
+
 namespace Audio {
 
 DEFINE_CLASS(Source)
@@ -18,7 +20,9 @@ protected:
 	long frameCursor;
 	BufferOutput out;
 	std::mutex locker;
-	virtual void onBufferRequest(long requestedSize) = 0;
+	bool looping;
+	virtual long onBufferRequest(BufferOutput* ptr, long len) = 0;
+	virtual void onBufferEnd(bool looping) = 0;
 public:
 	Source();
 	virtual int getFramerate() const;
@@ -28,6 +32,8 @@ public:
 	void play();
 	void pause();
 	void stop();
+	bool isLooping() const;
+	void setLooping(bool looping);
 
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 

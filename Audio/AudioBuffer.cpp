@@ -3,45 +3,12 @@
 
 namespace Audio {
 
-Buffer::Buffer(sf_count_t buffsize)
-	: buff(buffsize), frameRate(0), channelNum(0)
+Buffer::Buffer(int frameRate, int channelNum)
 {
-	;
-}
-Buffer::Buffer(Abstract::sFIO readah)
-{
-	bufferData(readah);
-}
-Buffer::Buffer(sSoundFile file, sf_count_t offset, sf_count_t frameNum)
-{
-	bufferData(file,offset,frameNum,true);
-}
-Buffer::Buffer(const float* input, size_t frameNum, int frameRate, int channelNum)
-{
-	bufferData(input,frameNum,frameRate,channelNum,true);
+	this->frameRate = frameRate;
+	this->channelNum = channelNum;
 }
 
-void Buffer::getAudioData(BufferOutput* out, size_t index) const
-{
-	if(out)
-	{
-		if(index < buff.size())
-		{
-			out->audioData = &buff[index];
-			out->numberOfRemainingFrames = buff.size() - index;
-		}
-		else
-		{
-			out->audioData = nullptr;
-			out->numberOfRemainingFrames = 0;
-		}
-	}
-	else
-	{
-		out->audioData = nullptr;
-		out->numberOfRemainingFrames = 0;
-	}
-}
 int Buffer::getFrameRate() const
 {
 	return frameRate;
@@ -52,24 +19,67 @@ int Buffer::getChannelNum() const
 }
 size_t Buffer::getFrameCount() const
 {
-	return buff.size() / channelNum;
+	return getSampleCount() / size_t(channelNum);
 }
-size_t Buffer::getBufferSize() const
+
+Buffer::Buffer(sf_count_t buffsize)
+	: frameRate(0),channelNum(0), buff(buffsize)
+{
+	;
+}
+Buffer::Buffer(Abstract::sFIO readah)
+	: frameRate(0),channelNum(0)
+{
+	bufferData(readah);
+}
+Buffer::Buffer(sSoundFile file, sf_count_t offset, sf_count_t frameNum)
+	: frameRate(0),channelNum(0)
+{
+	bufferData(file,offset,frameNum,0,true);
+}
+Buffer::Buffer(const float* input, size_t frameNum, int frameRate, int channelNum)
+	: frameRate(0),channelNum(0)
+{
+	bufferData(input,frameNum,frameRate,channelNum,0,true);
+}
+
+void Buffer::getAudioData(BufferOutput* out, size_t index) const
+{
+	if(out)
+	{
+		if(index < buff.size())
+		{
+			out->first = &buff[index];
+			out->second = buff.size() - index;
+		}
+		else
+		{
+			out->first = nullptr;
+			out->second = 0;
+		}
+	}
+	else
+	{
+		out->first = nullptr;
+		out->second = 0;
+	}
+}
+size_t Buffer::getSampleCount() const
 {
 	return  buff.size();
 }
-void Buffer::bufferData(const float* input, size_t frameNum, int frameRate, int channelNum, bool forceResize)
+void Buffer::bufferData(const float* input, size_t frameNum, int frameRate, int channelNum,  size_t bufferOffset, bool forceResize)
 {
-	std::unique_lock<std::mutex> locker(this->locker);
+	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	this->frameRate = frameRate;
 	this->channelNum = channelNum;
 	if(forceResize) buff.resize(frameNum*channelNum);
 	else if((frameNum * channelNum) > buff.size()) buff.resize(frameNum*channelNum);
-	memcpy(buff.data(),input,buff.size() * sizeof(float));
+	memcpy(&buff[bufferOffset],input,buff.size() * sizeof(float));
 }
-void Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t frameNum, bool forceResize)
+void Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t frameNum, size_t bufferOffset, bool forceResize)
 {
-	std::unique_lock<std::mutex> locker(this->locker);
+	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	if(file)
 	{
 		sf_count_t readingFrames = file->frames();
@@ -86,12 +96,12 @@ void Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t fra
 		this->channelNum = file->channels();
 		if(forceResize) buff.resize(readingFrames * file->channels());
 		else if(readingFrames > (buff.size() / file->channels())) buff.resize(readingFrames * file->channels());
-		file->readf(buff.data(),readingFrames);
+		file->readf(&buff[bufferOffset],readingFrames);
 	}
 }
 void Buffer::bufferData(Abstract::sFIO readah)
 {
-	std::unique_lock<std::mutex> locker(this->locker);
+	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	sSoundFile sndfile = SoundFile::createSoundFile(readah);
 	this->frameRate = sndfile->samplerate();
 	this->channelNum = sndfile->channels();

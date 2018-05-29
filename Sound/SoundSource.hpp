@@ -10,7 +10,8 @@ class Source : public Audio::Source
 private:
 	Audio::sBuffer buff;
 protected:
-	virtual void onBufferRequest(long requestedSize);
+	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);
+	virtual void onBufferEnd(bool looping);
 public:
 	Source(Audio::sBuffer nBuffer=nullptr);
 	const Audio::sBuffer getBuffer() const;

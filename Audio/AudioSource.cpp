@@ -25,6 +25,14 @@ Source::Status Source::getState() const
 {
 	return state;
 }
+bool Source::isLooping() const
+{
+	return looping;
+}
+void Source::setLooping(bool looping)
+{
+	this->looping = looping;
+}
 void Source::play()
 {
 	std::unique_lock<std::mutex> locker(this->locker);
@@ -45,20 +53,26 @@ void Source::stop()
 long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
 	std::unique_lock<std::mutex> locker(this->locker);
-	onBufferRequest(maxFrameNum * channelNum);
 	if(channelNum != getChannelCount()) throw std::runtime_error("Source - I/O Channel number mismatch! Please use a panner or channel mixer!");
-	if(frameRate != getFramerate())
-	{
-		if(getFramerate() > frameRate) maxFrameNum = long(float(maxFrameNum) * (float(getFramerate()) / float(frameRate)));
+	BufferOutput ptr;
+	bool isOver = false;
+	long framedSamples = 0;
+	long samplesToRead = maxFrameNum * channelNum;
+	while(samplesToRead) {
+		long readSamples = onBufferRequest(&ptr, samplesToRead);
+		samplesToRead -= readSamples;
+		for(long i = 0; i < readSamples; ++i,++framedSamples)
+		{
+			output[framedSamples] += out.first[i];
+		}
+		if(!readSamples)
+		{
+			isOver = true;
+			break;
+		}
 	}
-	getBuffer()->getAudioData(&out,frameCursor);
-	long framedFrames = std::min(out.numberOfRemainingFrames,maxFrameNum);
-	for(long i = 0; i < framedFrames; ++i)
-	{
-		output[i] += out.audioData[i];
-	}
-	frameCursor += framedFrames;
-	return framedFrames;
+	if(isOver) onBufferEnd(looping);
+	return framedSamples / channelNum;
 }
 
 }

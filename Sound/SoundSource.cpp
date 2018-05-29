@@ -16,9 +16,24 @@ void Source::setBuffer(Audio::sBuffer nBuffer)
 	std::unique_lock<std::mutex> locker(this->locker);
 	buff = nBuffer;
 }
-void Source::onBufferRequest(long requestedSize)
+long Source::onBufferRequest(Audio::BufferOutput* ptr, long len)
 {
-	(void)requestedSize;
+	if(buff)
+	{
+		if(ptr)
+		{
+			buff->getAudioData(ptr,frameCursor * getChannelCount());
+			return std::min(len,ptr->second);
+		} else return 0;
+	} else return 0;
+}
+void Source::onBufferEnd(bool looping)
+{
+	frameCursor = 0;
+	if(!looping)
+	{
+		state = STOPPED;
+	}
 }
 
 }

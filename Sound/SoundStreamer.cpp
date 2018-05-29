@@ -8,50 +8,55 @@ Streamer::Streamer(Abstract::sFIO readah, int buffNum, size_t bufferSize)
 {
 	for(int i = 0; i < buffNum;++i)
 	{
-		queue.push_back(BufferQueueElement(Audio::Buffer::create(bufferSize),true));
+		queue.emplace_back(Audio::Buffer::create(bufferSize),true);
 	}
-	currBufferIndex = queue.begin();
+	mWrite = queue.begin();
+	mRead = queue.begin();
 }
 void Streamer::checkQueue()
 {
-	BufferQueueElement* ptr = nullptr;
-	do {
-		ptr = &(queue.front());
-		if(ptr->second)
-		{
-			Audio::sBuffer tmpbuff = ptr->first;
-			queue.pop_front();
-			tmpbuff->bufferData(soundfile,frameCursor,tmpbuff->getFrameCount());
-			queue.push_back(BufferQueueElement(tmpbuff,false));
-		} else break;
-	} while(true);
+	while(mWrite->second) {
+		Audio::sBuffer tmpbuff = mWrite->first;
+		tmpbuff->bufferData(soundfile,frameCursor,tmpbuff->getFrameCount());
+		mWrite->second = false;
+
+		++mWrite;
+
+		if(mWrite == queue.end()) {
+			mWrite = queue.begin();
+		}
+	};
 }
 const Audio::sBuffer Streamer::getBuffer() const
 {
-	if(currBufferIndex == queue.end()) return nullptr;
-	else return currBufferIndex->first;
+	if(mRead == queue.end()) return nullptr;
+	else return mRead->first;
 }
 long Streamer::onBufferRequest(Audio::BufferOutput* ptr, long len)
 {
-	if(currBufferIndex == queue.end()) return 0;
-	if(ptr)
-	{
-		Audio::sBuffer tmp = currBufferIndex->first;
+	if(!mRead->second) {
+		Audio::sBuffer tmp = mRead->first;
 		if(tmp) {
-		tmp->getAudioData(ptr,curBufferCursor * getChannelCount());
-		if(len > ptr->second)
-		{
-			currBufferIndex->second = true;
-			++currBufferIndex;
-			return ptr->second;
-		} return len;
+			tmp->getAudioData(ptr,curBufferCursor * getChannelCount());
+			if(len > mRead->second)
+			{
+				mRead->second = true;
+				++mRead;
+
+				if(mRead == queue.end()) {
+					mRead = queue.begin();
+				}
+				return mRead->second;
+			} return len;
 		} else return 0;
-	} else return 0;
+	}else return 0;
 }
 void Streamer::onBufferEnd(bool looping)
 {
 	frameCursor = 0;
 	soundfile->seek(SEEK_SET,0);
+	mWrite = queue.begin();
+	mRead = queue.begin();
 	if(!looping)
 	{
 		state = STOPPED;

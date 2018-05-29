@@ -16,7 +16,7 @@ public:
 private:
 	const Audio::sSoundFile soundfile;
 	size_t curBufferCursor; // How far are we in the current buffer?
-	BufferIterator currBufferIndex; // Which buffer are we using?
+	BufferIterator mWrite, mRead;
 	BufferQueue queue;
 protected:
 	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);

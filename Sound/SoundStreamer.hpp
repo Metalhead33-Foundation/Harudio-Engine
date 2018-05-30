@@ -16,8 +16,9 @@ private:
 protected:
 	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);
 	virtual void onBufferEnd(bool looping);
-public:
 	Streamer(Abstract::sFIO readah, size_t bufferSize);
+public:
+	static sStreamer create(Abstract::sFIO readah, size_t bufferSize);
 	const Audio::sBuffer getBuffer() const;
 	void checkQueue();
 };

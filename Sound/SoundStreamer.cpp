@@ -8,6 +8,10 @@ Streamer::Streamer(Abstract::sFIO readah, size_t bufferSize)
 {
 	;
 }
+sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
+{
+	return sStreamer(new Streamer(readah,bufferSize));
+}
 void Streamer::checkQueue()
 {
 	size_t totalSize;

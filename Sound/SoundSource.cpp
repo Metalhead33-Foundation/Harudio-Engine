@@ -7,6 +7,10 @@ Source::Source(Audio::sBuffer nBuffer)
 {
 	;
 }
+sSource Source::create(Audio::sBuffer nBuffer)
+{
+	return sSource(new Source(nBuffer));
+}
 const Audio::sBuffer Source::getBuffer() const
 {
 	return buff;

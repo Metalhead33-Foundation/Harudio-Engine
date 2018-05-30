@@ -12,8 +12,9 @@ private:
 protected:
 	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);
 	virtual void onBufferEnd(bool looping);
-public:
 	Source(Audio::sBuffer nBuffer=nullptr);
+public:
+	static sSource create(Audio::sBuffer nBuffer=nullptr);
 	const Audio::sBuffer getBuffer() const;
 	void setBuffer(Audio::sBuffer nBuffer);
 };

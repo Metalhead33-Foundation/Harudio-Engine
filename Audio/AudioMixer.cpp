@@ -62,5 +62,28 @@ int Mixer::getChannelCount() const
 {
 	return channelNumber;
 }
+void Mixer::addToList(sPlayable playable)
+{
+	playableList.push_back(playable);
+}
+void Mixer::removeFromList(PlayableIterator it)
+{
+	playableList.erase(it);
+}
+void Mixer::removeFromList(sPlayable playable)
+{
+	for(auto it = playableList.begin(); it != playableList.end(); ++it)
+	{
+		if(!it->expired())
+		{
+			auto tmp = it->lock();
+			if(tmp == playable)
+			{
+				playableList.erase(it);
+				return;
+			}
+		}
+	}
+}
 
 }

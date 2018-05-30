@@ -3,6 +3,7 @@
 #include "Samplerate.hpp"
 #include "AudioMixer.hpp"
 #include <vector>
+#include <mutex>
 
 namespace Audio {
 
@@ -10,6 +11,9 @@ class Context : public Mixer
 {
 private:
 	PaStream *stream;
+	static int numContexts;
+	static std::recursive_mutex locker;
+	static void queryDevices(PaStreamParameters* inputParams, PaStreamParameters* outputParams, double desiredSamplerate);
 protected:
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 public:

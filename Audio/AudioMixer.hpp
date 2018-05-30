@@ -8,8 +8,11 @@ namespace Audio {
 
 class Mixer : public Playable
 {
+public:
+	typedef std::list<wPlayable> PlayableList;
+	typedef PlayableList::iterator PlayableIterator;
 private:
-	std::list<wPlayable> playableList;
+	PlayableList playableList;
 protected:
 	void mixDown(bool normalize=false);
 	std::vector<float> buffer;
@@ -22,6 +25,9 @@ public:
 	bool isPlaying() const;
 	int getFramerate() const;
 	int getChannelCount() const;
+	void addToList(sPlayable playable);
+	void removeFromList(PlayableIterator it);
+	void removeFromList(sPlayable playable);
 };
 
 }

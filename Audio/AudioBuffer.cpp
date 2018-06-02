@@ -19,7 +19,8 @@ int Buffer::getChannelNum() const
 }
 size_t Buffer::getFrameCount() const
 {
-	return getSampleCount() / size_t(channelNum);
+	if(getSampleCount() && channelNum) return getSampleCount() / size_t(channelNum);
+	else return 0;
 }
 
 Buffer::Buffer(sf_count_t buffsize)
@@ -83,6 +84,7 @@ long Buffer::bufferData(const sSoundFile file, sf_count_t offset, sf_count_t fra
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
 	if(file)
 	{
+		if(!buff.size()) forceResize = true;
 		sf_count_t readingFrames = file->frames();
 		if(offset)
 		{

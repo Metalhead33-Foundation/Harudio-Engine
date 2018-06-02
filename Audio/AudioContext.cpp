@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <vector>
+#include <climits>
 
 namespace Audio {
 
@@ -51,16 +52,20 @@ void Context::queryDevices(PaStreamParameters* inputParams, PaStreamParameters* 
 		it->second += int(maxHighOutputLatency / deviceInfo->defaultHighOutputLatency * 100.00);
 		it->second += int(maxLowInputLatency / deviceInfo->defaultLowInputLatency * 100.00);
 		it->second += int(maxLowOutputLatency / deviceInfo->defaultLowOutputLatency * 100.00);
+		if(!strcmp(deviceInfo->name,"pulse")) it->second = INT_MAX;
+		else if(!strcmp(deviceInfo->name,"jack_mixer")) it->second = INT_MIN;
+		std::cout << deviceInfo->name << ": " << it->second << std::endl;
 	}
 	int bestFit = 0;
 	for(size_t i = 0; i < fittingDevices.size();++i)
 	{
-		if(fittingDevices[i].second >= fittingDevices[i].second )
+		if(fittingDevices[i].second >= fittingDevices[bestFit].second )
 		{
 			bestFit = i;
 		}
 	}
 	deviceInfo = Pa_GetDeviceInfo(fittingDevices[bestFit].first);
+	std::cout << "Chosen audio device: " << deviceInfo->name << std::endl;
 	inputParams->device = fittingDevices[bestFit].first;
 	outputParams->device = fittingDevices[bestFit].first;
 	inputParams->suggestedLatency = deviceInfo->defaultLowInputLatency;

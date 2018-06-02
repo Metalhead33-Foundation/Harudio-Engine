@@ -6,7 +6,7 @@ Streamer::Streamer(Abstract::sFIO readah, size_t bufferSize)
 	: soundfile(Audio::SoundFile::createSoundFile(readah)),
 	  writePtr(0), readPtr(0), buff(Audio::Buffer::create(bufferSize))
 {
-	;
+	buff->bufferData(soundfile,0,buff->getFrameCount());
 }
 sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
 {
@@ -14,6 +14,7 @@ sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
 }
 void Streamer::checkQueue()
 {
+	if(writePtr == readPtr) return;
 	size_t totalSize;
 	if(writePtr < readPtr)
 	{

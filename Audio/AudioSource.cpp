@@ -1,4 +1,5 @@
 #include "AudioSource.hpp"
+#include <cstring>
 
 namespace Audio {
 
@@ -62,14 +63,14 @@ long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int fram
 	while(samplesToRead) {
 		long readSamples = onBufferRequest(&ptr, samplesToRead);
 		samplesToRead -= readSamples;
-		for(long i = 0; i < readSamples; ++i,++framedSamples)
-		{
-			output[framedSamples] += ptr.first[i];
-		}
 		if(!readSamples)
 		{
 			isOver = true;
 			break;
+		} else
+		{
+			memcpy(&output[framedSamples],ptr.first,readSamples * sizeof(float));
+			framedSamples += readSamples;
 		}
 	}
 	if(isOver) onBufferEnd(looping);

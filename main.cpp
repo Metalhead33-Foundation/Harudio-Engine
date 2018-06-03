@@ -23,13 +23,13 @@ int main()
 	auto sndfile = StdStream::createReader("/home/legacy/zene/others/Eurobeat/maybetonight.ogg");
 	auto buffread = StdStream::createReader("/home/legacy/zene/others/99 Red Balloons - GoldFinger.ogg");
 	auto buff = Audio::Buffer::create(buffread);
-	auto stream = Sound::Streamer::create(sndfile,8000);
+	auto stream = Sound::Streamer::create(sndfile,22000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
-	resampler->setSpeed(1.10f);
+	resampler->setSpeed(1.30f);
 	auto src = Sound::Source::create(buff);
-	//resampler->setInput(src);
-	// context.addToList(resampler);
-	context.addToList(stream);
+	resampler->setInput(stream);
+	context.addToList(resampler);
+	// context.addToList(stream);
 	// src->setLooping(true);
 	stream->play();
 	// src->play();

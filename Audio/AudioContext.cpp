@@ -1,5 +1,4 @@
 #include "AudioContext.hpp"
-#include "AudioPluginPlayable.hpp"
 #include <stdexcept>
 #include <cstring>
 #include <vector>
@@ -9,7 +8,6 @@ namespace Audio {
 
 int Context::numContexts;
 std::recursive_mutex Context::locker;
-long TINYBUFF = 0;
 
 void Context::queryDevices(PaStreamParameters* inputParams, PaStreamParameters* outputParams, double desiredSamplerate)
 {
@@ -77,7 +75,6 @@ Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBu
 	: Mixer(intendedBumChannels,intendedFramerate,intendedBufferSize), stream(nullptr)
 {
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
-	TINYBUFF = intendedBufferSize * intendedBumChannels;
 	PaStreamParameters outputParameters;
 	PaStreamParameters inputParameters;
 	std::memset(&outputParameters,0,sizeof(PaStreamParameters));
@@ -95,17 +92,6 @@ Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBu
 	err = Pa_OpenStream(&stream,&inputParameters,&outputParameters,intendedFramerate,intendedBufferSize,paNoFlag,
 						patestCallback,this);
 	if( err != paNoError ) throw std::runtime_error(Pa_GetErrorText(err));
-}
-
-long Context::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
-{
-	if(!output) throw std::runtime_error("Invalid output!");
-	mixDown();
-	long maxFrames = std::min(maxFrameNum,frameCount);
-	if(channelNum != channelNumber) throw std::runtime_error("Context - I/O Channel number mismatch! Please use a panner or channel mixer!");
-	if(frameRate != this->frameRate) throw std::runtime_error("Context - I/O Framerate mismatch! Please use a samplerate converter!");
-	memcpy(output,buffer.data(),maxFrames * channelNum * sizeof(float));
-	return maxFrames;
 }
 Context::~Context()
 {

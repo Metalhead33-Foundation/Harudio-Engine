@@ -14,8 +14,6 @@ private:
 	static int numContexts;
 	static std::recursive_mutex locker;
 	static void queryDevices(PaStreamParameters* inputParams, PaStreamParameters* outputParams, double desiredSamplerate);
-protected:
-	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 public:
 	Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize);
 	~Context();

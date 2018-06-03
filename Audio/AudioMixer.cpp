@@ -6,13 +6,14 @@ namespace Audio {
 
 Mixer::Mixer(int intendedChannelNumber, int intendedFramerate, long intendedBufferSize)
 	: frameRate(intendedFramerate), channelNumber(intendedChannelNumber),
-	  frameCount(intendedBufferSize), buffer(intendedBufferSize * intendedChannelNumber)
+	  frameCount(intendedBufferSize), inputBuffer(intendedBufferSize * intendedChannelNumber),
+	  outputBuffer(intendedBufferSize * intendedChannelNumber)
 {
 	;
 }
 void Mixer::mixDown(bool normalize)
 {
-	memset(buffer.data(),0,buffer.size() * sizeof(float));
+	memset(outputBuffer.data(),0,outputBuffer.size() * sizeof(float));
 	// std::cout << playableList.size() << std::endl;
 	size_t proc = 0;
 	for(auto it = playableList.begin(); it != playableList.end();)
@@ -23,7 +24,12 @@ void Mixer::mixDown(bool normalize)
 			sPlayable tmp = it->lock();
 			if(tmp->isPlaying())
 			{
-				tmp->pullAudio(buffer.data(),frameCount,channelNumber,frameRate);
+				memset(inputBuffer.data(),0,inputBuffer.size() * sizeof(float));
+				tmp->pullAudio(inputBuffer.data(),frameCount,channelNumber,frameRate);
+				for(size_t i = 0; i < inputBuffer.size(); ++i)
+				{
+					outputBuffer[i] += inputBuffer[i];
+				}
 				++proc;
 			}
 			++it;
@@ -32,9 +38,9 @@ void Mixer::mixDown(bool normalize)
 	if(normalize && proc)
 	{
 		float fProc = float(proc);
-		for(size_t i = 0; i < buffer.size(); ++i)
+		for(size_t i = 0; i < outputBuffer.size(); ++i)
 		{
-			buffer[i] /= fProc;
+			outputBuffer[i] /= fProc;
 		}
 	}
 }
@@ -45,11 +51,7 @@ long Mixer::pullAudio(float* output, long maxFrameNum, int channelNum, int frame
 	long maxFrames = std::min(maxFrameNum,frameCount);
 	if(channelNum != channelNumber) throw std::runtime_error("Mixer - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	if(frameRate != this->frameRate) throw std::runtime_error("Mixer - I/O Framerate mismatch! Please use a samplerate converter!");
-	for(long curFrame = 0; curFrame < maxFrames;++curFrame)
-	{
-		long frameCursor = curFrame * channelNum;
-		for(int i = 0; i < channelNum; ++i) output[frameCursor+i] += buffer[frameCursor+i];
-	}
+	memcpy(output,outputBuffer.data(),std::min(frameCount,maxFrameNum) * channelNum * sizeof(float));
 	return maxFrames;
 }
 bool Mixer::isPlaying() const

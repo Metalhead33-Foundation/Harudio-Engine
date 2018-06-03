@@ -2,7 +2,7 @@
 #define RESAMPLER_HPP
 #include "../AudioPluginPlayable.hpp"
 #include <samplerate.h>
-#include <vector>
+#include <array>
 
 namespace Audio {
 DEFINE_CLASS(Resampler)
@@ -10,8 +10,7 @@ class Resampler : public PluginPlayable
 {
 private:
 	int converterType;
-	std::vector<float> inputBuffer;
-	std::vector<float> outputBuffer;
+	static std::array<float,TINYBUFF> inputBuffer;
 	SRC_STATE* converter;
 	float speed;
 	double ratio;

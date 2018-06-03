@@ -15,7 +15,8 @@ private:
 	PlayableList playableList;
 protected:
 	void mixDown(bool normalize=false);
-	std::vector<float> buffer;
+	std::vector<float> inputBuffer;
+	std::vector<float> outputBuffer;
 	const int channelNumber;
 	const int frameRate;
 	const long frameCount;

@@ -46,11 +46,7 @@ long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channel
 	if(source) source->pullAudio(dryBuffer.data(),maxFrameNum,channelNum,frameRate);
 	processEffects();
 	long maxFrames = std::min(maxFrameNum,frameCount);
-	for(long curFrame = 0; curFrame < maxFrames;++curFrame)
-	{
-		long frameCursor = curFrame * channelNum;
-		for(int i = 0; i < channelNum; ++i) output[frameCursor+i] += dryBuffer[frameCursor+i];
-	}
+	memcpy(output,dryBuffer.data(),maxFrames * channelNum * sizeof(float));
 	return maxFrames;
 }
 

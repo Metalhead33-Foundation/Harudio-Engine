@@ -9,6 +9,7 @@ class Source : public Audio::Source
 {
 private:
 	Audio::sBuffer buff;
+	long currentFrame;
 protected:
 	virtual long onBufferRequest(Audio::BufferOutput* ptr, long len);
 	virtual void onBufferEnd(bool looping);

@@ -18,7 +18,6 @@ public:
 protected:
 	Status state;
 	long frameCursor;
-	BufferOutput out;
 	std::mutex locker;
 	bool looping;
 	virtual long onBufferRequest(BufferOutput* ptr, long len) = 0;

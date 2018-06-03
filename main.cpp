@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Audio/AudioContext.hpp"
 #include "Sound/SoundStreamer.hpp"
+#include "Sound/SoundSource.hpp"
 #include "Io/StdStream.hpp"
 #include <time.h>
 
@@ -11,15 +12,23 @@ using namespace std;
 
 int main()
 {
+	std::cout << "Creating context!" << std::endl;
 	Audio::Context context(44100,2,2048);
+	std::cout << "Created context!" << std::endl;
 	bool isPlaying = false;
 	struct timespec tim, tim2;
 	tim.tv_sec  = 0;
 	tim.tv_nsec = 500;
 	auto sndfile = StdStream::createReader("/home/legacy/zene/others/Eurobeat/maybetonight.ogg");
+	auto buffread = StdStream::createReader("/home/legacy/zene/others/99 Red Balloons - GoldFinger.ogg");
+	auto buff = Audio::Buffer::create(buffread);
 	auto stream = Sound::Streamer::create(sndfile,32000);
+	auto src = Sound::Source::create(buff);
 	context.addToList(stream);
+	context.addToList(src);
+	src->setLooping(true);
 	stream->play();
+	src->play();
 	context.unsuspend();
 	nanosleep(&tim , &tim2);
 	do {

@@ -1,4 +1,4 @@
-#include "LowpassFilter.hpp"
+#include "Degrader.hpp"
 #include <cstring>
 extern "C" {
 #include <alloca.h>
@@ -6,24 +6,24 @@ extern "C" {
 namespace Audio {
 namespace FX {
 
-LowpassFilter::LowpassFilter(int nLowEnd)
+Degrader::Degrader(int nLowEnd)
 	: lowEnd(nLowEnd)
 {
 	;
 }
-sLowpassFilter LowpassFilter::create(int nLowEnd)
+sDegrader Degrader::create(int nLowEnd)
 {
-	return sLowpassFilter(new LowpassFilter(nLowEnd));
+	return sDegrader(new Degrader(nLowEnd));
 }
-int LowpassFilter::getLowEnd() const
+int Degrader::getLowEnd() const
 {
 	return lowEnd;
 }
-void LowpassFilter::setLowEnd(int nLowEnd)
+void Degrader::setLowEnd(int nLowEnd)
 {
 	lowEnd = nLowEnd;
 }
-long LowpassFilter::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
+long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
 {
 	bool readMode=true;
 	float ratio=1.00/(float(frameRate)/float(lowEnd));

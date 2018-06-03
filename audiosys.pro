@@ -25,7 +25,7 @@ SOURCES += main.cpp \
     Audio/AudioPluginPlayable.cpp \
     Audio/Effect/Overdrive.cpp \
     Audio/Effect/SampleLevelEffect.cpp \
-    Audio/Effect/LowpassFilter.cpp
+    Audio/Effect/Degrader.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -51,4 +51,4 @@ HEADERS += \
     Audio/AudioPluginPlayable.hpp \
     Audio/Effect/Overdrive.hpp \
     Audio/Effect/SampleLevelEffect.hpp \
-    Audio/Effect/LowpassFilter.hpp
+    Audio/Effect/Degrader.hpp

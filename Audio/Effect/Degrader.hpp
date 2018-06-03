@@ -1,22 +1,22 @@
-#ifndef LOWPASSFILTER_HPP
-#define LOWPASSFILTER_HPP
+#ifndef DEGRADER_HPP
+#define DEGRADER_HPP
 #include "../AudioEffect.hpp"
 namespace Audio {
 namespace FX {
 
-DEFINE_CLASS(LowpassFilter)
-class LowpassFilter : public Effect
+DEFINE_CLASS(Degrader)
+class Degrader : public Effect
 {
 protected:
 	int lowEnd;
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
-	LowpassFilter(int nLowEnd);
+	Degrader(int nLowEnd);
 public:
-	static sLowpassFilter create(int nLowEnd);
+	static sDegrader create(int nLowEnd);
 	int getLowEnd() const;
 	void setLowEnd(int nLowEnd);
 };
 
 }
 }
-#endif // LOWPASSFILTER_HPP
+#endif // DEGRADER_HPP

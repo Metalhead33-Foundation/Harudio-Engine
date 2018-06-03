@@ -18,13 +18,5 @@ int Playable::patestCallback( const void *inputBuffer, void *outputBuffer,
 	return paContinue;
 	} else return paAbort;
 }
-float Playable::getVolume() const
-{
-	return volume;
-}
-void Playable::setVolume(float nVolume)
-{
-	volume = nVolume;
-}
 
 }

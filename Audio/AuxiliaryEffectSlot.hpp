@@ -7,24 +7,34 @@
 
 namespace Audio {
 
+DEFINE_CLASS(AuxiliaryEffectSlot)
 class AuxiliaryEffectSlot : public Playable
 {
+public:
+	typedef std::list<sEffect> EffectList;
+	typedef EffectList::iterator EffectIterator;
 private:
-	std::vector<float> dryBuffer;
-	std::vector<float> wetBuffer;
-	std::list<sEffect> effects;
+	PluggableBuffer dryBuffer;
+	PluggableBuffer wetBuffer;
+	EffectList effects;
 	const int channelNumber;
 	const int frameRate;
 	const long frameCount;
-	void processEffects();
+	void processEffects(long intendedFrameNum);
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 	sPlayable source;
+	AuxiliaryEffectSlot(int intendedChannelNumber, int intendedFramerate);
 public:
-	AuxiliaryEffectSlot(int intendedChannelNumber, int intendedFramerate, long intendedBufferSize);
+	static sAuxiliaryEffectSlot create(int intendedChannelNumber, int intendedFramerate);
 	int getFramerate() const;
 	int getChannelCount() const;
 	const sPlayable getSource() const;
 	void setSource(sPlayable nSource);
+
+	void addToList(sEffect playable);
+	void removeFromList(EffectIterator it);
+	void removeFromList(sEffect playable);
+	bool isPlaying() const;
 };
 
 }

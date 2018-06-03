@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     Audio/AudioBuffer.cpp \
     Sound/SoundSource.cpp \
     Sound/SoundStreamer.cpp \
-    Audio/AudioPluginPlayable.cpp
+    Audio/AudioPluginPlayable.cpp \
+    Audio/Effect/Overdrive.cpp \
+    Audio/Effect/SampleLevelEffect.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -45,4 +47,6 @@ HEADERS += \
     Audio/AudioBuffer.hpp \
     Sound/SoundSource.hpp \
     Sound/SoundStreamer.hpp \
-    Audio/AudioPluginPlayable.hpp
+    Audio/AudioPluginPlayable.hpp \
+    Audio/Effect/Overdrive.hpp \
+    Audio/Effect/SampleLevelEffect.hpp

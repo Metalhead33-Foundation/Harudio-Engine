@@ -6,6 +6,8 @@
 namespace Audio {
 template <int outputChannelCount> class Panner : public PluginPlayable
 {
+public:
+	typedef std::shared_ptr<Panner> sPanner;
 private:
 	enum MixingType : uint8_t
 	{
@@ -16,7 +18,7 @@ private:
 	float volumeLevel[outputChannelCount];
 	float channelRatio;
 	int inputChannelCount;
-	float inputBuffer[TINYBUFF];
+	PluggableBuffer inputBuffer;
 protected:
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 	{
@@ -26,8 +28,8 @@ protected:
 		long processedFrames = 0;
 		long readFrames = 0;
 		do {
-			readFrames = std::min(maxFrameNum-processedFrames,long(TINYBUFF/tinput->getChannelCount()));
-			readFrames = tinput->pullAudio(inputBuffer,readFrames,inputChannelCount,tinput->getFramerate());
+			readFrames = std::min(maxFrameNum-processedFrames,long(inputBuffer.size()/tinput->getChannelCount()));
+			readFrames = tinput->pullAudio(inputBuffer.data(),readFrames,inputChannelCount,tinput->getFramerate());
 			for(long curFrame = 0; curFrame < readFrames; ++curFrame,++processedFrames)
 			{
 				long inCursor = curFrame * inputChannelCount;
@@ -68,10 +70,6 @@ virtual void onChangedInput()
 		sPlayable tinput = input.lock();
 		setInputChannelCount(tinput->getChannelCount());
 	}
-public:
-	float getVolumeLevel(int index) const { return volumeLevel[index % outputChannelCount]; }
-	void setVolumeLevel(int index, float newBalance) { volumeLevel[index % outputChannelCount] = newBalance; }
-	int getInputChannelCount() const { return inputChannelCount; }
 	Panner()
 	{
 		setInputChannelCount(1);
@@ -82,9 +80,24 @@ public:
 		setInputChannelCount(inputChCount);
 		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = 1.00f;
 	}
+public:
+	float getVolumeLevel(int index) const { return volumeLevel[index % outputChannelCount]; }
+	void setVolumeLevel(int index, float newBalance) { volumeLevel[index % outputChannelCount] = newBalance; }
+	void setVolumeLevel(float newBalance) {
+		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = newBalance;
+	}
+	int getInputChannelCount() const { return inputChannelCount; }
 	virtual int getChannelCount() const
 	{
 		return outputChannelCount;
+	}
+	static sPanner create()
+	{
+		return sPanner(new Panner());
+	}
+	static sPanner create(int inputChCount)
+	{
+		return sPanner(new Panner(inputChCount));
 	}
 };
 

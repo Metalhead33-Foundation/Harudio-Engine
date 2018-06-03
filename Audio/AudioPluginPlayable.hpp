@@ -4,8 +4,6 @@
 #include <array>
 namespace Audio {
 
-#define TINYBUFF 2048
-
 DEFINE_CLASS(PluginPlayable)
 class PluginPlayable : public Playable
 {
@@ -20,7 +18,6 @@ public:
 	void setInput(sPlayable ninput);
 	const sPlayable getInput() const;
 	virtual void onChangedInput() = 0;
-	typedef std::array<float,TINYBUFF> PluggableBuffer;
 };
 
 }

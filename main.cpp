@@ -18,17 +18,17 @@ int main()
 	bool isPlaying = false;
 	struct timespec tim, tim2;
 	tim.tv_sec  = 0;
-	tim.tv_nsec = 500;
+	tim.tv_nsec = 10000;
 	auto sndfile = StdStream::createReader("/home/legacy/zene/others/Eurobeat/maybetonight.ogg");
 	auto buffread = StdStream::createReader("/home/legacy/zene/others/99 Red Balloons - GoldFinger.ogg");
 	auto buff = Audio::Buffer::create(buffread);
-	auto stream = Sound::Streamer::create(sndfile,32000);
+	auto stream = Sound::Streamer::create(sndfile,48000);
 	auto src = Sound::Source::create(buff);
 	context.addToList(stream);
 	context.addToList(src);
 	src->setLooping(true);
 	stream->play();
-	src->play();
+	// src->play();
 	context.unsuspend();
 	nanosleep(&tim , &tim2);
 	do {

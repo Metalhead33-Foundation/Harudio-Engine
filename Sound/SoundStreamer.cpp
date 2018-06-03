@@ -6,7 +6,7 @@ Streamer::Streamer(Abstract::sFIO readah, size_t bufferSize)
 	: soundfile(Audio::SoundFile::createSoundFile(readah)),
 	  writePtr(0), readPtr(0), buff(Audio::Buffer::create(bufferSize))
 {
-	buff->bufferData(soundfile,0,buff->getFrameCount());
+	buff->bufferData(soundfile,0,buff->getSampleCount() / soundfile->channels());
 }
 sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
 {
@@ -37,12 +37,14 @@ const Audio::sBuffer Streamer::getBuffer() const
 }
 long Streamer::onBufferRequest(Audio::BufferOutput* ptr, long len)
 {
+	// std::cout << readPtr << " - " << writePtr << std::endl;
 	if(ptr)
 	{
 		buff->getAudioData(ptr,readPtr);
 		long givenSamples = std::min(len,ptr->second);
-		if(ptr->second - givenSamples >= 0)
+		if(ptr->second - givenSamples <= 0)
 		{
+			// checkQueue();
 			readPtr = 0;
 		} else readPtr += givenSamples;
 		return givenSamples;

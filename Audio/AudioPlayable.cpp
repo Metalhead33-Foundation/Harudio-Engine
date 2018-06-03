@@ -14,7 +14,7 @@ int Playable::patestCallback( const void *inputBuffer, void *outputBuffer,
 	// float* out = (float*)outputBuffer;
 	float* out = static_cast<float*>(outputBuffer);
 	if(data->isPlaying()) data->pullAudio(out, framesPerBuffer, data->getChannelCount(), data->getFramerate());
-	std::cout << userData << " - audio: " << *out << std::endl;
+	// std::cout << userData << " - audio: " << *out << std::endl;
 	return paContinue;
 	} else return paAbort;
 }

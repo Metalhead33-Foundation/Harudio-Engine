@@ -4,6 +4,10 @@ namespace Audio {
 
 float inputBuffer[TINYBUFF];
 
+sResampler Resampler::create(int converterType)
+{
+	return sResampler(new Resampler(converterType));
+}
 float Resampler::getSpeed() const
 {
 	return speed;
@@ -31,6 +35,7 @@ long Resampler::converterCallback(void *self, float **data)
 		inFrames = input->pullAudio(inputBuffer,inFrames,
 									input->getChannelCount(),input->getFramerate());
 		*data = inputBuffer;
+		std::cout << inFrames << std::endl;
 		return inFrames;
 	} else return 0;
 }
@@ -46,12 +51,12 @@ void Resampler::cleanBuffers()
 void Resampler::onChangedInput()
 {
 	sPlayable tmp = input.lock();
+	int err;
 	if(converter)
 	{
 		src_delete(converter);
-		int err;
-		converter = src_callback_new(converterCallback,converterType,tmp->getChannelCount(),&err,this);
 	}
+	converter = src_callback_new(converterCallback,converterType,tmp->getChannelCount(),&err,this);
 }
 long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
@@ -74,6 +79,7 @@ long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int f
 				output[outputCursor+i] += outputBuffer[inputCursor+i];
 			}
 		}
+		std::cout << readFrames << std::endl;
 	} while(readFrames);
 	return processedFrames;
 }

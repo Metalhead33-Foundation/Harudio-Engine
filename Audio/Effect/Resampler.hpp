@@ -16,8 +16,9 @@ private:
 	static long converterCallback(void *self, float **data);
 
 	double getRatio(int outputFramerate) const;
+	Resampler(int converterType=SRC_LINEAR);
 public:
-	Resampler(int converterType);
+	static sResampler create(int converterType=SRC_LINEAR);
 	virtual void onChangedInput();
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 	float getSpeed() const;

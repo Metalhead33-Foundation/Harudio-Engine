@@ -14,7 +14,7 @@ using namespace std;
 int main()
 {
 	std::cout << "Creating context!" << std::endl;
-	Audio::Context context(44100,2,1024);
+	Audio::Context context(44100,2,2048);
 	std::cout << "Created context!" << std::endl;
 	bool isPlaying = false;
 	struct timespec tim, tim2;
@@ -25,7 +25,7 @@ int main()
 	auto buff = Audio::Buffer::create(buffread);
 	auto stream = Sound::Streamer::create(sndfile,96000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
-	resampler->setSpeed(1.00f);
+	resampler->setSpeed(1.09f);
 	auto src = Sound::Source::create(buff);
 	resampler->setInput(src);
 	context.addToList(resampler);

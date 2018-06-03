@@ -2,8 +2,6 @@
 #include <cstring>
 namespace Audio {
 
-float inputBuffer[TINYBUFF];
-
 sResampler Resampler::create(int converterType)
 {
 	return sResampler(new Resampler(converterType));
@@ -32,21 +30,22 @@ long Resampler::converterCallback(void *self, float **data)
 		if(sampler->input.expired()) return 0;
 		sPlayable input = sampler->input.lock();
 		long inFrames = long(TINYBUFF/input->getChannelCount());
-		inFrames = input->pullAudio(inputBuffer,inFrames,
+		inFrames = input->pullAudio(sampler->inputBuffer.data(),inFrames,
 									input->getChannelCount(),input->getFramerate());
-		*data = inputBuffer;
+		*data = sampler->inputBuffer.data();
 		std::cout << inFrames << std::endl;
 		return inFrames;
 	} else return 0;
 }
 Resampler::Resampler(int converterType)
-	: converter(nullptr), converterType(converterType), speed(1.0f)
+	: converter(nullptr), converterType(converterType), speed(1.0f),
+	  inputBuffer(TINYBUFF), outputBuffer(TINYBUFF)
 {
 	;
 }
 void Resampler::cleanBuffers()
 {
-	memset(inputBuffer,0,TINYBUFF * sizeof(float));
+	memset(inputBuffer.data(),0,inputBuffer.size() * sizeof(float));
 }
 void Resampler::onChangedInput()
 {
@@ -69,7 +68,7 @@ long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int f
 	long readFrames = 0;
 	do {
 		readFrames = std::min(long(TINYBUFF/channelNum),maxFrameNum-processedFrames);
-		readFrames = src_callback_read(converter,ratio,readFrames,outputBuffer);
+		readFrames = src_callback_read(converter,ratio,readFrames,outputBuffer.data());
 		for(long frameCursor = 0; frameCursor < readFrames; ++frameCursor,++processedFrames)
 		{
 			long inputCursor = frameCursor*channelNum;

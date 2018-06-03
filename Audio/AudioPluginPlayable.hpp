@@ -3,7 +3,7 @@
 #include "AudioPlayable.hpp"
 namespace Audio {
 
-#define TINYBUFF 256
+extern long TINYBUFF;
 
 DEFINE_CLASS(PluginPlayable)
 class PluginPlayable : public Playable

@@ -53,6 +53,7 @@ long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int ch
 					compRatio += ratio;
 				}
 			} else {
+				memset(kernel,0,sizeof(float)*channelNum);
 				readMode = true;
 				while(compRatio <= 1.0f)
 				{

@@ -9,10 +9,13 @@ DEFINE_CLASS(Overdrive)
 class Overdrive : public SampleLevelEffect
 {
 private:
-	Overdrive(float distortionPower = 1.0f);
+	Overdrive(int multi=1, float distortionPower = 1.0f);
+	int selfMultiplyAmmount;
 public:
-	static sOverdrive create(float distortionPower = 1.0f);
+	static sOverdrive create(int multi=1, float distortionPower = 1.0f);
 	float doEffect(float input);
+	int getSelfMultiplyAmount() const;
+	void setSelfMultiplyAmount(int multi);
 };
 
 }

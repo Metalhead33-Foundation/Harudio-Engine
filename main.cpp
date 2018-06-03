@@ -27,13 +27,13 @@ int main()
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
-	auto overdrive = Audio::FX::Overdrive::create();
+	auto overdrive = Audio::FX::Overdrive::create(4,1.0f);
 	aux->addToList(overdrive);
 	resampler->setSpeed(1.00f);
 	resampler->setInput(stream);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);
-	stereoPanner->setVolumeLevel(0.05f);
+	stereoPanner->setVolumeLevel(0.01f);
 	context.addToList(stereoPanner);
 	stream->play();
 	context.unsuspend();

@@ -55,6 +55,7 @@ void Resampler::onChangedInput()
 }
 long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
+	if(!output) throw std::runtime_error("Invalid output!");
 	if(input.expired()) return 0;
 	if(channelNum != getChannelCount()) throw std::runtime_error("Resampler - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	cleanBuffers();

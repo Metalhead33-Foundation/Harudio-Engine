@@ -52,8 +52,8 @@ void Context::queryDevices(PaStreamParameters* inputParams, PaStreamParameters* 
 		it->second += int(maxHighOutputLatency / deviceInfo->defaultHighOutputLatency * 100.00);
 		it->second += int(maxLowInputLatency / deviceInfo->defaultLowInputLatency * 100.00);
 		it->second += int(maxLowOutputLatency / deviceInfo->defaultLowOutputLatency * 100.00);
-		if(!strcmp(deviceInfo->name,"pulse")) it->second = INT_MAX;
-		else if(!strcmp(deviceInfo->name,"jack_mixer")) it->second = INT_MIN;
+		if(!strcmp(deviceInfo->name,"sysdefault")) it->second += 400;
+		else if(!strcmp(deviceInfo->name,"pulse")) it->second += 300;
 		std::cout << deviceInfo->name << ": " << it->second << std::endl;
 	}
 	int bestFit = 0;
@@ -96,6 +96,7 @@ Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBu
 
 long Context::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
+	if(!output) throw std::runtime_error("Invalid output!");
 	mixDown();
 	long maxFrames = std::min(maxFrameNum,frameCount);
 	if(channelNum != channelNumber) throw std::runtime_error("Context - I/O Channel number mismatch! Please use a panner or channel mixer!");

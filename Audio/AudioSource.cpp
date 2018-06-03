@@ -52,6 +52,7 @@ void Source::stop()
 }
 long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
+	if(!output) throw std::runtime_error("Invalid output!");
 	std::unique_lock<std::mutex> locker(this->locker);
 	if(channelNum != getChannelCount()) throw std::runtime_error("Source - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	BufferOutput ptr;
@@ -63,7 +64,7 @@ long Source::pullAudio(float* output, long maxFrameNum, int channelNum, int fram
 		samplesToRead -= readSamples;
 		for(long i = 0; i < readSamples; ++i,++framedSamples)
 		{
-			output[framedSamples] += out.first[i];
+			output[framedSamples] += ptr.first[i];
 		}
 		if(!readSamples)
 		{

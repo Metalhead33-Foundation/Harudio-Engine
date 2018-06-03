@@ -39,6 +39,7 @@ void AuxiliaryEffectSlot::processEffects()
 }
 long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
+	if(!output) throw std::runtime_error("Invalid output!");
 	if(channelNum != channelNumber) throw std::runtime_error("Mixer - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	if(frameRate != this->frameRate) throw std::runtime_error("Mixer - I/O Framerate mismatch! Please use a samplerate converter!");
 	memset(dryBuffer.data(),0,sizeof(float) * dryBuffer.size());

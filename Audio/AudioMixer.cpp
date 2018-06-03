@@ -13,6 +13,7 @@ Mixer::Mixer(int intendedChannelNumber, int intendedFramerate, long intendedBuff
 void Mixer::mixDown(bool normalize)
 {
 	memset(buffer.data(),0,buffer.size() * sizeof(float));
+	// std::cout << playableList.size() << std::endl;
 	size_t proc = 0;
 	for(auto it = playableList.begin(); it != playableList.end();)
 	{
@@ -39,6 +40,7 @@ void Mixer::mixDown(bool normalize)
 }
 long Mixer::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 {
+	if(!output) throw std::runtime_error("Invalid output!");
 	mixDown();
 	long maxFrames = std::min(maxFrameNum,frameCount);
 	if(channelNum != channelNumber) throw std::runtime_error("Mixer - I/O Channel number mismatch! Please use a panner or channel mixer!");

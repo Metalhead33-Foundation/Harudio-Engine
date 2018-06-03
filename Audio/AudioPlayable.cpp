@@ -9,10 +9,12 @@ int Playable::patestCallback( const void *inputBuffer, void *outputBuffer,
 						   PaStreamCallbackFlags statusFlags,
 						   void *userData )
 {
-	if(userData) {
-	pPlayable data = reinterpret_cast<pPlayable>(userData);
-	float *out = reinterpret_cast<float*>(outputBuffer);
+	if(userData && outputBuffer) {
+	pPlayable data = static_cast<pPlayable>(userData);
+	// float* out = (float*)outputBuffer;
+	float* out = static_cast<float*>(outputBuffer);
 	if(data->isPlaying()) data->pullAudio(out, framesPerBuffer, data->getChannelCount(), data->getFramerate());
+	std::cout << userData << " - audio: " << *out << std::endl;
 	return paContinue;
 	} else return paAbort;
 }

@@ -25,7 +25,7 @@ int main()
 	auto buff = Audio::Buffer::create(buffread);
 	auto stream = Sound::Streamer::create(sndfile,22000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
-	resampler->setSpeed(1.30f);
+	resampler->setSpeed(2.30f);
 	auto src = Sound::Source::create(buff);
 	resampler->setInput(stream);
 	context.addToList(resampler);

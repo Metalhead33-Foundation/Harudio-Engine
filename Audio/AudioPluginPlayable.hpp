@@ -1,6 +1,7 @@
 #ifndef AUDIOPLUGINPLAYABLE_HPP
 #define AUDIOPLUGINPLAYABLE_HPP
 #include "AudioPlayable.hpp"
+#include <array>
 namespace Audio {
 
 #define TINYBUFF 2048
@@ -19,6 +20,7 @@ public:
 	void setInput(sPlayable ninput);
 	const sPlayable getInput() const;
 	virtual void onChangedInput() = 0;
+	typedef std::array<float,TINYBUFF> PluggableBuffer;
 };
 
 }

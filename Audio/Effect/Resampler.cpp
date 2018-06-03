@@ -2,8 +2,6 @@
 #include <cstring>
 namespace Audio {
 
-std::array<float,TINYBUFF> Resampler::inputBuffer;
-
 sResampler Resampler::create(int converterType)
 {
 	return sResampler(new Resampler(converterType));

@@ -14,21 +14,24 @@ sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
 }
 void Streamer::checkQueue()
 {
-	if(writePtr == readPtr) return;
-	size_t totalSize;
-	if(writePtr < readPtr)
+	while(writePtr != readPtr)
 	{
-		totalSize = readPtr - writePtr;
-	}
-	else
-	{
-		totalSize = buff->getSampleCount() - writePtr;
-	}
+		size_t totalSize;
+		if(writePtr < readPtr)
+		{
+			totalSize = readPtr - writePtr;
+		}
+		else
+		{
+			totalSize = buff->getSampleCount() - writePtr;
+		}
 		long readFrames = buff->bufferData(soundfile,frameCursor,totalSize / buff->getChannelNum(),writePtr);
+		if(!readFrames) return;
 		writePtr += readFrames * buff->getChannelNum();
 		frameCursor += readFrames;
-	if(writePtr >= buff->getSampleCount()) {
-		writePtr = 0;
+		if(writePtr >= buff->getSampleCount()) {
+			writePtr = 0;
+		}
 	}
 }
 const Audio::sBuffer Streamer::getBuffer() const
@@ -47,6 +50,7 @@ long Streamer::onBufferRequest(Audio::BufferOutput* ptr, long len)
 			// checkQueue();
 			readPtr = 0;
 		} else readPtr += givenSamples;
+		// frameCursor += givenSamples / getChannelCount();
 		return givenSamples;
 	} else return 0;
 }

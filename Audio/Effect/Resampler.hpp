@@ -14,8 +14,10 @@ private:
 	std::vector<float> outputBuffer;
 	SRC_STATE* converter;
 	float speed;
+	double ratio;
 	void cleanBuffers();
 	static long converterCallback(void *self, float **data);
+	void refreshRatio(int outputFramerate);
 
 	double getRatio(int outputFramerate) const;
 	Resampler(int converterType=SRC_LINEAR);

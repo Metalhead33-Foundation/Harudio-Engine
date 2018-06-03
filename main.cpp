@@ -14,7 +14,7 @@ using namespace std;
 int main()
 {
 	std::cout << "Creating context!" << std::endl;
-	Audio::Context context(44100,2,2048);
+	Audio::Context context(44100,2,1024);
 	std::cout << "Created context!" << std::endl;
 	bool isPlaying = false;
 	struct timespec tim, tim2;
@@ -23,16 +23,16 @@ int main()
 	auto sndfile = StdStream::createReader("/home/legacy/zene/others/Eurobeat/maybetonight.ogg");
 	auto buffread = StdStream::createReader("/home/legacy/zene/others/99 Red Balloons - GoldFinger.ogg");
 	auto buff = Audio::Buffer::create(buffread);
-	auto stream = Sound::Streamer::create(sndfile,96000);
+	auto stream = Sound::Streamer::create(sndfile,8000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
-	resampler->setSpeed(1.09f);
+	resampler->setSpeed(1.10f);
 	auto src = Sound::Source::create(buff);
-	resampler->setInput(src);
-	context.addToList(resampler);
-	// context.addToList(src);
+	//resampler->setInput(src);
+	// context.addToList(resampler);
+	context.addToList(stream);
 	// src->setLooping(true);
-	// stream->play();
-	src->play();
+	stream->play();
+	// src->play();
 	context.unsuspend();
 	nanosleep(&tim , &tim2);
 	do {

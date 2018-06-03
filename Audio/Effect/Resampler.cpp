@@ -22,6 +22,10 @@ double Resampler::getRatio(int outputFramerate) const
 		return double(outputFramerate) / double(getFramerate()) / double(speed);
 	}
 }
+void Resampler::refreshRatio(int outputFramerate)
+{
+	ratio = getRatio(outputFramerate);
+}
 long Resampler::converterCallback(void *self, float **data)
 {
 	if(self)
@@ -29,11 +33,12 @@ long Resampler::converterCallback(void *self, float **data)
 		pResampler sampler = reinterpret_cast<pResampler>(self);
 		if(sampler->input.expired()) return 0;
 		sPlayable input = sampler->input.lock();
-		long inFrames = long(TINYBUFF/input->getChannelCount());
+		long inFrames;
+		if(sampler->ratio <= 1.0f) inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount())*sampler->ratio);
+		else inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount()));
 		inFrames = input->pullAudio(sampler->inputBuffer.data(),inFrames,
 									input->getChannelCount(),input->getFramerate());
 		*data = sampler->inputBuffer.data();
-		std::cout << inFrames << std::endl;
 		return inFrames;
 	} else return 0;
 }
@@ -63,7 +68,7 @@ long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int f
 	if(input.expired()) return 0;
 	if(channelNum != getChannelCount()) throw std::runtime_error("Resampler - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	cleanBuffers();
-	double ratio = getRatio(frameRate);
+	refreshRatio(frameRate);
 	long processedFrames = 0;
 	long readFrames = 0;
 	do {
@@ -78,7 +83,6 @@ long Resampler::pullAudio(float* output, long maxFrameNum, int channelNum, int f
 				output[outputCursor+i] += outputBuffer[inputCursor+i];
 			}
 		}
-		std::cout << readFrames << std::endl;
 	} while(readFrames);
 	return processedFrames;
 }

@@ -7,6 +7,7 @@
 #include "Audio/Effect/Panner.hpp"
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Overdrive.hpp"
+#include "Audio/Effect/LowpassFilter.hpp"
 #include <time.h>
 
 using namespace std;
@@ -28,12 +29,14 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	auto overdrive = Audio::FX::Overdrive::create(4,1.0f);
+	auto lowpass = Audio::FX::LowpassFilter::create(8000);
 	aux->addToList(overdrive);
+	aux->addToList(lowpass);
 	resampler->setSpeed(1.00f);
 	resampler->setInput(stream);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);
-	stereoPanner->setVolumeLevel(0.01f);
+	stereoPanner->setVolumeLevel(0.3f);
 	context.addToList(stereoPanner);
 	stream->play();
 	context.unsuspend();

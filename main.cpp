@@ -13,7 +13,7 @@ using namespace std;
 int main()
 {
 	std::cout << "Creating context!" << std::endl;
-	Audio::Context context(44100,2,2048);
+	Audio::Context context(44100,2,8000);
 	std::cout << "Created context!" << std::endl;
 	bool isPlaying = false;
 	struct timespec tim, tim2;

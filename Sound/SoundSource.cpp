@@ -28,7 +28,7 @@ long Source::onBufferRequest(Audio::BufferOutput* ptr, long len)
 		{
 			buff->getAudioData(ptr,frameCursor * getChannelCount());
 			long tmp = std::min(len,ptr->second);
-			frameCursor += tmp;
+			frameCursor += tmp/getChannelCount();
 			return tmp;
 		} else return 0;
 	} else return 0;

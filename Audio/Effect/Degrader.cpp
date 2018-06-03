@@ -62,6 +62,7 @@ long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int ch
 			if(curFrame < 0) curFrame = 0;
 		}
 	}
+	return maxFrames;
 }
 
 }

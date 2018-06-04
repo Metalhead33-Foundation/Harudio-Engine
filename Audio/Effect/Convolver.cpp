@@ -3,7 +3,7 @@ namespace Audio {
 namespace FX {
 
 Convolver::Convolver(const sBuffer nIR)
-	: IR(nIR)
+	: IR(nIR), memBuffer(nIR->getSampleCount()*2), memPtr(0)
 {
 	;
 }
@@ -16,18 +16,18 @@ long Convolver::process(float* inBuffer, float* outBuffer, long maxFrames, int c
 {
 	BufferOutput ptr;
 	IR->getAudioData(&ptr,0);
-	for(int sampleOffset=0; sampleOffset<channelNum;++sampleOffset)
+	for(long currFrame=0;currFrame<maxFrames;++currFrame)
 	{
-		for(long currFrame=0;currFrame<maxFrames;++currFrame)
+		for(int sampleOffset=0; sampleOffset<channelNum;++sampleOffset)
 		{
 			long outputSampleCursor = (currFrame*channelNum)+sampleOffset;
 			outBuffer[outputSampleCursor] = 0.0f;
-			for(long bufferCursor=0;bufferCursor<ptr.second;++bufferCursor)
-			{
-				long inputSampleCursor = ((currFrame-bufferCursor)*channelNum)+sampleOffset;
-				if(inputSampleCursor > 0) outBuffer[outputSampleCursor] += inBuffer[inputSampleCursor] * ptr.first[bufferCursor];
-				// else outBuffer[outputSampleCursor] += ptr.first[bufferCursor];
+			memBuffer[memPtr] = inBuffer[outputSampleCursor];
+			for(int I = 0; I < ptr.second; I++) {
+				outBuffer[outputSampleCursor] += memBuffer[(memBuffer.size() + memPtr - I) % memBuffer.size()]*ptr.first[I];
 			}
+			if(memPtr >= memBuffer.size()) memPtr = 0;
+			else memPtr++;
 		}
 	}
 	return maxFrames;

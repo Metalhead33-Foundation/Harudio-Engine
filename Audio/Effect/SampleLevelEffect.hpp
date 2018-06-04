@@ -6,7 +6,7 @@ namespace Audio {
 namespace FX {
 
 DEFINE_CLASS(SampleLevelEffect)
-class SampleLevelEffect : public Effect
+class SampleLevelEffect : public virtual Effect
 {
 private:
 	float effectLevel;

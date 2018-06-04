@@ -28,7 +28,9 @@ SOURCES += main.cpp \
     Audio/Effect/Degrader.cpp \
     Audio/Effect/BitCrusher.cpp \
     Audio/Effect/Clamp.cpp \
-    Audio/Effect/Gate.cpp
+    Audio/Effect/Gate.cpp \
+    Audio/Effect/SingleAttributeEffect.cpp \
+    Audio/Effect/Convolver.cpp
 
 HEADERS += \
     Io/StdStream.hpp \
@@ -57,4 +59,6 @@ HEADERS += \
     Audio/Effect/Degrader.hpp \
     Audio/Effect/BitCrusher.hpp \
     Audio/Effect/Clamp.hpp \
-    Audio/Effect/Gate.hpp
+    Audio/Effect/Gate.hpp \
+    Audio/Effect/SingleAttributeEffect.hpp \
+    Audio/Effect/Convolver.hpp

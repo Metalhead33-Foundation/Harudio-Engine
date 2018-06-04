@@ -101,7 +101,9 @@ public:
 	}
 };
 
+typedef Panner<1> MonoPanner;
 typedef Panner<2> StereoPanner;
+typedef Panner<4> QuadPanner;
 
 }
 

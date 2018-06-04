@@ -8,6 +8,7 @@
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Overdrive.hpp"
 #include "Audio/Effect/Degrader.hpp"
+#include "Audio/Effect/BitCrusher.hpp"
 #include <time.h>
 
 using namespace std;
@@ -26,17 +27,21 @@ int main()
 	auto sndfile = StdStream::createReader(SONG_PATH);
 	auto stream = Sound::Streamer::create(sndfile,22000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
+	auto monoPanner = Audio::MonoPanner::create();
 	auto stereoPanner = Audio::StereoPanner::create();
-	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
-	auto overdrive = Audio::FX::Overdrive::create(4,1.0f);
-	auto lowpass = Audio::FX::Degrader::create(8000);
-	// aux->addToList(overdrive);
+	auto aux = Audio::AuxiliaryEffectSlot::create(1,44100);
+	auto overdrive = Audio::FX::Overdrive::create(4,0.8f);
+	auto lowpass = Audio::FX::Degrader::create(6000);
+	auto bitcrusher = Audio::FX::BitCrusher::create(1);
+	aux->addToList(overdrive);
 	aux->addToList(lowpass);
-	resampler->setSpeed(1.00f);
+	aux->addToList(bitcrusher);
+	resampler->setSpeed(1.15f);
 	resampler->setInput(stream);
-	aux->setSource(resampler);
+	monoPanner->setInput(resampler);
+	aux->setSource(monoPanner);
 	stereoPanner->setInput(aux);
-	stereoPanner->setVolumeLevel(0.3f);
+	stereoPanner->setVolumeLevel(0.6f);
 	context.addToList(stereoPanner);
 	stream->play();
 	context.unsuspend();

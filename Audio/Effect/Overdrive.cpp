@@ -21,6 +21,7 @@ float Overdrive::doEffect(float input)
 	input += 1.0f;
 	for(int i = 0; i < selfMultiplyAmmount; ++i) input *= input;
 	input -= 1.0f;
+	input = std::min(input,1.0f);
 	if(isNegative) input *= -1.0f;
 	return input;
 }

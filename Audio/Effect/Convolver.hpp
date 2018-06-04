@@ -10,9 +10,6 @@ class Convolver : public Effect
 {
 private:
 	const sBuffer IR;
-	std::vector<float> kernel;
-	size_t writePtr;
-	size_t readPtr;
 	Convolver(const sBuffer nIR);
 protected:
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);

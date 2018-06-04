@@ -3,7 +3,7 @@ namespace Audio {
 namespace FX {
 
 Convolver::Convolver(const sBuffer nIR)
-	: IR(nIR), kernel(nIR->getSampleCount()), writePtr(0), readPtr(0)
+	: IR(nIR)
 {
 	;
 }

@@ -50,7 +50,8 @@ HEADERS += \
     Io/StdStream.hpp \
     Sound/SoundSource.hpp \
     Sound/SoundStreamer.hpp \
-    Audio/Effect/TwoStageConvolver.hpp
+    Audio/Effect/TwoStageConvolver.hpp \
+    Audio/Effect/IrBufferFiller.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \

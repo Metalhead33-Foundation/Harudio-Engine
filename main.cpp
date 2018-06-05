@@ -34,7 +34,7 @@ int main()
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
-	auto overdrive = Audio::FX::Clamp::create(0.2f);
+	auto overdrive = Audio::FX::Clamp::create(0.10f);
 	auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512,2);
 	resampler->setSpeed(1.10f);
 	resampler->setInput(stream);

@@ -35,14 +35,14 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	auto overdrive = Audio::FX::Clamp::create(0.2f);
-	auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512);
+	auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512,2);
+	resampler->setSpeed(1.10f);
+	resampler->setInput(stream);
 	aux->addToList(overdrive);
 	aux->addToList(convolver);
-	resampler->setSpeed(1.15f);
-	resampler->setInput(stream);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);
-	stereoPanner->setVolumeLevel(0.6f);
+	stereoPanner->setVolumeLevel(0.2f);
 	context.addToList(stereoPanner);
 	stream->play();
 	context.unsuspend();

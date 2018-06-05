@@ -14,13 +14,15 @@ namespace FX {
 DEFINE_CLASS(TwoStageConvolver)
 class TwoStageConvolver : public Effect
 {
+public:
+	typedef fftconvolver::sTwoStageFFTConvolver FastConvolver;
 private:
-	const fftconvolver::sTwoStageFFTConvolver FFT;
-	TwoStageConvolver(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize);
+	std::vector<FastConvolver> convolvers;
+	TwoStageConvolver(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize, int channelNum);
 protected:
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 public:
-	static sTwoStageConvolver create(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize);
+	static sTwoStageConvolver create(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize, int channelNum);
 };
 
 }

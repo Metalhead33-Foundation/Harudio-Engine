@@ -2,7 +2,7 @@
 #define CONVOLVER_HPP
 #include "../AudioEffect.hpp"
 #include "../AudioBuffer.hpp"
-
+#include <vector>
 
 namespace fftconvolver
 {
@@ -15,13 +15,15 @@ namespace FX {
 DEFINE_CLASS(Convolver)
 class Convolver : public Effect
 {
+public:
+	typedef fftconvolver::sFFTConvolver FastConvolver;
 private:
-	const fftconvolver::sFFTConvolver FFT;
-	Convolver(const sBuffer nIR, size_t blocksize);
+	Convolver(const sBuffer nIR, size_t blocksize, int channelCount);
 protected:
+	std::vector<FastConvolver> convolvers;
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 public:
-	static sConvolver create(const sBuffer nIR, size_t blocksize);
+	static sConvolver create(const sBuffer nIR, size_t blocksize, int channelCount);
 };
 
 }

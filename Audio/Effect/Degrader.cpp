@@ -31,41 +31,6 @@ long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int ch
 	float compRatio=1.0f;
 	float kernel = 0.0f;
 	memcpy(outBuffer,inBuffer,sampleCount*sizeof(float));
-	/*for(long curSample=0;curSample<sampleCount;++curSample)
-	{
-		if(readMode)
-		{
-			kernel += inBuffer[curSample];
-		}
-		else
-		{
-			outBuffer[curSample] = kernel;
-		}
-		compRatio -= ratio;
-		if(compRatio <= 0.0f)
-		{
-			if(readMode)
-			{
-				readMode = false;
-				kernel /= invRatio;
-				while(compRatio <= 1.0f)
-				{
-					--curSample;
-					compRatio += ratio;
-				}
-			}
-			else
-			{
-				kernel = 0.0f;
-				readMode = true;
-				while(compRatio <= 1.0f)
-				{
-					compRatio += ratio;
-				}
-			}
-			if(curSample < 0) curSample = 0;
-		}
-	}*/
 	for(int curChannel=0;curChannel<channelNum;++curChannel)
 	{
 		long curFrame=0;

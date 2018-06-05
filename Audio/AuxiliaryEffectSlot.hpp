@@ -20,6 +20,9 @@ private:
 	const int channelNumber;
 	const int frameRate;
 	const long frameCount;
+	void swapBuffers();
+	void interlace();
+	void deinterlace();
 	void processEffects(long intendedFrameNum);
 	long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 	sPlayable source;
@@ -28,6 +31,7 @@ public:
 	static sAuxiliaryEffectSlot create(int intendedChannelNumber, int intendedFramerate);
 	int getFramerate() const;
 	int getChannelCount() const;
+	long getFrameCount() const;
 	const sPlayable getSource() const;
 	void setSource(sPlayable nSource);
 

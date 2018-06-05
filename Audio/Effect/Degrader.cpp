@@ -1,8 +1,6 @@
 #include "Degrader.hpp"
 #include <cstring>
-extern "C" {
-#include <alloca.h>
-}
+
 namespace Audio {
 namespace FX {
 
@@ -26,41 +24,47 @@ void Degrader::setLowEnd(int nLowEnd)
 long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
 {
 	bool readMode=true;
-	float ratio=1.00/(float(frameRate)/float(lowEnd));
+	const float invRatio=(float(frameRate)/float(lowEnd));
+	const float ratio=1.0f/invRatio;
 	float compRatio=1.0f;
-	float* kernel = reinterpret_cast<float*>(alloca(sizeof(float)*channelNum));
-	memset(kernel,0,sizeof(float)*channelNum);
-	for(long curFrame=0; curFrame < maxFrames; ++curFrame)
+	float kernel = 0.0f;
+	for(int curChannel=0;curChannel<channelNum;++curChannel)
 	{
-		long sampleBegin=curFrame * channelNum;
-		for(int curChannel=0; curChannel < channelNum; ++curChannel)
+		for(long curFrame=0;curFrame<maxFrames;++curFrame)
 		{
-			if(readMode) {
-				kernel[curChannel] += inBuffer[sampleBegin+curChannel];
-			} else {
-				outBuffer[sampleBegin+curChannel] = kernel[curChannel];
+			const long samplePtr=(maxFrames*curChannel)+curFrame;
+			if(readMode)
+			{
+				kernel += inBuffer[samplePtr];
 			}
-		}
-		compRatio -= ratio;
-		if(compRatio <= 0.0f)
-		{
-			if(readMode) {
-				readMode = false;
-				for(int i = 0; i < channelNum;++i) kernel[i] /= 1.0f/ratio;
-				while(compRatio <= 1.0f)
-				{
-					--curFrame;
-					compRatio += ratio;
-				}
-			} else {
-				memset(kernel,0,sizeof(float)*channelNum);
-				readMode = true;
-				while(compRatio <= 1.0f)
-				{
-					compRatio += ratio;
-				}
+			else
+			{
+				outBuffer[samplePtr] = kernel;
 			}
-			if(curFrame < 0) curFrame = 0;
+			compRatio -= ratio;
+			if(compRatio <= 0.0f)
+			{
+				if(readMode)
+				{
+					readMode = false;
+					kernel /= invRatio;
+					while(compRatio <= 1.0f)
+					{
+						--curFrame;
+						compRatio += ratio;
+					}
+				}
+				else
+				{
+					kernel = 0;
+					readMode = true;
+					while(compRatio <= 1.0f)
+					{
+						compRatio += ratio;
+					}
+				}
+				if(curFrame < 0) curFrame = 0;
+			}
 		}
 	}
 	return maxFrames;

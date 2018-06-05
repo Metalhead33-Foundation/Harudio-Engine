@@ -1,4 +1,5 @@
 #include "Convolver.hpp"
+#include <cstring>
 namespace Audio {
 namespace FX {
 
@@ -16,13 +17,14 @@ long Convolver::process(float* inBuffer, float* outBuffer, long maxFrames, int c
 {
 	BufferOutput ptr;
 	IR->getAudioData(&ptr,0);
+	memcpy(&memBuffer[memPtr],inBuffer,std::min(ptr.second,long(memBuffer.size())-memPtr)*sizeof(float));
 	for(long currFrame=0;currFrame<maxFrames;++currFrame)
 	{
 		for(int sampleOffset=0; sampleOffset<channelNum;++sampleOffset)
 		{
 			long outputSampleCursor = (currFrame*channelNum)+sampleOffset;
 			outBuffer[outputSampleCursor] = 0.0f;
-			memBuffer[memPtr] = inBuffer[outputSampleCursor];
+			// memBuffer[memPtr] = inBuffer[outputSampleCursor];
 			for(int I = 0; I < ptr.second; I++) {
 				outBuffer[outputSampleCursor] += memBuffer[(memBuffer.size() + memPtr - I) % memBuffer.size()]*ptr.first[I];
 			}

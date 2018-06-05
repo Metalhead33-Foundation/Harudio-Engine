@@ -34,6 +34,42 @@ bool AuxiliaryEffectSlot::isPlaying() const
 	if(source) return source->isPlaying();
 	else return false;
 }
+long AuxiliaryEffectSlot::getFrameCount() const
+{
+	return long(dryBuffer.size()) / channelNumber;
+}
+void AuxiliaryEffectSlot::swapBuffers()
+{
+	memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
+	memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
+}
+void AuxiliaryEffectSlot::interlace()
+{
+	const long frameCnt=getFrameCount();
+	for(long curFrame=0;curFrame < frameCnt; ++curFrame)
+	{
+		for(int sampleOffset=0;sampleOffset<channelNumber;++sampleOffset)
+		{
+			const long wetFrameStart=(curFrame*channelNumber)+sampleOffset;
+			const long dryFrameStart=(frameCnt*sampleOffset)+curFrame;
+			wetBuffer[wetFrameStart] = dryBuffer[dryFrameStart];
+		}
+	}
+}
+void AuxiliaryEffectSlot::deinterlace()
+{
+	const long frameCnt=getFrameCount();
+	for(long curFrame=0;curFrame < frameCnt; ++curFrame)
+	{
+		const long dryFrameStart=(curFrame*channelNumber);
+		for(int sampleOffset=0;sampleOffset<channelNumber;++sampleOffset)
+		{
+			const long dryFrameStart=(curFrame*channelNumber)+sampleOffset;
+			const long wetFrameStart=(frameCnt*sampleOffset)+curFrame;
+			wetBuffer[wetFrameStart] = dryBuffer[dryFrameStart];
+		}
+	}
+}
 void AuxiliaryEffectSlot::processEffects(long intendedFrameNum)
 {
 	memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
@@ -41,8 +77,7 @@ void AuxiliaryEffectSlot::processEffects(long intendedFrameNum)
 	{
 		pEffect eff = it->get();
 		eff->process(dryBuffer.data(),wetBuffer.data(),intendedFrameNum,channelNumber,frameRate);
-		memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
-		memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
+		swapBuffers();
 	}
 }
 long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
@@ -58,8 +93,11 @@ long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channel
 		if(readFrames) readFrames = source->pullAudio(dryBuffer.data(),readFrames,channelNum,frameRate);
 		if(readFrames)
 		{
+			deinterlace();
+			swapBuffers();
 			processEffects(readFrames);
-			memcpy(&output[processedFrames],dryBuffer.data(),readFrames * channelNum * sizeof(float));
+			interlace();
+			memcpy(&output[processedFrames],wetBuffer.data(),readFrames * channelNum * sizeof(float));
 			processedFrames += readFrames;
 		}
 	} while(readFrames);

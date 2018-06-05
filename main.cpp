@@ -8,7 +8,7 @@
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Gate.hpp"
 #include "Audio/Effect/Clamp.hpp"
-#include "Audio/Effect/Convolver.hpp"
+#include "Audio/Effect/Degrader.hpp"
 #include <time.h>
 
 using namespace std;
@@ -35,8 +35,8 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	auto overdrive = Audio::FX::Clamp::create(0.2f);
-	auto convolver = Audio::FX::Convolver::create(irBuff);
-	aux->addToList(overdrive);
+	auto convolver = Audio::FX::Degrader::create(22050);
+	// aux->addToList(overdrive);
 	aux->addToList(convolver);
 	resampler->setSpeed(1.15f);
 	resampler->setInput(stream);

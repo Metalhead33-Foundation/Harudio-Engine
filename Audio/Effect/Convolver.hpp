@@ -2,6 +2,7 @@
 #define CONVOLVER_HPP
 #include "../AudioEffect.hpp"
 #include "../AudioBuffer.hpp"
+#include "IrBufferFiller.hpp"
 #include <vector>
 
 namespace fftconvolver
@@ -30,6 +31,8 @@ public:
 	static sConvolver create(sConvolver cpy, int channelCount);
 	static sConvolver create(const sBuffer nIR, size_t blocksize, int channelCount);
 	static sConvolver create(const float* IR, size_t irSize, size_t blocksize, int channelCount);
+	static sConvolver create(IrBufferCreator& creator, size_t blocksiz, int channelCount);
+	static sConvolver create(IrBufferFiller& creator, size_t blocksiz, int channelCount);
 };
 
 }

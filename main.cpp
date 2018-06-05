@@ -17,6 +17,7 @@ using namespace std;
 #define IR_PATH "/home/metalhead33/vst/Red Wire Impulses/Impulses/Blue Voodoo 4x12 WGS Veteran30 Laney/15-06_e609_Edge_-1-081115_1802_dc.wav"
 #define IR2_PATH "/home/metalhead33/vst/Red Wire Impulses/Impulses/Amps & Cabs (Guitar)/Fender68VibroluxReverb/Fender 68-Vibrolux SM57 off Axis.wav"
 #define IR3_PATH "/home/metalhead33/vst/Red Wire Impulses/catharsis-awesometime-fredman/2off-preshigh.wav"
+#define IR4_PATH "/home/metalhead33/QtProjects/Audio-Stuff/ir1.wav"
 
 int main()
 {
@@ -28,7 +29,7 @@ int main()
 	tim.tv_sec  = 0;
 	tim.tv_nsec = 10000;
 	auto sndfile = StdStream::createReader(SONG_PATH);
-	auto irfile = StdStream::createReader(IR3_PATH);
+	auto irfile = StdStream::createReader(IR4_PATH);
 	auto irBuff = Audio::Buffer::create(irfile);
 	auto stream = Sound::Streamer::create(sndfile,22000);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);

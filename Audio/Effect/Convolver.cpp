@@ -1,6 +1,7 @@
 #include "Convolver.hpp"
 #include "../FFTConvolver/FFTConvolver.h"
 #include <cstring>
+#include <stdexcept>
 namespace Audio {
 namespace FX {
 
@@ -16,6 +17,7 @@ Convolver::Convolver(const Convolver& cpy)
 Convolver::Convolver(const Convolver& cpy, int channelCount)
 	: convolvers(channelCount)
 {
+	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
 	for(int i = 0; i < channelCount;++i)
 	{
 		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
@@ -25,6 +27,7 @@ Convolver::Convolver(const Convolver& cpy, int channelCount)
 Convolver::Convolver(const sBuffer nIR, size_t blocksize, int channelCount)
 	: convolvers(channelCount)
 {
+	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
 	BufferOutput ptr;
 	nIR->getAudioData(&ptr,0);
 	for(int i = 0; i < channelCount;++i)
@@ -36,6 +39,7 @@ Convolver::Convolver(const sBuffer nIR, size_t blocksize, int channelCount)
 Convolver::Convolver(const float* IR, size_t irSize, size_t blocksize, int channelCount)
 	: convolvers(channelCount)
 {
+	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
 	for(int i = 0; i < channelCount;++i)
 	{
 		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
@@ -70,6 +74,20 @@ long Convolver::process(float* inBuffer, float* outBuffer, long maxFrames, int c
 		convolvers[i]->process(&inBuffer[sampleCursor],&outBuffer[sampleCursor],maxFrames);
 	}
 	return maxFrames;
+}
+sConvolver Convolver::create(IrBufferCreator& creator, size_t blocksiz, int channelCount)
+{
+	if(channelCount <= 0) return nullptr;
+	std::vector<float> crt;
+	creator(crt);
+	return create(crt.data(),crt.size(),blocksiz,channelCount);
+}
+sConvolver Convolver::create(IrBufferFiller& creator, size_t blocksiz, int channelCount)
+{
+	if(channelCount <= 0) return nullptr;
+	IrBuffer buff;
+	creator(buff);
+	return create(buff.audio,buff.sampleCount,blocksiz,channelCount);
 }
 
 }

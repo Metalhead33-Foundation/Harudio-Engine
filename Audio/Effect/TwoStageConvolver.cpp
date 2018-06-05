@@ -1,6 +1,7 @@
 #include "TwoStageConvolver.hpp"
 #include "../FFTConvolver/TwoStageFFTConvolver.h"
 #include <cstring>
+#include <stdexcept>
 namespace Audio {
 namespace FX {
 
@@ -16,6 +17,7 @@ TwoStageConvolver::TwoStageConvolver(const TwoStageConvolver& cpy)
 TwoStageConvolver::TwoStageConvolver(const TwoStageConvolver& cpy, int channelCount)
 	: convolvers(channelCount)
 {
+	if(channelCount <= 0) throw std::runtime_error("TwoStageConvolver - invalid number of channels!");
 	for(int i = 0; i < channelCount;++i)
 	{
 		convolvers[i] = fftconvolver::sTwoStageFFTConvolver(new fftconvolver::TwoStageFFTConvolver());
@@ -25,6 +27,7 @@ TwoStageConvolver::TwoStageConvolver(const TwoStageConvolver& cpy, int channelCo
 TwoStageConvolver::TwoStageConvolver(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize, int channelNum)
 	: convolvers(channelNum)
 {
+	if(channelNum <= 0) throw std::runtime_error("TwoStageConvolver - invalid number of channels!");
 	BufferOutput ptr;
 	nIR->getAudioData(&ptr,0);
 	for(int i = 0; i < channelNum;++i)
@@ -36,6 +39,7 @@ TwoStageConvolver::TwoStageConvolver(const sBuffer nIR, size_t head_blocksize, s
 TwoStageConvolver::TwoStageConvolver(const float* IR, size_t irLen, size_t head_blocksize, size_t tail_blocksize, int channelNum)
 	: convolvers(channelNum)
 {
+	if(channelNum <= 0) throw std::runtime_error("TwoStageConvolver - invalid number of channels!");
 	for(int i = 0; i < channelNum;++i)
 	{
 		convolvers[i] = fftconvolver::sTwoStageFFTConvolver(new fftconvolver::TwoStageFFTConvolver());
@@ -70,6 +74,20 @@ long TwoStageConvolver::process(float* inBuffer, float* outBuffer, long maxFrame
 		convolvers[i]->process(&inBuffer[sampleCursor],&outBuffer[sampleCursor],maxFrames);
 	}
 	return maxFrames;
+}
+sTwoStageConvolver TwoStageConvolver::create(IrBufferCreator& creator, size_t head_blocksize, size_t tail_blocksize, int channelCount)
+{
+	if(channelCount <= 0) return nullptr;
+	std::vector<float> crt;
+	creator(crt);
+	return create(crt.data(),crt.size(),head_blocksize,tail_blocksize,channelCount);
+}
+sTwoStageConvolver TwoStageConvolver::create(IrBufferFiller& creator, size_t head_blocksize, size_t tail_blocksize, int channelCount)
+{
+	if(channelCount <= 0) return nullptr;
+	IrBuffer buff;
+	creator(buff);
+	return create(buff.audio,buff.sampleCount,head_blocksize,tail_blocksize,channelCount);
 }
 
 }

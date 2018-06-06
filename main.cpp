@@ -7,8 +7,8 @@
 #include "Audio/Effect/Panner.hpp"
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Gate.hpp"
-#include "Audio/Effect/Clamp.hpp"
-#include "Audio/Effect/TwoStageConvolver.hpp"
+#include "Audio/Effect/Degrader.hpp"
+#include "Audio/Effect/Convolver.hpp"
 #include <time.h>
 
 using namespace std;
@@ -35,11 +35,12 @@ int main()
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
-	auto overdrive = Audio::FX::Clamp::create(0.10f);
-	auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512,2);
+	// auto overdrive = Audio::FX::Degrader::create(8000);
+	auto convolver = Audio::FX::Convolver::createLowpassFilter(44100,3000,64,2);
+	// auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512,2);
 	resampler->setSpeed(1.10f);
 	resampler->setInput(stream);
-	aux->addToList(overdrive);
+	// aux->addToList(overdrive);
 	aux->addToList(convolver);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);

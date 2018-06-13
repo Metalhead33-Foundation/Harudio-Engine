@@ -36,7 +36,7 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	// auto overdrive = Audio::FX::Degrader::create(8000);
-	auto convolver = Audio::FX::Convolver::createLowpassFilter(44100,3000,64,2);
+	auto convolver = Audio::FX::Convolver::createLowpassFilter(44100,16000,64,2);
 	// auto convolver = Audio::FX::TwoStageConvolver::create(irBuff,64,512,2);
 	resampler->setSpeed(1.10f);
 	resampler->setInput(stream);

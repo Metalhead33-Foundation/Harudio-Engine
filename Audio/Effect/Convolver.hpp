@@ -33,8 +33,6 @@ public:
 	static sConvolver create(const float* IR, size_t irSize, size_t blocksize, int channelCount);
 	static sConvolver create(IrBufferCreator& creator, size_t blocksiz, int channelCount);
 	static sConvolver create(IrBufferFiller& creator, size_t blocksiz, int channelCount);
-	static sConvolver createLowpassFilter(int inputSamplerate,int CutoffFrequency, size_t blocksiz, int channelCount);
-	static sConvolver createFastLowpassFilter(int inputSamplerate,int outputFrequency, size_t blocksiz, int channelCount);
 };
 
 }

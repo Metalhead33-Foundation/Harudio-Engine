@@ -25,7 +25,7 @@ void Streamer::checkQueue()
 		{
 			totalSize = buff->getSampleCount() - writePtr;
 		}
-		long readFrames = buff->bufferData(soundfile,frameCursor,totalSize / buff->getChannelNum(),writePtr);
+		const long readFrames = buff->bufferData(soundfile,frameCursor,totalSize / buff->getChannelNum(),writePtr);
 		if(!readFrames) return;
 		writePtr += readFrames * buff->getChannelNum();
 		frameCursor += readFrames;
@@ -44,7 +44,7 @@ long Streamer::onBufferRequest(Audio::BufferOutput* ptr, long len)
 	if(ptr)
 	{
 		buff->getAudioData(ptr,readPtr);
-		long givenSamples = std::min(len,ptr->second);
+		const long givenSamples = std::min(len,ptr->second);
 		if(ptr->second - givenSamples <= 0)
 		{
 			// checkQueue();

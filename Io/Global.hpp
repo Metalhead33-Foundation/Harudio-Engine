@@ -17,12 +17,14 @@
 
 // From util.h - Written by Daniël Sonck
 #define DEFINE_PTR(a) typedef a *p##a; \
-   typedef std::shared_ptr< a > s##a; \
-   typedef std::weak_ptr< a > w##a;
+	typedef std::shared_ptr< a > s##a; \
+	typedef std::weak_ptr< a > w##a; \
+	typedef std::unique_ptr< a > u##a;
 
 #define DEFINE_PTR2(s,a) typedef s::a *p##a; \
-   typedef std::shared_ptr< s::a > s##a; \
-   typedef std::weak_ptr< s::a > w##a;
+	typedef std::shared_ptr< s::a > s##a; \
+	typedef std::weak_ptr< s::a > w##a; \
+	typedef std::unique_ptr< a > u##a;
 
 #define DEFINE_CLASS(klass) class klass; DEFINE_PTR(klass)
 

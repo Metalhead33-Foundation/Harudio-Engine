@@ -25,7 +25,6 @@ private:
 	Convolver(const float* IR, size_t irSize, size_t blocksize, int channelCount);
 protected:
 	std::vector<FastConvolver> convolvers;
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 public:
 	static sConvolver create(sConvolver cpy);
 	static sConvolver create(sConvolver cpy, int channelCount);
@@ -33,6 +32,7 @@ public:
 	static sConvolver create(const float* IR, size_t irSize, size_t blocksize, int channelCount);
 	static sConvolver create(IrBufferCreator& creator, size_t blocksiz, int channelCount);
 	static sConvolver create(IrBufferFiller& creator, size_t blocksiz, int channelCount);
+	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 };
 
 }

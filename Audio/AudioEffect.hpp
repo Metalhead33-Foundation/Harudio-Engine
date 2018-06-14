@@ -10,10 +10,9 @@ class Effect
 {
 public:
 	friend class AuxiliaryEffectSlot;
-protected:
-	virtual long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate) = 0;
 public:
 	virtual ~Effect() = default;
+	virtual long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate) = 0;
 };
 
 }

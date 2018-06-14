@@ -1,9 +1,372 @@
 #include "Filter.hpp"
+#include "Convolver.hpp"
+#include "TwoStageConvolver.hpp"
 #include <cmath>
 #include <numeric>
 #include <algorithm>
 #include <cstring>
 #include <vector>
+
+
+namespace Audio {
+namespace FX {
+
+sLowpassFilter LowpassFilter::create(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency)
+{
+	return sLowpassFilter(new LowpassFilter(blockSize,channelNum,frameRate,CutoffFrequency));
+}
+sLowpassFilter LowpassFilter::create(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency)
+{
+	return sLowpassFilter(new LowpassFilter(tail,head,channelNum,frameRate,CutoffFrequency));
+}
+sHighpassFilter HighpassFilter::create(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency)
+{
+	return sHighpassFilter(new HighpassFilter(blockSize,channelNum,frameRate,CutoffFrequency));
+}
+sHighpassFilter HighpassFilter::create(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency)
+{
+	return sHighpassFilter(new HighpassFilter(tail,head,channelNum,frameRate,CutoffFrequency));
+}
+sBandpassFilter BandpassFilter::create(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+{
+	return sBandpassFilter(new BandpassFilter(blockSize,channelNum,frameRate,lowCutoff,highCutoff));
+}
+sBandpassFilter BandpassFilter::create(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+{
+	return sBandpassFilter(new BandpassFilter(tail,head,channelNum,frameRate,lowCutoff,highCutoff));
+}
+sBandRejectFilter BandRejectFilter::create(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+{
+	return sBandRejectFilter(new BandRejectFilter(blockSize,channelNum,frameRate,lowCutoff,highCutoff));
+}
+sBandRejectFilter BandRejectFilter::create(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+{
+	return sBandRejectFilter(new BandRejectFilter(tail,head,channelNum,frameRate,lowCutoff,highCutoff));
+}
+
+enum FilterType : uint8_t
+{
+	lowpass,
+	highpass,
+	bandpass,
+	bandreject
+};
+
+// Lowpass filters
+sConvolver createLowpassFilter(int inputSamplerate,int CutoffFrequency, size_t blocksiz, int channelCount);
+sTwoStageConvolver createTwoStageLowpassFilter(int inputSamplerate,int CutoffFrequency, size_t head_blocksize, size_t tail_blocksize, int channelCount);
+// Highpass filters
+sConvolver createHighpassFilter(int inputSamplerate,int CutoffFrequency, size_t blocksiz, int channelCount);
+sTwoStageConvolver createTwoStageHighpassFilter(int inputSamplerate,int CutoffFrequency, size_t head_blocksize, size_t tail_blocksize, int channelCount);
+// Bandpass filters
+sConvolver createBandpassFilter(int inputSamplerate,int lowCutoff, int highCutoff, size_t blocksiz, int channelCount);
+sTwoStageConvolver createTwoStageBandpassFilter(int inputSamplerate,int lowCutoff, int highCutoff, size_t head_blocksize, size_t tail_blocksize, int channelCount);
+// Band-Rejject filters
+sConvolver createBandRejectfilter(int inputSamplerate,int lowCutoff, int highCutoff, size_t blocksiz, int channelCount);
+sTwoStageConvolver createTwoStageBandRejectfilter(int inputSamplerate,int lowCutoff, int highCutoff, size_t head_blocksize, size_t tail_blocksize, int channelCount);
+
+struct SP_private
+{
+	virtual const sEffect getEffect() const = 0;
+	virtual ~SP_private() = default;
+	virtual void resetSelf() = 0;
+	int inputSamplerate;
+	int CutoffFrequency;
+	int channelCount;
+	FilterType type;
+};
+struct BP_private
+{
+	virtual const sEffect getEffect() const = 0;
+	virtual ~BP_private() = default;
+	virtual void resetSelf() = 0;
+	int inputSamplerate;
+	int lowCutoff;
+	int highCutoff;
+	int channelCount;
+	FilterType type;
+};
+
+struct NormalSinglepass : public SP_private
+{
+	sConvolver conv;
+	size_t blocksize;
+	NormalSinglepass(FilterType type, int inputSamplerate,int CutoffFrequency, size_t blocksiz, int channelCount)
+	{
+		this->type = type;
+		this->inputSamplerate = inputSamplerate;
+		this->CutoffFrequency = CutoffFrequency;
+		this->blocksize = blocksiz;
+		this->channelCount = channelCount;
+		switch (type) {
+		case lowpass:
+			conv = createLowpassFilter(inputSamplerate,CutoffFrequency,blocksiz,channelCount);
+			break;
+		case highpass:
+			conv = createHighpassFilter(inputSamplerate,CutoffFrequency,blocksiz,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+	const sEffect getEffect() const { return conv; }
+	void resetSelf()
+	{
+		switch (type) {
+		case lowpass:
+			conv = createLowpassFilter(inputSamplerate,CutoffFrequency,blocksize,channelCount);
+			break;
+		case highpass:
+			conv = createHighpassFilter(inputSamplerate,CutoffFrequency,blocksize,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+};
+struct TwoStageSinglepass : public SP_private
+{
+	sTwoStageConvolver conv;
+	size_t head,tail;
+	TwoStageSinglepass(FilterType type, int inputSamplerate,int CutoffFrequency, size_t head, size_t tail, int channelCount)
+	{
+		this->type = type;
+		this->inputSamplerate = inputSamplerate;
+		this->CutoffFrequency = CutoffFrequency;
+		this->head = head;
+		this->tail = tail;
+		this->channelCount = channelCount;
+		switch (type) {
+		case lowpass:
+			conv = createTwoStageLowpassFilter(inputSamplerate,CutoffFrequency,head,tail,channelCount);
+			break;
+		case highpass:
+			conv = createTwoStageHighpassFilter(inputSamplerate,CutoffFrequency,head,tail,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+	const sEffect getEffect() const { return conv; }
+	void resetSelf()
+	{
+		switch (type) {
+		case lowpass:
+			conv = createTwoStageLowpassFilter(inputSamplerate,CutoffFrequency,head,tail,channelCount);
+			break;
+		case highpass:
+			conv = createTwoStageHighpassFilter(inputSamplerate,CutoffFrequency,head,tail,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+};
+struct NormalBandpass : public BP_private
+{
+	sConvolver conv;
+	size_t blocksize;
+	NormalBandpass(FilterType type, int inputSamplerate,int lowCutoff, int highCutoff, size_t blocksiz, int channelCount)
+	{
+		this->type = type;
+		this->inputSamplerate = inputSamplerate;
+		this->lowCutoff = lowCutoff;
+		this->highCutoff = highCutoff;
+		this->blocksize = blocksiz;
+		this->channelCount = channelCount;
+		switch (type) {
+		case bandpass:
+			conv = createBandpassFilter(inputSamplerate,lowCutoff,highCutoff,blocksiz,channelCount);
+			break;
+		case bandreject:
+			conv = createBandRejectfilter(inputSamplerate,lowCutoff,highCutoff,blocksiz,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+	const sEffect getEffect() const { return conv; }
+	void resetSelf()
+	{
+		switch (type) {
+		case bandpass:
+			conv = createBandpassFilter(inputSamplerate,lowCutoff,highCutoff,blocksize,channelCount);
+			break;
+		case bandreject:
+			conv = createBandRejectfilter(inputSamplerate,lowCutoff,highCutoff,blocksize,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+};
+struct TwoStageBandpass : public BP_private
+{
+	sTwoStageConvolver conv;
+	size_t head,tail;
+	TwoStageBandpass(FilterType type, int inputSamplerate,int lowCutoff, int highCutoff, size_t head, size_t tail, int channelCount)
+	{
+		this->type = type;
+		this->inputSamplerate = inputSamplerate;
+		this->lowCutoff = lowCutoff;
+		this->highCutoff = highCutoff;
+		this->head = head;
+		this->tail = tail;
+		this->channelCount = channelCount;
+		switch (type) {
+		case bandpass:
+			conv = createTwoStageBandpassFilter(inputSamplerate,lowCutoff,highCutoff,head,tail,channelCount);
+			break;
+		case bandreject:
+			conv = createTwoStageBandRejectfilter(inputSamplerate,lowCutoff,highCutoff,head,tail,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+	const sEffect getEffect() const { return conv; }
+	void resetSelf()
+	{
+		switch (type) {
+		case bandpass:
+			conv = createTwoStageBandpassFilter(inputSamplerate,lowCutoff,highCutoff,head,tail,channelCount);
+			break;
+		case bandreject:
+			conv = createTwoStageBandRejectfilter(inputSamplerate,lowCutoff,highCutoff,head,tail,channelCount);
+			break;
+		default:
+			break;
+		}
+	}
+};
+
+LowpassFilter::LowpassFilter(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency)
+	: imp(new NormalSinglepass(lowpass,frameRate,CutoffFrequency,blockSize,channelNum))
+{
+	;
+}
+LowpassFilter::LowpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency)
+	: imp(new TwoStageSinglepass(lowpass,frameRate,CutoffFrequency,head,tail,channelNum))
+{
+	;
+}
+long LowpassFilter::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
+{
+	return imp->getEffect()->process(inBuffer,outBuffer,maxFrames,channelNum,frameRate);
+}
+int LowpassFilter::getCutoff() const
+{
+	return imp->CutoffFrequency;
+}
+void LowpassFilter::setCutoff(int setto)
+{
+	imp->CutoffFrequency = setto;
+	imp->resetSelf();
+}
+
+HighpassFilter::HighpassFilter(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency)
+	: imp(new NormalSinglepass(highpass,frameRate,CutoffFrequency,blockSize,channelNum))
+{
+	;
+}
+HighpassFilter::HighpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency)
+	: imp(new TwoStageSinglepass(highpass,frameRate,CutoffFrequency,head,tail,channelNum))
+{
+	;
+}
+long HighpassFilter::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
+{
+	return imp->getEffect()->process(inBuffer,outBuffer,maxFrames,channelNum,frameRate);
+}
+int HighpassFilter::getCutoff() const
+{
+	return imp->CutoffFrequency;
+}
+void HighpassFilter::setCutoff(int setto)
+{
+	imp->CutoffFrequency = setto;
+	imp->resetSelf();
+}
+
+BandpassFilter::BandpassFilter(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+	: imp(new NormalBandpass(bandpass,frameRate,lowCutoff,highCutoff,blockSize,channelNum))
+{
+	;
+}
+BandpassFilter::BandpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+	: imp(new TwoStageBandpass(bandpass,frameRate,lowCutoff,highCutoff,head,tail,channelNum))
+{
+	;
+}
+int BandpassFilter::getLowCutoff() const
+{
+	return imp->lowCutoff;
+}
+void BandpassFilter::setLowCutoff(int setto)
+{
+	imp->lowCutoff = setto;
+	imp->resetSelf();
+}
+int BandpassFilter::getHighCutoff() const
+{
+	return imp->highCutoff;
+}
+void BandpassFilter::setHighCutoff(int setto)
+{
+	imp->highCutoff = setto;
+	imp->resetSelf();
+}
+void BandpassFilter::setBoth(int low, int high)
+{
+	imp->lowCutoff = low;
+	imp->highCutoff = high;
+	imp->resetSelf();
+}
+long BandpassFilter::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
+{
+	imp->getEffect()->process(inBuffer,outBuffer,maxFrames,channelNum,frameRate);
+}
+BandRejectFilter::BandRejectFilter(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+	: imp(new NormalBandpass(bandreject,frameRate,lowCutoff,highCutoff,blockSize,channelNum))
+{
+	;
+}
+BandRejectFilter::BandRejectFilter(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff)
+	: imp(new TwoStageBandpass(bandreject,frameRate,lowCutoff,highCutoff,head,tail,channelNum))
+{
+	;
+}
+int BandRejectFilter::getLowCutoff() const
+{
+	return imp->lowCutoff;
+}
+void BandRejectFilter::setLowCutoff(int setto)
+{
+	imp->lowCutoff = setto;
+	imp->resetSelf();
+}
+int BandRejectFilter::getHighCutoff() const
+{
+	return imp->highCutoff;
+}
+void BandRejectFilter::setHighCutoff(int setto)
+{
+	imp->highCutoff = setto;
+	imp->resetSelf();
+}
+void BandRejectFilter::setBoth(int low, int high)
+{
+	imp->lowCutoff = low;
+	imp->highCutoff = high;
+	imp->resetSelf();
+}
+long BandRejectFilter::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
+{
+	imp->getEffect()->process(inBuffer,outBuffer,maxFrames,channelNum,frameRate);
+}
+
+}
+}
 
 template<typename T> double sinc(T a)
 {
@@ -48,14 +411,6 @@ conv_valid(std::vector<T> const &f, std::vector<T> const &g) {
 
 namespace Audio {
 namespace FX {
-
-enum FilterType : uint8_t
-{
-	lowpass,
-	highpass,
-	bandpass,
-	bandreject
-};
 
 static void fillSingleFilter(std::vector<float>& vec, FilterType type, int inputSamplerate,int CutoffFrequency)
 {

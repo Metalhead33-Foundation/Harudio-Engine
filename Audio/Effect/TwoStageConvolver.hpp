@@ -23,8 +23,6 @@ private:
 	TwoStageConvolver(const TwoStageConvolver& cpy, int channelCount);
 	TwoStageConvolver(const sBuffer nIR, size_t head_blocksize, size_t tail_blocksize, int channelNum);
 	TwoStageConvolver(const float* IR, size_t irLen, size_t head_blocksize, size_t tail_blocksize, int channelNum);
-protected:
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 public:
 	static sTwoStageConvolver create(sTwoStageConvolver cpy);
 	static sTwoStageConvolver create(sTwoStageConvolver cpy, int channelCount);
@@ -32,6 +30,7 @@ public:
 	static sTwoStageConvolver create(const float* IR, size_t irLen, size_t head_blocksize, size_t tail_blocksize, int channelNum);
 	static sTwoStageConvolver create(IrBufferCreator& creator, size_t head_blocksize, size_t tail_blocksize, int channelCount);
 	static sTwoStageConvolver create(IrBufferFiller& creator, size_t head_blocksize, size_t tail_blocksize, int channelCount);
+	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 };
 
 }

@@ -52,7 +52,7 @@ HEADERS += \
     Sound/SoundStreamer.hpp \
     Audio/Effect/TwoStageConvolver.hpp \
     Audio/Effect/IrBufferFiller.hpp \
-    Audio/Effect/LowpassFilter.hpp
+    Audio/Effect/Filter.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -82,4 +82,4 @@ SOURCES += \
     Sound/SoundStreamer.cpp \
     main.cpp \
     Audio/Effect/TwoStageConvolver.cpp \
-    Audio/Effect/LowpassFilter.cpp
+    Audio/Effect/Filter.cpp

@@ -34,12 +34,13 @@ int main()
 	auto irfile = StdStream::createReader(IR4_PATH);
 	auto irBuff = Audio::Buffer::create(irfile);
 	auto stream = Sound::Streamer::create(sndfile,22000);
+	stream->setLooping(true);
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	// auto overdrive = Audio::FX::Degrader::create(8000);
 	auto convolver = Audio::FX::BandpassFilter::create(512,2,44100,5000,1200);
-	resampler->setSpeed(1.10f);
+	resampler->setSpeed(1.20f);
 	resampler->setInput(stream);
 	// aux->addToList(overdrive);
 	aux->addToList(convolver);

@@ -26,7 +26,10 @@ void Streamer::checkQueue()
 			totalSize = buff->getSampleCount() - writePtr;
 		}
 		const long readFrames = buff->bufferData(soundfile,frameCursor,totalSize / buff->getChannelNum(),writePtr);
-		if(!readFrames) return;
+		if(!readFrames) {
+			onBufferEnd(looping);
+			return;
+		}
 		writePtr += readFrames * buff->getChannelNum();
 		frameCursor += readFrames;
 		if(writePtr >= buff->getSampleCount()) {
@@ -49,15 +52,16 @@ long Streamer::onBufferRequest(Audio::BufferOutput* ptr, long len)
 		{
 			// checkQueue();
 			readPtr = 0;
+			// return 0;
 		} else readPtr += givenSamples;
-		// frameCursor += givenSamples / getChannelCount();
+		// std::cout << givenSamples << "\n";
 		return givenSamples;
 	} else return 0;
 }
 void Streamer::onBufferEnd(bool looping)
 {
-	frameCursor = 0;
 	soundfile->seek(SEEK_SET,0);
+	frameCursor = buff->bufferData(soundfile,0,buff->getSampleCount() / soundfile->channels());
 	readPtr = 0;
 	writePtr = 0;
 	if(!looping)

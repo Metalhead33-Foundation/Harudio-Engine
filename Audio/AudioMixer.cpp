@@ -18,22 +18,18 @@ void Mixer::mixDown(bool normalize)
 	size_t proc = 0;
 	for(auto it = playableList.begin(); it != playableList.end();)
 	{
-		if(it->expired()) it = playableList.erase(it);
-		else
-		{
-			sPlayable tmp = it->lock();
+			sPlayable tmp = it->first;
 			if(tmp->isPlaying())
 			{
 				memset(inputBuffer.data(),0,inputBuffer.size() * sizeof(float));
 				tmp->pullAudio(inputBuffer.data(),frameCount,channelNumber,frameRate);
 				for(size_t i = 0; i < inputBuffer.size(); ++i)
 				{
-					outputBuffer[i] += inputBuffer[i];
+					outputBuffer[i] += inputBuffer[i] * it->second;
 				}
 				++proc;
 			}
 			++it;
-		}
 	}
 	if(normalize && proc)
 	{
@@ -66,9 +62,11 @@ int Mixer::getChannelCount() const
 {
 	return channelNumber;
 }
-void Mixer::addToList(sPlayable playable)
+void Mixer::addToList(sPlayable playable, float volume)
 {
-	playableList.push_back(playable);
+	auto it = playableList.find(playable);
+	if(it != playableList.end()) it->second = volume;
+	else playableList.emplace(playable,volume);
 }
 void Mixer::removeFromList(PlayableIterator it)
 {
@@ -76,18 +74,8 @@ void Mixer::removeFromList(PlayableIterator it)
 }
 void Mixer::removeFromList(sPlayable playable)
 {
-	for(auto it = playableList.begin(); it != playableList.end(); ++it)
-	{
-		if(!it->expired())
-		{
-			auto tmp = it->lock();
-			if(tmp == playable)
-			{
-				playableList.erase(it);
-				return;
-			}
-		}
-	}
+	auto it = playableList.find(playable);
+	if(it != playableList.end()) playableList.erase(it);
 }
 
 }

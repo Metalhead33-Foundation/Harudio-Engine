@@ -93,11 +93,15 @@ long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channel
 		if(readFrames) readFrames = source->pullAudio(dryBuffer.data(),readFrames,channelNum,frameRate);
 		if(readFrames)
 		{
-			deinterlace();
-			swapBuffers();
-			processEffects(readFrames);
-			interlace();
-			memcpy(&output[processedFrames],wetBuffer.data(),readFrames * channelNum * sizeof(float));
+			if(effects.empty()) {
+				memcpy(&output[processedFrames],dryBuffer.data(),readFrames * channelNum * sizeof(float));
+			} else {
+				deinterlace();
+				swapBuffers();
+				processEffects(readFrames);
+				interlace();
+				memcpy(&output[processedFrames],wetBuffer.data(),readFrames * channelNum * sizeof(float));
+			}
 			processedFrames += readFrames;
 		}
 	} while(readFrames);

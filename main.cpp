@@ -9,11 +9,14 @@
 #include "Audio/Effect/Gate.hpp"
 #include "Audio/Effect/Degrader.hpp"
 #include "Audio/Effect/Filter.hpp"
+#include "Audio/Effect/BitCrusher.hpp"
 #include <time.h>
 
 using namespace std;
 
 #define SONG_PATH "/home/legacy/zene/GameMusic/Doki Doki Literature Club/getoutmyhead.ogg"
+#define RUS_SONG "/home/legacy/zene/GameMusic/Doki Doki Literature Club/rus.ogg"
+#define ENG_SONG "/home/legacy/zene/GameMusic/Doki Doki Literature Club/10000000_1576501802457395_2632349514147481969_n.ogg"
 #define STILL_NIGHT "/home/legacy/zene/GameMusic/Runescape/Still Night (Journey to Varrock) - RuneScape Guitar Cover-M4XFYy75u5g.ogg"
 #define HARMONY "/home/legacy/zene/GameMusic/Runescape/Harmony (Lumbridge) - Runescape Guitar Cover-fAgnRd7BUPo.ogg"
 #define IR_PATH "/home/metalhead33/vst/Red Wire Impulses/Impulses/Blue Voodoo 4x12 WGS Veteran30 Laney/15-06_e609_Edge_-1-081115_1802_dc.wav"
@@ -24,7 +27,7 @@ using namespace std;
 int main()
 {
 	std::cout << "Creating context!" << std::endl;
-	Audio::Context context(44100,2,2048);
+	Audio::Context context(48000,2,2048);
 	std::cout << "Created context!" << std::endl;
 	bool isPlaying = false;
 	struct timespec tim, tim2;
@@ -35,19 +38,21 @@ int main()
 	auto irBuff = Audio::Buffer::create(irfile);
 	auto stream = Sound::Streamer::create(sndfile,22000);
 	stream->setLooping(true);
-	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
+	auto resampler = Audio::Resampler::create(SRC_LINEAR);
 	auto stereoPanner = Audio::StereoPanner::create();
-	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
-	// auto overdrive = Audio::FX::Degrader::create(8000);
-	auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
-	resampler->setSpeed(1.05f);
+	auto aux = Audio::AuxiliaryEffectSlot::create(2,48000);
+	auto overdrive = Audio::FX::Degrader::create(5999);
+	auto bits = Audio::FX::BitCrusher::create(4);
+	// auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
+	resampler->setSpeed(1.00f);
 	resampler->setInput(stream);
 	// aux->addToList(overdrive);
-	aux->addToList(convolver);
-	aux->setSource(resampler);
-	stereoPanner->setInput(aux);
+	// aux->addToList(overdrive);
+	// aux->addToList(bits);
+	stereoPanner->setInput(resampler);
 	stereoPanner->setVolumeLevel(0.2f);
-	context.addToList(stereoPanner);
+	aux->setSource(stereoPanner);
+	context.addToList(aux,1.0f);
 	stream->play();
 	context.unsuspend();
 	nanosleep(&tim , &tim2);

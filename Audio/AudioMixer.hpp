@@ -1,7 +1,7 @@
 #ifndef AUDIOMIXER_HPP
 #define AUDIOMIXER_HPP
 #include "AudioPlayable.hpp"
-#include <list>
+#include <unordered_map>
 #include <vector>
 
 namespace Audio {
@@ -9,7 +9,7 @@ namespace Audio {
 class Mixer : public Playable
 {
 public:
-	typedef std::list<wPlayable> PlayableList;
+	typedef std::unordered_map<sPlayable,float> PlayableList;
 	typedef PlayableList::iterator PlayableIterator;
 private:
 	PlayableList playableList;
@@ -26,7 +26,7 @@ public:
 	bool isPlaying() const;
 	int getFramerate() const;
 	int getChannelCount() const;
-	void addToList(sPlayable playable);
+	void addToList(sPlayable playable,float volume);
 	void removeFromList(PlayableIterator it);
 	void removeFromList(sPlayable playable);
 };

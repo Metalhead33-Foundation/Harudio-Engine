@@ -29,7 +29,7 @@ int main()
 	bool isPlaying = false;
 	struct timespec tim, tim2;
 	tim.tv_sec  = 0;
-	tim.tv_nsec = 10000;
+	tim.tv_nsec = 1000;
 	auto sndfile = StdStream::createReader(STILL_NIGHT);
 	auto irfile = StdStream::createReader(IR4_PATH);
 	auto irBuff = Audio::Buffer::create(irfile);
@@ -39,8 +39,8 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,44100);
 	// auto overdrive = Audio::FX::Degrader::create(8000);
-	auto convolver = Audio::FX::BandpassFilter::create(512,2,44100,5000,1200);
-	resampler->setSpeed(1.20f);
+	auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
+	resampler->setSpeed(1.05f);
 	resampler->setInput(stream);
 	// aux->addToList(overdrive);
 	aux->addToList(convolver);

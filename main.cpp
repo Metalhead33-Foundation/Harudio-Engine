@@ -10,6 +10,7 @@
 #include "Audio/Effect/Degrader.hpp"
 #include "Audio/Effect/Filter.hpp"
 #include "Audio/Effect/BitCrusher.hpp"
+#include "Audio/Effect/Compactor.hpp"
 #include <time.h>
 
 using namespace std;
@@ -42,12 +43,12 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,48000);
 	auto overdrive = Audio::FX::Degrader::create(5999);
-	auto bits = Audio::FX::BitCrusher::create(4);
+	auto bits = Audio::FX::Compactor::create();
 	// auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
 	resampler->setSpeed(1.20f);
 	resampler->setInput(stream);
 	// aux->addToList(overdrive);
-	aux->addToList(overdrive);
+	// aux->addToList(overdrive);
 	aux->addToList(bits);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);

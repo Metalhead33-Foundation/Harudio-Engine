@@ -54,7 +54,9 @@ HEADERS += \
     Sound/SoundStreamer.hpp \
     Audio/Effect/TwoStageConvolver.hpp \
     Audio/Effect/IrBufferFiller.hpp \
-    Audio/Effect/Filter.hpp
+    Audio/Effect/Filter.hpp \
+    Io/fsqrt.hpp \
+    Audio/Effect/Compactor.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -84,4 +86,5 @@ SOURCES += \
     Sound/SoundStreamer.cpp \
     main.cpp \
     Audio/Effect/TwoStageConvolver.cpp \
-    Audio/Effect/Filter.cpp
+    Audio/Effect/Filter.cpp \
+    Audio/Effect/Compactor.cpp

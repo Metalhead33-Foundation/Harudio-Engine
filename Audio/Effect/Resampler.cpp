@@ -34,8 +34,9 @@ long Resampler::converterCallback(void *self, float **data)
 		if(sampler->input.expired()) return 0;
 		sPlayable input = sampler->input.lock();
 		long inFrames;
-		if(sampler->ratio <= 1.0f) inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount())*sampler->ratio);
-		else inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount()));
+		/*if(sampler->ratio <= 1.0f) inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount())*sampler->ratio);
+		else inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount()));*/
+		inFrames = long(float(sampler->inputBuffer.size()/input->getChannelCount()));
 		inFrames = input->pullAudio(sampler->inputBuffer.data(),inFrames,
 									input->getChannelCount(),input->getFramerate());
 		*data = sampler->inputBuffer.data();

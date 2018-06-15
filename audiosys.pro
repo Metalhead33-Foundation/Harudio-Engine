@@ -7,6 +7,8 @@ debug {
 CONFIG += -O0
 }
 
+QMAKE_CXXFLAGS += -ffast-math
+QMAKE_CXXFLAGS_RELEASE *= -O3
 CONFIG(release, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp
 CONFIG(debug, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp
 

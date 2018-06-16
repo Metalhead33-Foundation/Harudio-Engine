@@ -3,14 +3,14 @@
 namespace Audio {
 namespace FX {
 
-BitCrusher::BitCrusher(uint8_t nbits, float nEffectLevel)
-	: SampleLevelEffect(nEffectLevel), bits(nbits)
+BitCrusher::BitCrusher(uint8_t nbits)
+	:  bits(nbits)
 {
 	numberClamper = pow(double(2),double(nbits-1));
 }
-sBitCrusher BitCrusher::create(uint8_t nbits, float nEffectLevel)
+sBitCrusher BitCrusher::create(uint8_t nbits)
 {
-	return sBitCrusher(new BitCrusher(nbits,nEffectLevel));
+	return sBitCrusher(new BitCrusher(nbits));
 }
 float BitCrusher::doEffect(float input)
 {

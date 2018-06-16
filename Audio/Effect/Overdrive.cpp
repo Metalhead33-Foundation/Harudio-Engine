@@ -4,14 +4,14 @@
 namespace Audio {
 namespace FX {
 
-Overdrive::Overdrive(int multi, float distortionPower)
-	: SampleLevelEffect(distortionPower), selfMultiplyAmmount(multi)
+Overdrive::Overdrive(int multi)
+	: selfMultiplyAmmount(multi)
 {
 	;
 }
-sOverdrive Overdrive::create(int multi, float distortionPower)
+sOverdrive Overdrive::create(int multi)
 {
-	return sOverdrive(new Overdrive(multi,distortionPower));
+	return sOverdrive(new Overdrive(multi));
 }
 float Overdrive::doEffect(float input)
 {

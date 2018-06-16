@@ -38,9 +38,16 @@ long AuxiliaryEffectSlot::getFrameCount() const
 {
 	return long(dryBuffer.size()) / channelNumber;
 }
-void AuxiliaryEffectSlot::swapBuffers()
+void AuxiliaryEffectSlot::swapBuffers(float wetness)
 {
-	memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
+	if(wetness >= 0.999999f)	memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
+	else {
+		const float dryness=1.0f-wetness;
+		for(size_t i = 0; i < dryBuffer.size(); ++i)
+		{
+			dryBuffer[i] = (dryBuffer[i]*dryness) + (wetBuffer[i]*wetness);
+		}
+	}
 	memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
 }
 void AuxiliaryEffectSlot::interlace()
@@ -75,9 +82,9 @@ void AuxiliaryEffectSlot::processEffects(long intendedFrameNum)
 	memset(wetBuffer.data(),0,sizeof(float) * wetBuffer.size());
 	for(auto it = effects.begin(); it != effects.end(); ++it)
 	{
-		pEffect eff = it->get();
+		pEffect eff = it->first.get();
 		eff->process(dryBuffer.data(),wetBuffer.data(),intendedFrameNum,channelNumber,frameRate);
-		swapBuffers();
+		swapBuffers(it->second);
 	}
 }
 long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
@@ -107,9 +114,24 @@ long AuxiliaryEffectSlot::pullAudio(float* output, long maxFrameNum, int channel
 	} while(readFrames);
 	return processedFrames;
 }
-void AuxiliaryEffectSlot::addToList(sEffect playable)
+void AuxiliaryEffectSlot::addToList(sEffect playable, float wetness)
 {
-	effects.push_back(playable);
+	effects.push_back(std::make_pair(playable,wetness));
+}
+void AuxiliaryEffectSlot::setWetness(float wetness, EffectIterator it)
+{
+	it->second = wetness;
+}
+void AuxiliaryEffectSlot::setWetness(float wetness, sEffect playable)
+{
+	for(auto it = effects.begin(); it != effects.end(); ++it)
+	{
+		if(it->first == playable)
+		{
+			it->second = wetness;
+			return;
+		}
+	}
 }
 void AuxiliaryEffectSlot::removeFromList(EffectIterator it)
 {
@@ -119,7 +141,7 @@ void AuxiliaryEffectSlot::removeFromList(sEffect playable)
 {
 	for(auto it = effects.begin(); it != effects.end(); ++it)
 	{
-		if(*it == playable)
+		if(it->first == playable)
 		{
 			effects.erase(it);
 			return;

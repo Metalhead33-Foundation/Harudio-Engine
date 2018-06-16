@@ -10,9 +10,9 @@ class BitCrusher : public SampleLevelEffect
 private:
 	float numberClamper;
 	uint8_t bits;
-	BitCrusher(uint8_t nbits=8,float nEffectLevel=1.0f);
+	BitCrusher(uint8_t nbits=8);
 public:
-	static sBitCrusher create(uint8_t nbits=8,float nEffectLevel=1.0f);
+	static sBitCrusher create(uint8_t nbits=8);
 	float doEffect(float input);
 	uint8_t getBits() const;
 	void setBits(uint8_t setto);

@@ -11,7 +11,8 @@ DEFINE_CLASS(AuxiliaryEffectSlot)
 class AuxiliaryEffectSlot : public Playable
 {
 public:
-	typedef std::list<sEffect> EffectList;
+	typedef std::pair<sEffect,float> EffectElement;
+	typedef std::list<EffectElement> EffectList;
 	typedef EffectList::iterator EffectIterator;
 private:
 	PluggableBuffer dryBuffer;
@@ -20,7 +21,7 @@ private:
 	const int channelNumber;
 	const int frameRate;
 	const long frameCount;
-	void swapBuffers();
+	void swapBuffers(float wetness=1.0f);
 	void interlace();
 	void deinterlace();
 	void processEffects(long intendedFrameNum);
@@ -35,7 +36,9 @@ public:
 	const sPlayable getSource() const;
 	void setSource(sPlayable nSource);
 
-	void addToList(sEffect playable);
+	void addToList(sEffect playable, float wetness=1.0f);
+	void setWetness(float wetness, EffectIterator it);
+	void setWetness(float wetness, sEffect playable);
 	void removeFromList(EffectIterator it);
 	void removeFromList(sEffect playable);
 	bool isPlaying() const;

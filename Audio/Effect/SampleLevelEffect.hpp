@@ -8,14 +8,8 @@ namespace FX {
 DEFINE_CLASS(SampleLevelEffect)
 class SampleLevelEffect : public virtual Effect
 {
-private:
-	float effectLevel;
-protected:
 public:
-	SampleLevelEffect(float nEffectLevel=1.0f);
 	virtual ~SampleLevelEffect() = default;
-	float getEffectLevel() const;
-	void setEffectLevel(float nEffectLevel);
 	virtual float doEffect(float input) = 0;
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
 };

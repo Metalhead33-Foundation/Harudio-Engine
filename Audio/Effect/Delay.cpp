@@ -5,6 +5,17 @@
 namespace Audio {
 namespace FX {
 
+void createDelayIR(std::vector<float>& IR, size_t sampleOffset)
+{
+	IR.resize(sampleOffset);
+	memset(IR.data(),0,IR.size()*sizeof(float));
+	IR[IR.size()-1] = 1.0f;
+	/*for(int i = 0; i < 4; ++i)
+	{
+		IR.push_back(IR[IR.size()-1]*0.5f);
+	}*/
+}
+
 struct Delay_private
 {
 	virtual const sEffect getEffect() const = 0;
@@ -20,9 +31,8 @@ struct SimpleDelay : public Delay_private
 	const sEffect getEffect() const { return conv; }
 	void resetSelf()
 	{
-		std::vector<float> tmp(sampleOffset);
-		memset(tmp.data(),0,tmp.size()*sizeof(float));
-		tmp[tmp.size()-1] = 1.0f;
+		std::vector<float> tmp;
+		createDelayIR(tmp,sampleOffset);
 		conv = Convolver::create(tmp.data(),tmp.size(),blocksize,channelCount);
 	}
 	SimpleDelay(size_t blocksize, size_t offset, int channelCount)
@@ -40,9 +50,8 @@ struct TwoStageDelay : public Delay_private
 	const sEffect getEffect() const { return conv; }
 	void resetSelf()
 	{
-		std::vector<float> tmp(sampleOffset);
-		memset(tmp.data(),0,tmp.size()*sizeof(float));
-		tmp[tmp.size()-1] = 1.0f;
+		std::vector<float> tmp;
+		createDelayIR(tmp,sampleOffset);
 		conv = TwoStageConvolver::create(tmp.data(),tmp.size(),head,tail,channelCount);
 	}
 	TwoStageDelay(size_t head, size_t tail, size_t offset, int channelCount)

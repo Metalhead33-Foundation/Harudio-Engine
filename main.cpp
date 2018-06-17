@@ -39,12 +39,12 @@ int main()
 	auto resampler = Audio::Resampler::create(SRC_SINC_BEST_QUALITY);
 	auto stereoPanner = Audio::StereoPanner::create();
 	auto aux = Audio::AuxiliaryEffectSlot::create(2,48000);
-	auto delay = Audio::FX::Delay::create(512,2048,2);
+	auto delay = Audio::FX::Delay::create(512,8000,0.3f,2);
 	// auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
 	auto degrader = Audio::FX::Degrader::create(3500);
 	resampler->setSpeed(1.20f);
 	resampler->setInput(stream);
-	aux->addToList(delay,0.5f);
+	aux->addToList(delay,1.00f);
 	aux->setSource(resampler);
 	stereoPanner->setInput(aux);
 	stereoPanner->setVolumeLevel(1.0f);

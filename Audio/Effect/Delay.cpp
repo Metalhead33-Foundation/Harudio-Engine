@@ -5,11 +5,12 @@
 namespace Audio {
 namespace FX {
 
-void createDelayIR(std::vector<float>& IR, size_t sampleOffset)
+void createDelayIR(std::vector<float>& IR, size_t sampleOffset, float delayVolume=1.0f)
 {
 	IR.resize(sampleOffset);
 	memset(IR.data(),0,IR.size()*sizeof(float));
-	IR[IR.size()-1] = 1.0f;
+	IR[0] = 1.0f;
+	IR[IR.size()-1] = delayVolume;
 	/*for(int i = 0; i < 4; ++i)
 	{
 		IR.push_back(IR[IR.size()-1]*0.5f);
@@ -23,6 +24,7 @@ struct Delay_private
 	virtual void resetSelf() = 0;
 	int channelCount;
 	size_t sampleOffset;
+	float delayVolume;
 };
 struct SimpleDelay : public Delay_private
 {
@@ -32,13 +34,14 @@ struct SimpleDelay : public Delay_private
 	void resetSelf()
 	{
 		std::vector<float> tmp;
-		createDelayIR(tmp,sampleOffset);
+		createDelayIR(tmp,sampleOffset,delayVolume);
 		conv = Convolver::create(tmp.data(),tmp.size(),blocksize,channelCount);
 	}
-	SimpleDelay(size_t blocksize, size_t offset, int channelCount)
+	SimpleDelay(size_t blocksize, size_t offset,float delayVolume, int channelCount)
 	{
 		this->blocksize = blocksize;
 		this->sampleOffset = offset;
+		this->delayVolume = delayVolume;
 		this->channelCount = channelCount;
 		resetSelf();
 	}
@@ -51,26 +54,27 @@ struct TwoStageDelay : public Delay_private
 	void resetSelf()
 	{
 		std::vector<float> tmp;
-		createDelayIR(tmp,sampleOffset);
+		createDelayIR(tmp,sampleOffset,delayVolume);
 		conv = TwoStageConvolver::create(tmp.data(),tmp.size(),head,tail,channelCount);
 	}
-	TwoStageDelay(size_t head, size_t tail, size_t offset, int channelCount)
+	TwoStageDelay(size_t head, size_t tail, size_t offset, float delayVolume, int channelCount)
 	{
 		this->head = head;
 		this->tail = tail;
 		this->sampleOffset = offset;
+		this->delayVolume = delayVolume;
 		this->channelCount = channelCount;
 		resetSelf();
 	}
 };
 
-Delay::Delay(size_t blocksize, size_t offset, int channelCount)
-	: impl(new SimpleDelay(blocksize,offset,channelCount))
+Delay::Delay(size_t blocksize, size_t offset,float delayVolume, int channelCount)
+	: impl(new SimpleDelay(blocksize,offset,delayVolume,channelCount))
 {
 	;
 }
-Delay::Delay(size_t head, size_t tail, size_t offset, int channelCount)
-	: impl(new TwoStageDelay(head,tail,offset,channelCount))
+Delay::Delay(size_t head, size_t tail, size_t offset,float delayVolume, int channelCount)
+	: impl(new TwoStageDelay(head,tail,offset,delayVolume,channelCount))
 {
 	;
 }
@@ -90,13 +94,26 @@ void Delay::setSampleOffset(size_t setto)
 		impl->resetSelf();
 	}
 }
-sDelay Delay::create(size_t blocksize, size_t offset, int channelCount)
+float Delay::getDelayVolume() const
 {
-	return sDelay(new Delay(blocksize,offset,channelCount));
+	return impl->delayVolume;
 }
-sDelay Delay::create(size_t head, size_t tail, size_t offset, int channelCount)
+void Delay::setDelayVolume(float setto)
 {
-	return sDelay(new Delay(head,tail,offset,channelCount));
+	if(setto != impl->delayVolume)
+	{
+		impl->delayVolume = setto;
+		impl->resetSelf();
+	}
+}
+
+sDelay Delay::create(size_t blocksize, size_t offset, float delayVolume, int channelCount)
+{
+	return sDelay(new Delay(blocksize,offset,delayVolume,channelCount));
+}
+sDelay Delay::create(size_t head, size_t tail, size_t offset, float delayVolume, int channelCount)
+{
+	return sDelay(new Delay(head,tail,offset,delayVolume,channelCount));
 }
 
 }

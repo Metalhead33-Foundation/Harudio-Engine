@@ -57,7 +57,8 @@ HEADERS += \
     Audio/Effect/Filter.hpp \
     Io/fsqrt.hpp \
     Audio/Effect/Compactor.hpp \
-    Audio/Effect/Delay.hpp
+    Audio/Effect/Delay.hpp \
+    Sound/SongLibrary.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -89,4 +90,5 @@ SOURCES += \
     Audio/Effect/TwoStageConvolver.cpp \
     Audio/Effect/Filter.cpp \
     Audio/Effect/Compactor.cpp \
-    Audio/Effect/Delay.cpp
+    Audio/Effect/Delay.cpp \
+    Sound/SongLibrary.cpp

@@ -2,6 +2,11 @@
 
 namespace Sound {
 
+Streamer::Streamer(Audio::sSoundFile sndf, size_t bufferSize)
+	: soundfile(sndf), writePtr(0), readPtr(0), buff(Audio::Buffer::create(bufferSize))
+{
+	frameCursor = buff->bufferData(soundfile,0,buff->getSampleCount() / soundfile->channels());
+}
 Streamer::Streamer(Abstract::sFIO readah, size_t bufferSize)
 	: soundfile(Audio::SoundFile::createSoundFile(readah)),
 	  writePtr(0), readPtr(0), buff(Audio::Buffer::create(bufferSize))
@@ -11,6 +16,10 @@ Streamer::Streamer(Abstract::sFIO readah, size_t bufferSize)
 sStreamer Streamer::create(Abstract::sFIO readah, size_t bufferSize)
 {
 	return sStreamer(new Streamer(readah,bufferSize));
+}
+sStreamer Streamer::create(Audio::sSoundFile sndf, size_t bufferSize)
+{
+	return sStreamer(new Streamer(sndf,bufferSize));
 }
 void Streamer::checkQueue()
 {

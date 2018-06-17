@@ -8,6 +8,7 @@
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Delay.hpp"
 #include "Audio/Effect/Degrader.hpp"
+#include "Sound/SongLibrary.hpp"
 #include <time.h>
 
 using namespace std;
@@ -42,6 +43,20 @@ int main()
 	auto delay = Audio::FX::Delay::create(512,8000,0.3f,2);
 	// auto convolver = Audio::FX::LowpassFilter::create(512,2,44100,5000);
 	auto degrader = Audio::FX::Degrader::create(3500);
+
+	auto songlib = Sound::SongLibrary::create(
+				[](const std::string& path) {
+			std::vector<std::string> vec;
+			vec.push_back("/home/legacy/zene/Jmusic/m.o.v.e/m.o.v.e _ FLY ME SO HIGH-13XKfnzPgz4.ogg");
+			vec.push_back("/home/legacy/zene/Jmusic/m.o.v.e/m.o.v.e _ BREAK IN2 THE NITE-7OkzGLgyyCw.ogg");
+			return vec;
+		},StdStream::createReader
+	);
+	for(auto it = songlib->begin(); it != songlib->end();++it)
+	{
+		std::cout << it->artist << " - " << it->title << "\n";
+	}
+
 	resampler->setSpeed(1.20f);
 	resampler->setInput(stream);
 	aux->addToList(delay,1.00f);

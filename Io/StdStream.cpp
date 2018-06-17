@@ -15,7 +15,7 @@ StdStream::StdStream()
 	chandle = 0;
 }
 
-StdStream::StdStream(std::string newpath, bool ro)
+StdStream::StdStream(const std::string& newpath, bool ro)
 {
 	chandle = 0;
 	open(newpath,ro);
@@ -93,7 +93,7 @@ bool StdStream::IsActive()
 	return active;
 }
 
-bool StdStream::open(std::string newpath, bool ro)
+bool StdStream::open(const std::string &newpath, bool ro)
 {
 	if(chandle) fclose(chandle);
 	if(ro) chandle = fopen(newpath.c_str(),"rb");
@@ -119,11 +119,11 @@ char StdStream::getc()
 {
 	return fgetc(chandle);
 }
-Abstract::sFIO StdStream::createReader(std::string newpath)
+Abstract::sFIO StdStream::createReader(const std::string &newpath)
 {
 	return Abstract::sFIO(new StdStream(newpath,true));
 }
-Abstract::sFIO StdStream::createWriter(std::string newpath)
+Abstract::sFIO StdStream::createWriter(const std::string &newpath)
 {
 	return Abstract::sFIO(new StdStream(newpath,false));
 }

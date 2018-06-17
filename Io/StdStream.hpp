@@ -13,7 +13,7 @@
 class StdStream : public Abstract::FIO {
 public:
 	StdStream();
-	StdStream(std::string newpath, bool ro = false);
+	StdStream(const std::string& newpath, bool ro = false);
 	~StdStream();
 	virtual int64_t read(void* data, int64_t size);
 	virtual int64_t seek(int64_t position);
@@ -24,10 +24,10 @@ public:
 	std::string GetPath();
 	void close();
 	bool IsActive();
-	bool open(std::string newpath, bool ro = false);
+	bool open(const std::string& newpath, bool ro = false);
 
-	static Abstract::sFIO createReader(std::string newpath);
-	static Abstract::sFIO createWriter(std::string newpath);
+	static Abstract::sFIO createReader(const std::string& newpath);
+	static Abstract::sFIO createWriter(const std::string& newpath);
 
 	virtual Abstract::byteBuffer loadIntoBuffer();
 	virtual std::string stringize();

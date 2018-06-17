@@ -8,11 +8,11 @@ DEFINE_CLASS(FIOSys)
 class FIOSys {
 public:
 	virtual ~FIOSys() = default;
-	virtual sFIO openRead(const std::string& path) = 0;
-	virtual sFIO openWrite(const std::string& path) = 0;
-	virtual bool exists(const std::string& path) = 0;
-	virtual byteBuffer loadFileIntoBuffer(const std::string &path) = 0;
-	virtual std::string stringizeFile(const std::string &path) = 0;
+	virtual sFIO openRead(const std::string& path) const = 0;
+	virtual sFIO openWrite(const std::string& path) const = 0;
+	virtual bool exists(const std::string& path) const = 0;
+	virtual byteBuffer loadFileIntoBuffer(const std::string &path) const = 0;
+	virtual std::string stringizeFile(const std::string &path) const = 0;
 };
 
 }

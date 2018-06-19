@@ -10,7 +10,7 @@ int Playable::patestCallback( const void *inputBuffer, void *outputBuffer,
 						   void *userData )
 {
 	if(userData && outputBuffer) {
-	pPlayable data = static_cast<pPlayable>(userData);
+	const pPlayable data = static_cast<pPlayable>(userData);
 	// float* out = (float*)outputBuffer;
 	float* out = static_cast<float*>(outputBuffer);
 	if(data->isPlaying()) data->pullAudio(out, framesPerBuffer, data->getChannelCount(), data->getFramerate());

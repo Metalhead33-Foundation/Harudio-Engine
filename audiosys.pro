@@ -61,7 +61,9 @@ HEADERS += \
     Audio/Effect/Delay.hpp \
     Sound/SongLibrary.hpp \
     Audio/Effect/MatrixPanner.hpp \
-    Audio/Effect/AmbisonicPanner.hpp
+    Audio/Effect/AmbisonicPanner.hpp \
+    Audio/Effect/PositionalPanner.hpp \
+    Audio/Effect/ComplexConvolver.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -95,4 +97,6 @@ SOURCES += \
     Audio/Effect/Compactor.cpp \
     Audio/Effect/Delay.cpp \
     Sound/SongLibrary.cpp \
-    Audio/Effect/AmbisonicPanner.cpp
+    Audio/Effect/AmbisonicPanner.cpp \
+    Audio/Effect/PositionalPanner.cpp \
+    Audio/Effect/ComplexConvolver.cpp

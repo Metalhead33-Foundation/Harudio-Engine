@@ -12,7 +12,7 @@
 #include "Audio/Effect/BitCrusher.hpp"
 #include "Audio/Effect/Filter.hpp"
 #include "Audio/Effect/Convolver.hpp"
-#include "Audio/Effect/AmbisonicPanner.hpp"
+#include "Audio/Effect/PositionalPanner.hpp"
 #include "Sound/SongLibrary.hpp"
 #include <time.h>
 
@@ -44,6 +44,8 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::createPanner();
 	auto monoPanner = Audio::MonoPanner::createPanner();
 	auto ambisonic = Audio::AmbisonicPanner::createAmbisonicPanner();
+	auto positional = Audio::PositionalPanner::createPositionPanner(
+				glm::vec3(0.03f,0.03f,0.3f),glm::vec3(-0.0f,-0.0f,0.0f),1.0f);
 
 
 	auto songlib = Sound::SongLibrary::create(
@@ -62,14 +64,13 @@ int main()
 	auto stream = Sound::Streamer::create(songlib->getSong(2).getSong(StdStream::createReader),
 										  22000);
 	stream->setLooping(true);
-	monoPanner->setInput(stream);
-	ambisonic->setInput(monoPanner);
+	positional->setInput(stream);
 
 	resampler->setSpeed(1.20f);
-	resampler->setInput(ambisonic);
+	resampler->setInput(positional);
 	stereoPanner->setInput(resampler);
 	// stereoPanner->setVolumeLevel(1.0f);
-	context.addToList(stereoPanner,1.0f);
+	context.addToList(stereoPanner,0.1f);
 	stream->play();
 	context.unsuspend();
 	nanosleep(&tim , &tim2);
@@ -77,7 +78,7 @@ int main()
 	do {
 		stream->checkQueue();
 		degrees += 0.01f;
-		ambisonic->setHorizontalAngle(degrees*0.0174532925f);
+		// ambisonic->setHorizontalAngle(degrees*0.0174532925f);
 		if(nanosleep(&tim , &tim2) < 0 )
 		{
 			context.suspend();

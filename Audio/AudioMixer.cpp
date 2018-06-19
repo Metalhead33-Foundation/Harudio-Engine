@@ -23,6 +23,7 @@ void Mixer::mixDown(bool normalize)
 			{
 				memset(inputBuffer.data(),0,inputBuffer.size() * sizeof(float));
 				tmp->pullAudio(inputBuffer.data(),frameCount,channelNumber,frameRate);
+#pragma omp for simd safelen(4)
 				for(size_t i = 0; i < inputBuffer.size(); ++i)
 				{
 					outputBuffer[i] += inputBuffer[i] * it->second;
@@ -34,6 +35,7 @@ void Mixer::mixDown(bool normalize)
 	if(normalize && proc)
 	{
 		float fProc = float(proc);
+#pragma omp for simd safelen(4)
 		for(size_t i = 0; i < outputBuffer.size(); ++i)
 		{
 			outputBuffer[i] /= fProc;

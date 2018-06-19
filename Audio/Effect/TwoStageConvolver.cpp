@@ -68,6 +68,7 @@ sTwoStageConvolver TwoStageConvolver::create(const float* IR, size_t irLen, size
 long TwoStageConvolver::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
 {
 	if(channelNum != convolvers.size()) throw std::runtime_error("Convolver - I/O Channel number mismatch! Please use a panner or channel mixer!");
+	// #pragma omp parallel for
 	for(int i = 0; i < channelNum; ++i)
 	{
 		long sampleCursor=maxFrames*i;

@@ -37,7 +37,7 @@ long Compactor::process(float* inBuffer, float* outBuffer, long maxFrames, int c
 	const long sampleCount = maxFrames * channelNum;
 	for(long i = 0; i < sampleCount;++i)
 	{
-		outBuffer[i] = uncompact(sqrt(compact(inBuffer[i])),inBuffer[i]);
+		outBuffer[i] = uncompact(sqrtf(compact(inBuffer[i])),inBuffer[i]);
 	}
 /*#ifdef SSE_SUPPORTED
 	const long iterationCount = sampleCount % 4 ? ((sampleCount/4)+1) : sampleCount/4;

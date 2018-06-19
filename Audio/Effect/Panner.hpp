@@ -15,11 +15,11 @@ private:
 		DOWNMIX,
 		UPMIX
 	} mixingType;
-	float volumeLevel[outputChannelCount];
 	float channelRatio;
 	int inputChannelCount;
 	PluggableBuffer inputBuffer;
 protected:
+	float volumeLevel[outputChannelCount];
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 	{
 		if(input.expired()) return 0;
@@ -32,8 +32,9 @@ protected:
 			readFrames = tinput->pullAudio(inputBuffer.data(),readFrames,inputChannelCount,tinput->getFramerate());
 			for(long curFrame = 0; curFrame < readFrames; ++curFrame,++processedFrames)
 			{
-				long inCursor = curFrame * inputChannelCount;
-				long outCursor = processedFrames * outputChannelCount;
+				const long inCursor = curFrame * inputChannelCount;
+				const long outCursor = processedFrames * outputChannelCount;
+				for(int i = 0; i < outputChannelCount;++i) output[outCursor+i] = 0.0f;
 				switch (mixingType) {
 					case EQUAL_MIX:
 					{
@@ -91,11 +92,11 @@ public:
 	{
 		return outputChannelCount;
 	}
-	static sPanner create()
+	static sPanner createPanner()
 	{
 		return sPanner(new Panner());
 	}
-	static sPanner create(int inputChCount)
+	static sPanner createPanner(int inputChCount)
 	{
 		return sPanner(new Panner(inputChCount));
 	}

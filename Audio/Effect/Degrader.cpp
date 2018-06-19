@@ -26,7 +26,7 @@ long Degrader::process(float* inBuffer, float* outBuffer, long maxFrames, int ch
 {
 	bool readMode=true;
 	const long sampleCount=maxFrames*channelNum;
-	const float invRatio=floor((float(frameRate)/float(lowEnd))+0.5f);
+	const float invRatio=floorf((float(frameRate)/float(lowEnd))+0.5f);
 	const float ratio=1.0f/invRatio;
 	float compRatio=1.0f;
 	float kernel = 0.0f;

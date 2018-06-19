@@ -68,7 +68,9 @@ sConvolver  Convolver::create(const float* IR, size_t irSize, size_t blocksize, 
 }
 long Convolver::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
 {
-	if(channelNum != convolvers.size()) throw std::runtime_error("Convolver - I/O Channel number mismatch! Please use a panner or channel mixer!");
+	if(channelNum != convolvers.size()) throw std::runtime_error("Convolver - I/O Channel number mismatch! Please use a panner or channel mixer!");	
+	// #pragma omp target teams distribute parallel for
+#pragma omp for
 	for(int i = 0; i < channelNum; ++i)
 	{
 		long sampleCursor=maxFrames*i;

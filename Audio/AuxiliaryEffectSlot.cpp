@@ -43,6 +43,7 @@ void AuxiliaryEffectSlot::swapBuffers(float wetness)
 	if(wetness >= 0.999999f)	memcpy(dryBuffer.data(),wetBuffer.data(),sizeof(float) * dryBuffer.size());
 	else {
 		const float dryness=1.0f-wetness;
+		#pragma omp parallel for
 		for(size_t i = 0; i < dryBuffer.size(); ++i)
 		{
 			dryBuffer[i] = (dryBuffer[i]*dryness) + (wetBuffer[i]*wetness);

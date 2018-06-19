@@ -18,7 +18,7 @@ float BitCrusher::doEffect(float input)
 	if(isNegative) input *= -1.0f;
 	input = std::min(input,1.0f);
 	input *= numberClamper;
-	input = floor(input+0.5f);
+	input = floorf(input+0.5f);
 	input /= numberClamper;
 	if(isNegative) input *= -1.0f;
 	return input;
@@ -32,7 +32,7 @@ void BitCrusher::setBits(uint8_t setto)
 	if(bits != setto)
 	{
 		bits = setto;
-		numberClamper = pow(double(2),double(bits-1))/2.0f;
+		numberClamper = pow(double(2),double(bits))-1.0;
 	}
 }
 

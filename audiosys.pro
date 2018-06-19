@@ -7,10 +7,12 @@ debug {
 CONFIG += -O0
 }
 
-QMAKE_CXXFLAGS += -ffast-math
+QMAKE_CXXFLAGS += -ffast-math -fopenmp
 QMAKE_CXXFLAGS_RELEASE *= -O3
-CONFIG(release, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp
-CONFIG(debug, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp
+QMAKE_CFLAGS += -ffast-math -fopenmp
+QMAKE_CFLAGS_RELEASE *= -O3
+CONFIG(release, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp -fopenmp
+CONFIG(debug, debug|release): LIBS += -lsndfile -lsamplerate -lportaudio -lportaudiocpp -fopenmp
 
 SUBDIRS += \
     audiosys.pro
@@ -24,7 +26,6 @@ HEADERS += \
     Audio/Effect/Clamp.hpp \
     Audio/Effect/Convolver.hpp \
     Audio/Effect/Degrader.hpp \
-    Audio/Effect/DimensionalPanner.hpp \
     Audio/Effect/Gate.hpp \
     Audio/Effect/Overdrive.hpp \
     Audio/Effect/Panner.hpp \
@@ -58,7 +59,9 @@ HEADERS += \
     Io/fsqrt.hpp \
     Audio/Effect/Compactor.hpp \
     Audio/Effect/Delay.hpp \
-    Sound/SongLibrary.hpp
+    Sound/SongLibrary.hpp \
+    Audio/Effect/MatrixPanner.hpp \
+    Audio/Effect/AmbisonicPanner.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -91,4 +94,5 @@ SOURCES += \
     Audio/Effect/Filter.cpp \
     Audio/Effect/Compactor.cpp \
     Audio/Effect/Delay.cpp \
-    Sound/SongLibrary.cpp
+    Sound/SongLibrary.cpp \
+    Audio/Effect/AmbisonicPanner.cpp

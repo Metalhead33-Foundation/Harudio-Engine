@@ -9,7 +9,7 @@ DEFINE_STRUCT(Convolver_private)
 class Convolver
 {
 private:
-	uConvolver_private impl;
+	sConvolver_private impl;
 public:
 	Convolver(size_t blocksize);
 	Convolver(size_t head, size_t tail);

@@ -1,6 +1,4 @@
 #include "Delay.hpp"
-#include "Convolver.hpp"
-#include "TwoStageConvolver.hpp"
 #include <cstring>
 namespace Audio {
 namespace FX {
@@ -17,103 +15,47 @@ void createDelayIR(std::vector<float>& IR, size_t sampleOffset, float delayVolum
 	}*/
 }
 
-struct Delay_private
+void Delay::reset()
 {
-	virtual const sEffect getEffect() const = 0;
-	virtual ~Delay_private() = default;
-	virtual void resetSelf() = 0;
-	int channelCount;
-	size_t sampleOffset;
-	float delayVolume;
-};
-struct SimpleDelay : public Delay_private
-{
-	sConvolver conv;
-	size_t blocksize;
-	const sEffect getEffect() const { return conv; }
-	void resetSelf()
-	{
-		std::vector<float> tmp;
-		createDelayIR(tmp,sampleOffset,delayVolume);
-		conv = Convolver::create(tmp.data(),tmp.size(),blocksize,channelCount);
-	}
-	SimpleDelay(size_t blocksize, size_t offset,float delayVolume, int channelCount)
-	{
-		this->blocksize = blocksize;
-		this->sampleOffset = offset;
-		this->delayVolume = delayVolume;
-		this->channelCount = channelCount;
-		resetSelf();
-	}
-};
-struct TwoStageDelay : public Delay_private
-{
-	sTwoStageConvolver conv;
-	size_t head,tail;
-	const sEffect getEffect() const { return conv; }
-	void resetSelf()
-	{
-		std::vector<float> tmp;
-		createDelayIR(tmp,sampleOffset,delayVolume);
-		conv = TwoStageConvolver::create(tmp.data(),tmp.size(),head,tail,channelCount);
-	}
-	TwoStageDelay(size_t head, size_t tail, size_t offset, float delayVolume, int channelCount)
-	{
-		this->head = head;
-		this->tail = tail;
-		this->sampleOffset = offset;
-		this->delayVolume = delayVolume;
-		this->channelCount = channelCount;
-		resetSelf();
-	}
-};
-
-Delay::Delay(size_t blocksize, size_t offset,float delayVolume, int channelCount)
-	: impl(new SimpleDelay(blocksize,offset,delayVolume,channelCount))
-{
-	;
+	std::vector<float> IR;
+	createDelayIR(IR,sampleOffset,delayVolume);
+	adapt(IR);
 }
-Delay::Delay(size_t head, size_t tail, size_t offset,float delayVolume, int channelCount)
-	: impl(new TwoStageDelay(head,tail,offset,delayVolume,channelCount))
+Delay::Delay(size_t offset, float delayVolume, int channelId,const sAdaptableConvolver setto)
+	: ImpulseResponseGenerator(channelId,setto)
 {
-	;
-}
-long Delay::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
-{
-	impl->getEffect()->process(inBuffer,outBuffer,maxFrames,channelNum,frameRate);
+	this->sampleOffset = offset;
+	this->delayVolume = delayVolume;
+	if(setto) reset();
 }
 size_t Delay::getSampleOffset() const
 {
-	return impl->sampleOffset;
+	return sampleOffset;
 }
 void Delay::setSampleOffset(size_t setto)
 {
-	if(setto != impl->sampleOffset)
+	if(setto != sampleOffset)
 	{
-		impl->sampleOffset = setto;
-		impl->resetSelf();
+		sampleOffset = setto;
+		reset();
 	}
 }
 float Delay::getDelayVolume() const
 {
-	return impl->delayVolume;
+	return delayVolume;
 }
 void Delay::setDelayVolume(float setto)
 {
-	if(setto != impl->delayVolume)
+	if(setto != delayVolume)
 	{
-		impl->delayVolume = setto;
-		impl->resetSelf();
+		delayVolume = setto;
+		reset();
 	}
 }
 
-sDelay Delay::create(size_t blocksize, size_t offset, float delayVolume, int channelCount)
+sDelay Delay::create(size_t offset, float delayVolume, int channelId,const sAdaptableConvolver setto)
 {
-	return sDelay(new Delay(blocksize,offset,delayVolume,channelCount));
-}
-sDelay Delay::create(size_t head, size_t tail, size_t offset, float delayVolume, int channelCount)
-{
-	return sDelay(new Delay(head,tail,offset,delayVolume,channelCount));
+	return sDelay(new Delay(offset,delayVolume,channelId,setto));
 }
 
 }

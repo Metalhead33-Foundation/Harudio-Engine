@@ -76,6 +76,11 @@ long SimpleConvolver::process(float* inBuffer, float* outBuffer, long maxFrames,
 	if(channelNum != impl->channelCount) throw std::runtime_error("Convolver - I/O Channel number mismatch! Please use a panner or channel mixer!");
 	return impl->process(inBuffer,outBuffer,maxFrames,channelNum);
 }
+void SimpleConvolver::adapt(const std::vector<float>& IR, int channelId)
+{
+	(void)channelId;
+	init(IR.data(),IR.size());
+}
 
 }
 }

@@ -63,7 +63,9 @@ HEADERS += \
     Audio/Effect/AmbisonicPanner.hpp \
     Audio/Effect/PositionalPanner.hpp \
     Audio/Effect/ComplexConvolver.hpp \
-    Audio/Effect/SimpleConvolver.hpp
+    Audio/Effect/SimpleConvolver.hpp \
+    Audio/Effect/AdaptableConvolver.hpp \
+    Audio/Effect/ImpulseResponseGenerator.hpp
 
 SOURCES += \
     Audio/Effect/BitCrusher.cpp \
@@ -99,4 +101,5 @@ SOURCES += \
     Audio/Effect/AmbisonicPanner.cpp \
     Audio/Effect/PositionalPanner.cpp \
     Audio/Effect/ComplexConvolver.cpp \
-    Audio/Effect/SimpleConvolver.cpp
+    Audio/Effect/SimpleConvolver.cpp \
+    Audio/Effect/ImpulseResponseGenerator.cpp

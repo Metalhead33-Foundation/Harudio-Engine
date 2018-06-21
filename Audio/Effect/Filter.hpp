@@ -1,6 +1,6 @@
 #ifndef LOWPASSFILTER_HPP
 #define LOWPASSFILTER_HPP
-#include "../AudioEffect.hpp"
+#include "ImpulseResponseGenerator.hpp"
 
 namespace Audio {
 namespace FX {
@@ -9,70 +9,75 @@ DEFINE_CLASS(LowpassFilter)
 DEFINE_CLASS(HighpassFilter)
 DEFINE_CLASS(BandpassFilter)
 DEFINE_CLASS(BandRejectFilter)
-DEFINE_STRUCT(SP_private)
-DEFINE_STRUCT(BP_private)
 
-class LowpassFilter : public Effect
+class SinglepassFilter : public ImpulseResponseGenerator
 {
-private:
-	const uSP_private imp;
 protected:
-	LowpassFilter(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency);
-	LowpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency);
+	int cutoffFrequency;
+	int inputSamplerate;
+	virtual void reset() = 0;
+	SinglepassFilter(int inputSamplerate,int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	int getCutoff() const;
-	void setCutoff(int setto);
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
-	static sLowpassFilter create(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency);
-	static sLowpassFilter create(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency);
+	virtual ~SinglepassFilter() = default;
+	int getCutoffFrequency() const;
+	void setCutoffFrequency(int setto);
+	int getInputSamplerate() const;
+	void setInputSamplerate(int setto);
 };
-class HighpassFilter : public Effect
+class DoublepassFilter : public ImpulseResponseGenerator
 {
-private:
-	const uSP_private imp;
 protected:
-	HighpassFilter(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency);
-	HighpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency);
+	int lowCutoff;
+	int highCutoff;
+	int inputSamplerate;
+	virtual void reset() = 0;
+	DoublepassFilter(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	int getCutoff() const;
-	void setCutoff(int setto);
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
-	static sHighpassFilter create(size_t blockSize, int channelNum, int frameRate, int CutoffFrequency);
-	static sHighpassFilter create(size_t tail, size_t head, int channelNum, int frameRate, int CutoffFrequency);
-};
-class BandpassFilter : public Effect
-{
-private:
-	const uBP_private imp;
-protected:
-	BandpassFilter(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff);
-	BandpassFilter(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff);
-public:
+	virtual ~DoublepassFilter() = default;
 	int getLowCutoff() const;
 	void setLowCutoff(int setto);
 	int getHighCutoff() const;
 	void setHighCutoff(int setto);
-	void setBoth(int low, int high);
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
-	static sBandpassFilter create(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff);
-	static sBandpassFilter create(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff);
+	void setCutoff(int low, int high);
+	int getInputSamplerate() const;
+	void setInputSamplerate(int setto);
 };
-class BandRejectFilter : public Effect
+
+class LowpassFilter : public SinglepassFilter
 {
 private:
-	const uBP_private imp;
-protected:
-	BandRejectFilter(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff);
-	BandRejectFilter(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff);
+	LowpassFilter(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	int getLowCutoff() const;
-	void setLowCutoff(int setto);
-	int getHighCutoff() const;
-	void setHighCutoff(int setto);
-	void setBoth(int low, int high);
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
-	static sBandRejectFilter create(size_t blockSize, int channelNum, int frameRate, int lowCutoff, int highCutoff);
-	static sBandRejectFilter create(size_t tail, size_t head, int channelNum, int frameRate, int lowCutoff, int highCutoff);
+	sLowpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
+protected:
+	void reset();
+};
+class HighpassFilter : public SinglepassFilter
+{
+private:
+	HighpassFilter(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
+public:
+	sHighpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
+protected:
+	void reset();
+};
+class BandpassFilter : public DoublepassFilter
+{
+private:
+	BandpassFilter(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+public:
+	sBandpassFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+protected:
+	void reset();
+};
+class BandRejectFilter : public DoublepassFilter
+{
+private:
+	BandRejectFilter(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+public:
+	sBandRejectFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+protected:
+	void reset();
 };
 
 }

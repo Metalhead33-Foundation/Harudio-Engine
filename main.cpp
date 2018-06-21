@@ -7,6 +7,7 @@
 #include "Audio/Effect/Panner.hpp"
 #include "Audio/AuxiliaryEffectSlot.hpp"
 #include "Audio/Effect/Filter.hpp"
+#include "Audio/Effect/Delay.hpp"
 #include "Audio/Effect/PositionalPanner.hpp"
 #include "Audio/Effect/ComplexConvolver.hpp"
 #include "Audio/Effect/SimpleConvolver.hpp"
@@ -47,8 +48,8 @@ int main()
 	// conv2->init(irBuff);
 	auto filter1 = Audio::FX::LowpassFilter::create(48000,4000,0,conv);
 	auto filter2 = Audio::FX::HighpassFilter::create(48000,2000,1,conv);
-	auto filter3 = Audio::FX::BandpassFilter::create(48000,500,5000,2,conv);
-	auto filter4 = Audio::FX::BandRejectFilter::create(48000,500,5000,3,conv);
+	auto filter3 = Audio::FX::Delay::create(2048,0.25f,2,conv);
+	auto filter4 = Audio::FX::Delay::create(2048,0.25f,3,conv);
 	aux->addToList(conv,1.0f);
 
 	auto songlib = Sound::SongLibrary::create(
@@ -64,7 +65,7 @@ int main()
 	{
 		std::cout << it->artist << " - " << it->title << "\n";
 	}
-	auto stream = Sound::Streamer::create(songlib->getSong(2).getSong(StdStream::createReader),
+	auto stream = Sound::Streamer::create(songlib->getSong(1).getSong(StdStream::createReader),
 										  22000);
 	stream->setLooping(true);
 	monoPanner->setInput(stream);
@@ -83,7 +84,7 @@ int main()
 	float degrees = 0;
 	do {
 		stream->checkQueue();
-		degrees += 0.005f;
+		degrees += 0.001f;
 		ambisonic->setHorizontalAngle(degrees*0.0174532925f);
 		if(nanosleep(&tim , &tim2) < 0 )
 		{

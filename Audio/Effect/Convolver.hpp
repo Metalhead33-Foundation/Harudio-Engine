@@ -1,38 +1,24 @@
 #ifndef CONVOLVER_HPP
 #define CONVOLVER_HPP
-#include "../AudioEffect.hpp"
 #include "../AudioBuffer.hpp"
-#include "IrBufferFiller.hpp"
-#include <vector>
-
-namespace fftconvolver
-{
-DEFINE_CLASS(FFTConvolver)
-}
-
 namespace Audio {
 namespace FX {
 
 DEFINE_CLASS(Convolver)
-class Convolver : public Effect
+DEFINE_STRUCT(Convolver_private)
+class Convolver
 {
-public:
-	typedef fftconvolver::sFFTConvolver FastConvolver;
 private:
-	Convolver(const Convolver& cpy);
-	Convolver(const Convolver& cpy, int channelCount);
-	Convolver(const sBuffer nIR, size_t blocksize, int channelCount);
-	Convolver(const float* IR, size_t irSize, size_t blocksize, int channelCount);
-protected:
-	std::vector<FastConvolver> convolvers;
+	uConvolver_private impl;
 public:
-	static sConvolver create(sConvolver cpy);
-	static sConvolver create(sConvolver cpy, int channelCount);
-	static sConvolver create(const sBuffer nIR, size_t blocksize, int channelCount);
-	static sConvolver create(const float* IR, size_t irSize, size_t blocksize, int channelCount);
-	static sConvolver create(IrBufferCreator& creator, size_t blocksiz, int channelCount);
-	static sConvolver create(IrBufferFiller& creator, size_t blocksiz, int channelCount);
-	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate);
+	Convolver(size_t blocksize);
+	Convolver(size_t head, size_t tail);
+	void reset(size_t blocksize);
+	void reset(size_t head, size_t tail);
+	void init(const sBuffer nIR);
+	void init(const float* IR, size_t irSize);
+	void init(const Convolver& cyp);
+	void process(float* inBuffer, float* outBuffer, size_t sampleCount);
 };
 
 }

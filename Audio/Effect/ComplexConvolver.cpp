@@ -1,6 +1,5 @@
 #include "ComplexConvolver.hpp"
-#include "../FFTConvolver/FFTConvolver.h"
-#include "../FFTConvolver/TwoStageFFTConvolver.h"
+#include "Convolver.hpp"
 #include <vector>
 
 namespace Audio {
@@ -9,15 +8,29 @@ namespace FX {
 struct ComplexConvolver_private
 {
 	const int channelCount;
-	virtual ~ComplexConvolver_private() = default;
-	ComplexConvolver_private(int channelCnt)
+	std::vector<Convolver> conv;
+	ComplexConvolver_private(int channelCnt, size_t blocksize)
 		: channelCount(channelCnt)
 	{
-		;
+		for(int i = 0; i < channelCnt;++i) conv.emplace_back(blocksize);
 	}
-	virtual void init(const sBuffer nIR, int channelId) = 0;
-	virtual void init(const float* IR, size_t irSize, int channelId) = 0;
-	virtual void processOneChannel(float* input, float* output, size_t sampleCount, int channelId) = 0;
+	ComplexConvolver_private(int channelCnt, size_t head, size_t tail)
+		: channelCount(channelCnt)
+	{
+		for(int i = 0; i < channelCnt;++i) conv.emplace_back(head,tail);
+	}
+	void init(const sBuffer nIR, int channelId)
+	{
+		conv[channelId % channelCount].init(nIR);
+	}
+	virtual void init(const float* IR, size_t irSize, int channelId)
+	{
+		conv[channelId % channelCount].init(IR,irSize);
+	}
+	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
+	{
+		conv[channelId % channelCount].process(input,output,sampleCount);
+	}
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum)
 	{
 		if(channelNum != channelCount) return 0;
@@ -30,73 +43,23 @@ struct ComplexConvolver_private
 	}
 };
 
-struct NormalComplexConvolver : public ComplexConvolver_private
-{
-	std::vector<fftconvolver::FFTConvolver> conv;
-	const size_t blockSize;
-	NormalComplexConvolver(size_t blocksize, int channelNum)
-		: ComplexConvolver_private(channelNum), blockSize(blocksize), conv(channelNum)
-	{
-		;
-	}
-	void init(const sBuffer nIR, int channelId)
-	{
-		BufferOutput ptr;
-		nIR->getAudioData(&ptr,0);
-		conv[channelId].init(blockSize,ptr.first,ptr.second);
-	}
-	void init(const float* IR, size_t irSize, int channelId)
-	{
-		conv[channelId].init(blockSize,IR,irSize);
-	}
-	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
-	{
-		conv[channelId].process(input,output,sampleCount);
-	}
-};
-
-struct TwoStageComplexConvolver : public ComplexConvolver_private
-{
-	std::vector<fftconvolver::TwoStageFFTConvolver> conv;
-	const size_t head, tail;
-	TwoStageComplexConvolver(size_t head, size_t tail, int channelNum)
-		: ComplexConvolver_private(channelNum), head(head), tail(tail), conv(channelNum)
-	{
-		;
-	}
-	void init(const sBuffer nIR, int channelId)
-	{
-		BufferOutput ptr;
-		nIR->getAudioData(&ptr,0);
-		conv[channelId].init(head,tail,ptr.first,ptr.second);
-	}
-	void init(const float* IR, size_t irSize, int channelId)
-	{
-		conv[channelId].init(head,tail,IR,irSize);
-	}
-	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
-	{
-		conv[channelId].process(input,output,sampleCount);
-	}
-};
-
 ComplexConvolver::ComplexConvolver(size_t blocksize, int channelCount)
-	: impl(new NormalComplexConvolver(blocksize,channelCount))
+	: impl(new ComplexConvolver_private(blocksize,channelCount))
 {
 	;
 }
 ComplexConvolver::ComplexConvolver(size_t head, size_t tail, int channelCount)
-	: impl(new TwoStageComplexConvolver(head,tail,channelCount))
+	: impl(new ComplexConvolver_private(head,tail,channelCount))
 {
 	;
 }
 void ComplexConvolver::reset(size_t blocksize, int channelCount)
 {
-	impl = uComplexConvolver_private(new NormalComplexConvolver(blocksize,channelCount));
+	impl = uComplexConvolver_private(new ComplexConvolver_private(blocksize,channelCount));
 }
 void ComplexConvolver::reset(size_t head, size_t tail, int channelCount)
 {
-	impl = uComplexConvolver_private(new TwoStageComplexConvolver(head,tail,channelCount));
+	impl = uComplexConvolver_private(new ComplexConvolver_private(head,tail,channelCount));
 }
 void ComplexConvolver::init(const sBuffer nIR, int channelId)
 {

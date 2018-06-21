@@ -1,6 +1,5 @@
 #include "SimpleConvolver.hpp"
-#include "../FFTConvolver/FFTConvolver.h"
-#include "../FFTConvolver/TwoStageFFTConvolver.h"
+#include "Convolver.hpp"
 #include <vector>
 
 namespace Audio {
@@ -9,15 +8,31 @@ namespace FX {
 struct SimpleConvolver_private
 {
 	const int channelCount;
-	virtual ~SimpleConvolver_private() = default;
-	SimpleConvolver_private(int channelCnt)
+	std::vector<Convolver> conv;
+	SimpleConvolver_private(int channelCnt, size_t blocksize)
 		: channelCount(channelCnt)
 	{
-		;
+		for(int i = 0; i < channelCnt;++i) conv.emplace_back(blocksize);
 	}
-	virtual void init(const sBuffer nIR) = 0;
-	virtual void init(const float* IR, size_t irSize) = 0;
-	virtual void processOneChannel(float* input, float* output, size_t sampleCount, int channelId) = 0;
+	SimpleConvolver_private(int channelCnt, size_t head, size_t tail)
+		: channelCount(channelCnt)
+	{
+		for(int i = 0; i < channelCnt;++i) conv.emplace_back(head,tail);
+	}
+	void init(const sBuffer nIR)
+	{
+		conv[0].init(nIR);
+		for(int i = 1; i < channelCount;++i) conv[i].init(conv[0]);
+	}
+	void init(const float* IR, size_t irSize)
+	{
+		conv[0].init(IR,irSize);
+		for(int i = 1; i < channelCount;++i) conv[i].init(conv[0]);
+	}
+	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
+	{
+		conv[channelId % channelCount].process(input,output,sampleCount);
+	}
 	long process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum)
 	{
 		if(channelNum != channelCount) return 0;
@@ -30,89 +45,23 @@ struct SimpleConvolver_private
 	}
 };
 
-struct NormalSimpleConvolver : public SimpleConvolver_private
-{
-	std::vector<fftconvolver::FFTConvolver> conv;
-	const size_t blockSize;
-	NormalSimpleConvolver(size_t blocksize, int channelNum)
-		: SimpleConvolver_private(channelNum), blockSize(blocksize), conv(channelNum)
-	{
-		;
-	}
-	void init(const sBuffer nIR)
-	{
-		BufferOutput ptr;
-		nIR->getAudioData(&ptr,0);
-		conv[0].init(blockSize,ptr.first,ptr.second);
-		for(int i = 0; i < channelCount;++i)
-		{
-			conv[i].init(conv[0]);
-		}
-	}
-	void init(const float* IR, size_t irSize)
-	{
-		conv[0].init(blockSize,IR,irSize);
-		for(int i = 0; i < channelCount;++i)
-		{
-			conv[i].init(conv[0]);
-		}
-	}
-	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
-	{
-		conv[channelId].process(input,output,sampleCount);
-	}
-};
-
-struct TwoStageSimpleConvolver : public SimpleConvolver_private
-{
-	std::vector<fftconvolver::TwoStageFFTConvolver> conv;
-	const size_t head, tail;
-	TwoStageSimpleConvolver(size_t head, size_t tail, int channelNum)
-		: SimpleConvolver_private(channelNum), head(head), tail(tail), conv(channelNum)
-	{
-		;
-	}
-	void init(const sBuffer nIR)
-	{
-		BufferOutput ptr;
-		nIR->getAudioData(&ptr,0);
-		conv[0].init(head,tail,ptr.first,ptr.second);
-		for(int i = 0; i < channelCount;++i)
-		{
-			conv[i].init(conv[0]);
-		}
-	}
-	void init(const float* IR, size_t irSize)
-	{
-		conv[0].init(head,tail,IR,irSize);
-		for(int i = 0; i < channelCount;++i)
-		{
-			conv[i].init(conv[0]);
-		}
-	}
-	void processOneChannel(float* input, float* output, size_t sampleCount, int channelId)
-	{
-		conv[channelId].process(input,output,sampleCount);
-	}
-};
-
 SimpleConvolver::SimpleConvolver(size_t blocksize, int channelCount)
-: impl(new NormalSimpleConvolver(blocksize,channelCount))
+: impl(new SimpleConvolver_private(blocksize,channelCount))
 {
 	;
 }
 SimpleConvolver::SimpleConvolver(size_t head, size_t tail, int channelCount)
-: impl(new TwoStageSimpleConvolver(head,tail,channelCount))
+: impl(new SimpleConvolver_private(head,tail,channelCount))
 {
 	;
 }
 void SimpleConvolver::reset(size_t blocksize, int channelCount)
 {
-	impl = uSimpleConvolver_private(new NormalSimpleConvolver(blocksize,channelCount));
+	impl = uSimpleConvolver_private(new SimpleConvolver_private(blocksize,channelCount));
 }
 void SimpleConvolver::reset(size_t head, size_t tail, int channelCount)
 {
-	impl = uSimpleConvolver_private(new TwoStageSimpleConvolver(head,tail,channelCount));
+	impl = uSimpleConvolver_private(new SimpleConvolver_private(head,tail,channelCount));
 }
 void SimpleConvolver::init(const sBuffer nIR)
 {

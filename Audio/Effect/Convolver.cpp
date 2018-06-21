@@ -1,96 +1,133 @@
 #include "Convolver.hpp"
 #include "../FFTConvolver/FFTConvolver.h"
-#include <cstring>
-#include <stdexcept>
+#include "../FFTConvolver/TwoStageFFTConvolver.h"
+#include <vector>
 
 namespace Audio {
 namespace FX {
 
-Convolver::Convolver(const Convolver& cpy)
-	: convolvers(cpy.convolvers.size())
+struct Convolver_private
 {
-	for(size_t i = 0; i < cpy.convolvers.size();++i)
+	virtual ~Convolver_private() = default;
+	Convolver_private()
 	{
-		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
-		convolvers[i]->init(*cpy.convolvers[0]);
+		;
 	}
-}
-Convolver::Convolver(const Convolver& cpy, int channelCount)
-	: convolvers(channelCount)
+	virtual void init(const sBuffer nIR) = 0;
+	virtual void init(const float* IR, size_t irSize) = 0;
+	virtual void init(const fftconvolver::FFTConvolver& conv) = 0;
+	virtual void init(const Convolver_private& conv) = 0;
+	virtual void process(float* inBuffer, float* outBuffer, size_t sampleCount) = 0;
+	virtual const fftconvolver::FFTConvolver& getReference() const = 0;
+};
+
+struct NormalSimpleConvolver : public Convolver_private
 {
-	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
-	for(int i = 0; i < channelCount;++i)
+	fftconvolver::FFTConvolver conv;
+	const size_t blockSize;
+	void init(const sBuffer nIR)
 	{
-		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
-		convolvers[i]->init(*cpy.convolvers[0]);
+		BufferOutput ptr;
+		nIR->getAudioData(&ptr,0);
+		conv.init(blockSize,ptr.first,ptr.second);
 	}
-}
-Convolver::Convolver(const sBuffer nIR, size_t blocksize, int channelCount)
-	: convolvers(channelCount)
-{
-	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
-	BufferOutput ptr;
-	nIR->getAudioData(&ptr,0);
-	for(int i = 0; i < channelCount;++i)
+	void init(const float* IR, size_t irSize)
 	{
-		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
-		convolvers[i]->init(blocksize,ptr.first,ptr.second);
+		conv.init(blockSize,IR,irSize);
 	}
-}
-Convolver::Convolver(const float* IR, size_t irSize, size_t blocksize, int channelCount)
-	: convolvers(channelCount)
-{
-	if(channelCount <= 0) throw std::runtime_error("Convolved - invalid number of channels!");
-	for(int i = 0; i < channelCount;++i)
+	void init(const fftconvolver::FFTConvolver& conv)
 	{
-		convolvers[i] = fftconvolver::sFFTConvolver(new fftconvolver::FFTConvolver());
-		convolvers[i]->init(blocksize,IR,irSize);
+		this->conv.init(blockSize,conv.getBuffer());
 	}
-}
-sConvolver Convolver::create(sConvolver cpy)
-{
-	if(cpy) return sConvolver(new Convolver(*cpy));
-	else return nullptr;
-}
-sConvolver Convolver::create(sConvolver cpy, int channelCount)
-{
-	if(cpy) return sConvolver(new Convolver(*cpy,channelCount));
-	else return nullptr;
-}
-sConvolver Convolver::create(const sBuffer nIR, size_t blocksize, int channelCount)
-{
-	if(nIR) return sConvolver(new Convolver(nIR,blocksize,channelCount));
-	else return nullptr;
-}
-sConvolver  Convolver::create(const float* IR, size_t irSize, size_t blocksize, int channelCount)
-{
-	return sConvolver(new Convolver(IR,irSize,blocksize,channelCount));
-}
-long Convolver::process(float* inBuffer, float* outBuffer, long maxFrames, int channelNum, int frameRate)
-{
-	if(channelNum != convolvers.size()) throw std::runtime_error("Convolver - I/O Channel number mismatch! Please use a panner or channel mixer!");	
-	// #pragma omp target teams distribute parallel for
-#pragma omp for
-	for(int i = 0; i < channelNum; ++i)
+	void init(const Convolver_private& conv)
 	{
-		long sampleCursor=maxFrames*i;
-		convolvers[i]->process(&inBuffer[sampleCursor],&outBuffer[sampleCursor],maxFrames);
+		init(conv.getReference());
 	}
-	return maxFrames;
-}
-sConvolver Convolver::create(IrBufferCreator& creator, size_t blocksiz, int channelCount)
+	void process(float* inBuffer, float* outBuffer, size_t sampleCount)
+	{
+		conv.process(inBuffer,outBuffer,sampleCount);
+	}
+	const fftconvolver::FFTConvolver& getReference() const
+	{
+		return conv;
+	}
+	NormalSimpleConvolver(size_t blocksize)
+		: blockSize(blocksize)
+	{
+		;
+	}
+};
+
+struct TwoStageSimpleConvolver : public Convolver_private
 {
-	if(channelCount <= 0) return nullptr;
-	std::vector<float> crt;
-	creator(crt);
-	return create(crt.data(),crt.size(),blocksiz,channelCount);
-}
-sConvolver Convolver::create(IrBufferFiller& creator, size_t blocksiz, int channelCount)
+	fftconvolver::TwoStageFFTConvolver conv;
+	const size_t head, tail;
+	void init(const sBuffer nIR)
+	{
+		BufferOutput ptr;
+		nIR->getAudioData(&ptr,0);
+		conv.init(head,tail,ptr.first,ptr.second);
+	}
+	void init(const float* IR, size_t irSize)
+	{
+		conv.init(head,tail,IR,irSize);
+	}
+	void init(const fftconvolver::FFTConvolver& conv)
+	{
+		this->conv.init(head,tail,conv);
+	}
+	void init(const Convolver_private& conv)
+	{
+		init(conv.getReference());
+	}
+	void process(float* inBuffer, float* outBuffer, size_t sampleCount)
+	{
+		conv.process(inBuffer,outBuffer,sampleCount);
+	}
+	const fftconvolver::FFTConvolver& getReference() const
+	{
+		return conv.getHead();
+	}
+	TwoStageSimpleConvolver(size_t head, size_t tail)
+		: head(head), tail(tail)
+	{
+		;
+	}
+};
+
+Convolver::Convolver(size_t blocksize)
+: impl(new NormalSimpleConvolver(blocksize))
 {
-	if(channelCount <= 0) return nullptr;
-	IrBuffer buff;
-	creator(buff);
-	return create(buff.audio,buff.sampleCount,blocksiz,channelCount);
+	;
+}
+Convolver::Convolver(size_t head, size_t tail)
+: impl(new TwoStageSimpleConvolver(head,tail))
+{
+	;
+}
+void Convolver::reset(size_t blocksize)
+{
+	impl = uConvolver_private(new NormalSimpleConvolver(blocksize));
+}
+void Convolver::reset(size_t head, size_t tail)
+{
+	impl = uConvolver_private(new TwoStageSimpleConvolver(head,tail));
+}
+void Convolver::init(const sBuffer nIR)
+{
+	impl->init(nIR);
+}
+void Convolver::init(const float* IR, size_t irSize)
+{
+	impl->init(IR,irSize);
+}
+void Convolver::init(const Convolver& cyp)
+{
+	impl->init(*cyp.impl);
+}
+void Convolver::process(float* inBuffer, float* outBuffer, size_t sampleCount)
+{
+	impl->process(inBuffer,outBuffer,sampleCount);
 }
 
 }

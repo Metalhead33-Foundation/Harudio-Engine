@@ -53,7 +53,6 @@ HEADERS += \
     Io/StdStream.hpp \
     Sound/SoundSource.hpp \
     Sound/SoundStreamer.hpp \
-    Audio/Effect/TwoStageConvolver.hpp \
     Audio/Effect/IrBufferFiller.hpp \
     Audio/Effect/Filter.hpp \
     Io/fsqrt.hpp \
@@ -93,7 +92,6 @@ SOURCES += \
     Sound/SoundSource.cpp \
     Sound/SoundStreamer.cpp \
     main.cpp \
-    Audio/Effect/TwoStageConvolver.cpp \
     Audio/Effect/Filter.cpp \
     Audio/Effect/Compactor.cpp \
     Audio/Effect/Delay.cpp \

@@ -6,13 +6,10 @@
 #include "Audio/Effect/Resampler.hpp"
 #include "Audio/Effect/Panner.hpp"
 #include "Audio/AuxiliaryEffectSlot.hpp"
-#include "Audio/Effect/Clamp.hpp"
-#include "Audio/Effect/Gate.hpp"
-#include "Audio/Effect/Degrader.hpp"
-#include "Audio/Effect/BitCrusher.hpp"
 #include "Audio/Effect/Filter.hpp"
-#include "Audio/Effect/Convolver.hpp"
 #include "Audio/Effect/PositionalPanner.hpp"
+#include "Audio/Effect/ComplexConvolver.hpp"
+#include "Audio/Effect/SimpleConvolver.hpp"
 #include "Sound/SongLibrary.hpp"
 #include <time.h>
 
@@ -44,9 +41,15 @@ int main()
 	auto stereoPanner = Audio::StereoPanner::createPanner();
 	auto monoPanner = Audio::MonoPanner::createPanner();
 	auto ambisonic = Audio::AmbisonicPanner::createAmbisonicPanner();
-	auto positional = Audio::PositionalPanner::createPositionPanner(
-				glm::vec3(0.03f,0.03f,0.3f),glm::vec3(-0.0f,-0.0f,0.0f),1.0f);
-
+	auto aux = Audio::AuxiliaryEffectSlot::create(4,48000);
+	auto conv = Audio::FX::ComplexConvolver::create(4,512);
+	auto conv2 = Audio::FX::SimpleConvolver::create(4,512);
+	// conv2->init(irBuff);
+	auto filter1 = Audio::FX::LowpassFilter::create(48000,4000,0,conv);
+	auto filter2 = Audio::FX::HighpassFilter::create(48000,2000,1,conv);
+	auto filter3 = Audio::FX::BandpassFilter::create(48000,500,5000,2,conv);
+	auto filter4 = Audio::FX::BandRejectFilter::create(48000,500,5000,3,conv);
+	aux->addToList(conv,1.0f);
 
 	auto songlib = Sound::SongLibrary::create(
 				[](const std::string& path) {
@@ -64,10 +67,13 @@ int main()
 	auto stream = Sound::Streamer::create(songlib->getSong(2).getSong(StdStream::createReader),
 										  22000);
 	stream->setLooping(true);
-	positional->setInput(stream);
+	monoPanner->setInput(stream);
+	ambisonic->setInput(monoPanner);
 
+	aux->setSource(ambisonic);
 	resampler->setSpeed(1.20f);
-	resampler->setInput(positional);
+	resampler->setInput(aux);
+
 	stereoPanner->setInput(resampler);
 	// stereoPanner->setVolumeLevel(1.0f);
 	context.addToList(stereoPanner,0.1f);
@@ -77,8 +83,8 @@ int main()
 	float degrees = 0;
 	do {
 		stream->checkQueue();
-		degrees += 0.01f;
-		// ambisonic->setHorizontalAngle(degrees*0.0174532925f);
+		degrees += 0.005f;
+		ambisonic->setHorizontalAngle(degrees*0.0174532925f);
 		if(nanosleep(&tim , &tim2) < 0 )
 		{
 			context.suspend();

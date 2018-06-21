@@ -14,9 +14,11 @@ private:
 	uSimpleConvolver_private impl;
 protected:
 	void adapt(const std::vector<float>& IR, int channelId);
-public:
 	SimpleConvolver(size_t blocksize, int channelCount);
 	SimpleConvolver(size_t head, size_t tail, int channelCount);
+public:
+	static sSimpleConvolver create(size_t blocksize, int channelCount);
+	static sSimpleConvolver create(size_t head, size_t tail, int channelCount);
 	void reset(size_t blocksize, int channelCount);
 	void reset(size_t head, size_t tail, int channelCount);
 	void init(const sBuffer nIR);

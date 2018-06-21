@@ -48,7 +48,7 @@ class LowpassFilter : public SinglepassFilter
 private:
 	LowpassFilter(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	sLowpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
+	static sLowpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 protected:
 	void reset();
 };
@@ -57,7 +57,7 @@ class HighpassFilter : public SinglepassFilter
 private:
 	HighpassFilter(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	sHighpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
+	static sHighpassFilter create(int inputSamplerate, int cutoffFrequency=-1,int channelId=0, const sAdaptableConvolver setto=nullptr);
 protected:
 	void reset();
 };
@@ -66,7 +66,7 @@ class BandpassFilter : public DoublepassFilter
 private:
 	BandpassFilter(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	sBandpassFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+	static sBandpassFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
 protected:
 	void reset();
 };
@@ -75,7 +75,7 @@ class BandRejectFilter : public DoublepassFilter
 private:
 	BandRejectFilter(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
 public:
-	sBandRejectFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
+	static sBandRejectFilter create(int inputSamplerate, int lowCutoff=-1, int highCutoff=-1, int channelId=0, const sAdaptableConvolver setto=nullptr);
 protected:
 	void reset();
 };

@@ -10,7 +10,7 @@ namespace Audio {
 namespace FX {
 
 SinglepassFilter::SinglepassFilter(int inputSamplerate, int cutoffFrequency, int channelId, const sAdaptableConvolver setto)
-	: ImpulseResponseGenerator(channelId,setto), cutoffFrequency(cutoffFrequency)
+	: ImpulseResponseGenerator(channelId,setto), cutoffFrequency(cutoffFrequency), inputSamplerate(inputSamplerate)
 {
 	;
 }
@@ -28,7 +28,7 @@ void SinglepassFilter::setCutoffFrequency(int setto)
 }
 
 DoublepassFilter::DoublepassFilter(int inputSamplerate, int lowCutoff, int highCutoff, int channelId, const sAdaptableConvolver setto)
-	: ImpulseResponseGenerator(channelId,setto), lowCutoff(lowCutoff), highCutoff(highCutoff)
+	: ImpulseResponseGenerator(channelId,setto), lowCutoff(lowCutoff), highCutoff(highCutoff), inputSamplerate(inputSamplerate)
 {
 	;
 }

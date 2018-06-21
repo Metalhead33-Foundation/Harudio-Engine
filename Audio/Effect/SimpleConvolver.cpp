@@ -5,6 +5,15 @@
 namespace Audio {
 namespace FX {
 
+sSimpleConvolver SimpleConvolver::create(size_t blocksize, int channelCount)
+{
+	return sSimpleConvolver(new SimpleConvolver(blocksize,channelCount));
+}
+sSimpleConvolver SimpleConvolver::create(size_t head, size_t tail, int channelCount)
+{
+	return sSimpleConvolver(new SimpleConvolver(head,tail,channelCount));
+}
+
 struct SimpleConvolver_private
 {
 	const int channelCount;
@@ -12,12 +21,13 @@ struct SimpleConvolver_private
 	SimpleConvolver_private(int channelCnt, size_t blocksize)
 		: channelCount(channelCnt)
 	{
-		for(int i = 0; i < channelCnt;++i) conv.emplace_back(blocksize);
+		for(int i = 0; i < channelCnt;++i) conv.push_back(Convolver(blocksize));
 	}
 	SimpleConvolver_private(int channelCnt, size_t head, size_t tail)
 		: channelCount(channelCnt)
 	{
-		for(int i = 0; i < channelCnt;++i) conv.emplace_back(head,tail);
+		// for(int i = 0; i < channelCnt;++i) conv.emplace_back(head,tail);
+		for(int i = 0; i < channelCnt;++i) conv.push_back(Convolver(head,tail));
 	}
 	void init(const sBuffer nIR)
 	{

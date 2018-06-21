@@ -5,6 +5,15 @@
 namespace Audio {
 namespace FX {
 
+sComplexConvolver ComplexConvolver::create(size_t blocksize, int channelCount)
+{
+	return sComplexConvolver(new ComplexConvolver(blocksize,channelCount));
+}
+sComplexConvolver ComplexConvolver::create(size_t head, size_t tail, int channelCount)
+{
+	return sComplexConvolver(new ComplexConvolver(head,tail,channelCount));
+}
+
 struct ComplexConvolver_private
 {
 	const int channelCount;

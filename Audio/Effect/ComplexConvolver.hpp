@@ -14,9 +14,11 @@ private:
 	uComplexConvolver_private impl;
 protected:
 	void adapt(const std::vector<float>& IR, int channelId);
-public:
 	ComplexConvolver(size_t blocksize, int channelCount);
 	ComplexConvolver(size_t head, size_t tail, int channelCount);
+public:
+	static sComplexConvolver create(size_t blocksize, int channelCount);
+	static sComplexConvolver create(size_t head, size_t tail, int channelCount);
 	void reset(size_t blocksize, int channelCount);
 	void reset(size_t head, size_t tail, int channelCount);
 	void init(const sBuffer nIR, int channelId);

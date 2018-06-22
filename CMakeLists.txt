@@ -21,7 +21,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 SET(HS "")
   
 find_package(PortAudio REQUIRED)
-find_package(LibSndFile REQUIRED)
+find_package(SndFile REQUIRED)
 find_package(Libsamplerate REQUIRED)
 
 
@@ -34,7 +34,7 @@ add_subdirectory("Io")
 target_link_libraries(${PROJECT_NAME}
     ${PORTAUDIO_LIBRARIES}
     ${LIBSAMPLERATE_LIBRARIES}
-    ${LIBSNDFILE_LIBRARY}
+    ${SNDFILE_LIBRARY}
     )
 
 # target_link_libraries(toDo toDoCore)
@@ -43,7 +43,7 @@ target_link_libraries(${PROJECT_NAME}
 # Install library
 install(
 	TARGETS ${PROJECT_NAME} 
-	LIBRARY DESTINATION lib/${PROJECT_NAME}
+	LIBRARY DESTINATION lib
 )
 INSTALL (
     DIRECTORY ${CMAKE_SOURCE_DIR}

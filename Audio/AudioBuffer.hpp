@@ -25,6 +25,7 @@ public:
 	Buffer(int frameRate, int channelNum);
 	int getFrameRate() const;
 	int getChannelNum() const;
+	void setFrameRate(int frameRate);
 	size_t getFrameCount() const;
 
 	virtual ~Buffer() = default;

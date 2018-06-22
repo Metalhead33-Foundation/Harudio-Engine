@@ -1,7 +1,27 @@
 #include "AudioBuffer.hpp"
 #include <cstring>
+#include "Samplerate.hpp"
 
 namespace Audio {
+
+void Buffer::setFrameRate(int frameRate)
+{
+	if(this->frameRate != frameRate) {
+	const double ratio = double(this->frameRate) / double(frameRate);
+	const long newFrameCount = size_t(double(getFrameCount()) * ratio);
+	std::vector<float> newBuff(newFrameCount * channelNum);
+	SRC_DATA data;
+	Samplerate conv(0,channelNum);
+	data.data_in = buff.data();
+	data.data_out = newBuff.data();
+	data.src_ratio = ratio;
+	data.input_frames = getFrameCount();
+	data.output_frames = newFrameCount;
+	conv.process(&data);
+	this->frameRate = frameRate;
+	buff = newBuff;
+	}
+}
 
 Buffer::Buffer(int frameRate, int channelNum)
 {

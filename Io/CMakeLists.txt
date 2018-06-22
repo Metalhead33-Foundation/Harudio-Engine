@@ -7,11 +7,10 @@ target_sources(${PROJECT_NAME}
 						"${CMAKE_CURRENT_LIST_DIR}/FIOSys.hpp"
 						"${CMAKE_CURRENT_LIST_DIR}/fsqrt.hpp"
 						"${CMAKE_CURRENT_LIST_DIR}/Global.hpp"
-						"${CMAKE_CURRENT_LIST_DIR}/sndfile.hpp"
+						"${CMAKE_CURRENT_LIST_DIR}/sndfile.hh"
 						"${CMAKE_CURRENT_LIST_DIR}/SoundFile.hpp"
 					PRIVATE
 						"${CMAKE_CURRENT_LIST_DIR}/SoundFile.cpp"
-						"${CMAKE_CURRENT_LIST_DIR}/sndfile.cpp"
 						)
 						
 SET(				HS	"${HS}" 
@@ -21,7 +20,6 @@ SET(				HS	"${HS}"
 						"${CMAKE_CURRENT_LIST_DIR}/Global.hpp"
 						"${CMAKE_CURRENT_LIST_DIR}/sndfile.hpp"
 						"${CMAKE_CURRENT_LIST_DIR}/SoundFile.hpp"
-						"${CMAKE_CURRENT_LIST_DIR}/sndfile.hpp"
 )
 
 

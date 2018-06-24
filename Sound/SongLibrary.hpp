@@ -33,10 +33,10 @@ private:
 	const Abstract::sFIOSys sys;
 	const ListCreator listCreator;
 	SongLibrary(const std::string& path, const ListCreator& creator, Abstract::sFIOSys sys);
-	SongLibrary(const ListCreator& creator, const Song::FileOpener& opener);
+	SongLibrary(const std::string& path, const ListCreator& creator, const Song::FileOpener& opener);
 public:
 	static sSongLibrary create(const std::string& path, const ListCreator& creator, Abstract::sFIOSys sys);
-	static sSongLibrary create(const ListCreator& creator, const Song::FileOpener& opener);
+	static sSongLibrary create(const std::string& path, const ListCreator& creator, const Song::FileOpener& opener);
 	const Song& getSong(size_t id) const;
 	const Song& operator[](size_t id) const;
 	size_t getLibrarySize() const;

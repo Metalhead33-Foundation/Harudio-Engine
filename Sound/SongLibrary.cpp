@@ -32,8 +32,8 @@ SongLibrary::SongLibrary(const std::string &path, const ListCreator &creator, Ab
 		lib.push_back(tmp);
 	}
 }
-SongLibrary::SongLibrary(const ListCreator& creator, const Song::FileOpener& opener)
-	: folderPath(""), listCreator(creator), sys(nullptr)
+SongLibrary::SongLibrary(const std::string& path, const ListCreator& creator, const Song::FileOpener& opener)
+	: folderPath(path), listCreator(creator), sys(nullptr)
 {
 	stringVector paths = listCreator(folderPath);
 	for(auto it = paths.begin(); it != paths.end(); ++it)
@@ -53,9 +53,9 @@ sSongLibrary SongLibrary::create(const std::string& path, const ListCreator& cre
 {
 	return sSongLibrary(new SongLibrary(path,creator,sys));
 }
-sSongLibrary SongLibrary::create(const ListCreator& creator, const Song::FileOpener& opener)
+sSongLibrary SongLibrary::create(const std::string& path, const ListCreator& creator, const Song::FileOpener& opener)
 {
-	return sSongLibrary(new SongLibrary(creator,opener));
+	return sSongLibrary(new SongLibrary(path,creator,opener));
 }
 const Song& SongLibrary::getSong(size_t id) const
 {

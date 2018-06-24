@@ -23,6 +23,9 @@ target_sources(${PROJECT_NAME}
 						"${CMAKE_CURRENT_LIST_DIR}/AudioSource.cpp"
 						)
 
+add_subdirectory("Effect")
+add_subdirectory("FFTConvolver")
+
 SET(				HS	"${HS}" 
 						"${CMAKE_CURRENT_LIST_DIR}/AudioContext.hpp"
 						"${CMAKE_CURRENT_LIST_DIR}/AudioMixer.hpp"

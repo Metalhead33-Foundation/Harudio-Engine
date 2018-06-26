@@ -149,5 +149,17 @@ void AuxiliaryEffectSlot::removeFromList(sEffect playable)
 		}
 	}
 }
+bool AuxiliaryEffectSlot::empty() const
+{
+	return effects.empty();
+}
+AuxiliaryEffectSlot::EffectConstIterator AuxiliaryEffectSlot::begin() const
+{
+	return effects.begin();
+}
+AuxiliaryEffectSlot::EffectConstIterator AuxiliaryEffectSlot::end() const
+{
+	return effects.end();
+}
 
 }

@@ -14,6 +14,7 @@ public:
 	typedef std::pair<sEffect,float> EffectElement;
 	typedef std::list<EffectElement> EffectList;
 	typedef EffectList::iterator EffectIterator;
+	typedef EffectList::const_iterator EffectConstIterator;
 private:
 	PluggableBuffer dryBuffer;
 	PluggableBuffer wetBuffer;
@@ -42,6 +43,10 @@ public:
 	void removeFromList(EffectIterator it);
 	void removeFromList(sEffect playable);
 	bool isPlaying() const;
+
+	bool empty() const;
+	EffectConstIterator begin() const;
+	EffectConstIterator end() const;
 };
 
 }

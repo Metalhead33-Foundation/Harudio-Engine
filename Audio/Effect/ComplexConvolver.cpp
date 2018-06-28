@@ -53,12 +53,12 @@ struct ComplexConvolver_private
 };
 
 ComplexConvolver::ComplexConvolver(size_t blocksize, int channelCount)
-	: impl(new ComplexConvolver_private(blocksize,channelCount))
+	: impl(new ComplexConvolver_private(channelCount,blocksize))
 {
 	;
 }
 ComplexConvolver::ComplexConvolver(size_t head, size_t tail, int channelCount)
-	: impl(new ComplexConvolver_private(head,tail,channelCount))
+	: impl(new ComplexConvolver_private(channelCount,head,tail))
 {
 	;
 }

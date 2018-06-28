@@ -16,13 +16,16 @@ Context::Context(int intendedFramerate, int intendedBumChannels, long intendedBu
 	want.freq = intendedFramerate;
 	want.format = AUDIO_F32;
 	want.channels = intendedBumChannels;
-	want.samples = intendedBufferSize;
+	want.samples = intendedBufferSize/intendedBumChannels;
 	want.callback = Playable::SDL_AudioCallback;
 	want.userdata = this;
 	this->dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
 	if (dev == 0) {
 		throw std::runtime_error(SDL_GetError());
 	}
+	frameCount = have.samples;
+	inputBuffer.reserve(have.samples*have.channels);
+	outputBuffer.reserve(have.samples*have.channels);
 	std::unique_lock<std::recursive_mutex> locker(this->locker);
 }
 Context::~Context()

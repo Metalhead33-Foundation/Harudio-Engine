@@ -19,7 +19,7 @@ protected:
 	std::vector<float> outputBuffer;
 	const int channelNumber;
 	const int frameRate;
-	const long frameCount;
+	long frameCount;
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate);
 public:
 	Mixer(int intendedChannelNumber, int intendedFramerate, long intendedBufferSize);

@@ -1,7 +1,6 @@
 #ifndef AUDIOPLAYABLE_HPP
 #define AUDIOPLAYABLE_HPP
 #include "../Io/Global.hpp"
-#include <portaudio.h>
 #include <array>
 
 namespace Audio {
@@ -27,11 +26,7 @@ public:
 	typedef std::array<float,TINYBUFF> PluggableBuffer;
 	virtual ~Playable() = default;
 	virtual bool isPlaying() const = 0;
-	static int patestCallback( const void *inputBuffer, void *outputBuffer,
-							   unsigned long framesPerBuffer,
-							   const PaStreamCallbackTimeInfo* timeInfo,
-							   PaStreamCallbackFlags statusFlags,
-							   void *userData );
+	static void SDL_AudioCallback(void*  userdata, unsigned char* stream, int len);
 	virtual int getFramerate() const = 0;
 	virtual int getChannelCount() const = 0;
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;

@@ -20,7 +20,7 @@ ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 SET(HS "")
   
-find_package(PortAudio REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(SndFile REQUIRED)
 find_package(Libsamplerate REQUIRED)
 
@@ -32,7 +32,7 @@ add_subdirectory("Sound")
 add_subdirectory("Io")
 
 target_link_libraries(${PROJECT_NAME}
-    ${PORTAUDIO_LIBRARIES}
+    ${SDL2_LIBRARY}
     ${LIBSAMPLERATE_LIBRARIES}
     ${SNDFILE_LIBRARY}
     )

@@ -4,22 +4,20 @@
 #include "AudioMixer.hpp"
 #include <vector>
 #include <mutex>
+#include <SDL2/SDL_audio.h>
 
 namespace Audio {
 
 class Context : public Mixer
 {
 private:
-	PaStream *stream;
-	static int numContexts;
+	SDL_AudioDeviceID dev;
 	static std::recursive_mutex locker;
-	static void queryDevices(PaStreamParameters* inputParams, PaStreamParameters* outputParams, double desiredSamplerate);
 public:
 	Context(int intendedFramerate, int intendedBumChannels, long intendedBufferSize);
 	~Context();
 	void suspend();
 	void unsuspend();
-	void abort();
 	bool isStopped();
 	bool isActive();
 };

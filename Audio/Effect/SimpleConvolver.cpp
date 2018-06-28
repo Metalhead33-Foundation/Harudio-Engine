@@ -56,12 +56,12 @@ struct SimpleConvolver_private
 };
 
 SimpleConvolver::SimpleConvolver(size_t blocksize, int channelCount)
-: impl(new SimpleConvolver_private(blocksize,channelCount))
+: impl(new SimpleConvolver_private(channelCount,blocksize))
 {
 	;
 }
 SimpleConvolver::SimpleConvolver(size_t head, size_t tail, int channelCount)
-: impl(new SimpleConvolver_private(head,tail,channelCount))
+: impl(new SimpleConvolver_private(channelCount,head,tail))
 {
 	;
 }

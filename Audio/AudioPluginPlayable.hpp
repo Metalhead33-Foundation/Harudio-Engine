@@ -9,7 +9,6 @@ class PluginPlayable : public Playable
 {
 protected:
 	wPlayable input;
-	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;
 public:
 	virtual ~PluginPlayable() = default;
 	bool isPlaying() const;
@@ -18,6 +17,7 @@ public:
 	void setInput(sPlayable ninput);
 	const sPlayable getInput() const;
 	virtual void onChangedInput() = 0;
+	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate) = 0;
 };
 
 }

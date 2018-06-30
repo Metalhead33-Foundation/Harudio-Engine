@@ -20,6 +20,29 @@ private:
 	PluggableBuffer inputBuffer;
 protected:
 	float volumeLevel[outputChannelCount];
+	void setInputChannelCount(int newChannelCount) {
+		inputChannelCount = newChannelCount;
+		if(inputChannelCount == outputChannelCount) mixingType = EQUAL_MIX;
+		else if(inputChannelCount < outputChannelCount) mixingType = UPMIX;
+		else mixingType = DOWNMIX;
+		channelRatio = float(outputChannelCount) / float(inputChannelCount);
+	}
+virtual void onChangedInput()
+	{
+		sPlayable tinput = input.lock();
+		setInputChannelCount(tinput->getChannelCount());
+	}
+	Panner()
+	{
+		setInputChannelCount(1);
+		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = 1.00f;
+	}
+	Panner(int inputChCount)
+	{
+		setInputChannelCount(inputChCount);
+		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = 1.00f;
+	}
+public:
 	virtual long pullAudio(float* output, long maxFrameNum, int channelNum, int frameRate)
 	{
 		if(input.expired()) return 0;
@@ -59,29 +82,6 @@ protected:
 		} while(readFrames);
 		return processedFrames;
 	}
-	void setInputChannelCount(int newChannelCount) {
-		inputChannelCount = newChannelCount;
-		if(inputChannelCount == outputChannelCount) mixingType = EQUAL_MIX;
-		else if(inputChannelCount < outputChannelCount) mixingType = UPMIX;
-		else mixingType = DOWNMIX;
-		channelRatio = float(outputChannelCount) / float(inputChannelCount);
-	}
-virtual void onChangedInput()
-	{
-		sPlayable tinput = input.lock();
-		setInputChannelCount(tinput->getChannelCount());
-	}
-	Panner()
-	{
-		setInputChannelCount(1);
-		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = 1.00f;
-	}
-	Panner(int inputChCount)
-	{
-		setInputChannelCount(inputChCount);
-		for(int i = 0; i < outputChannelCount; ++i) volumeLevel[i] = 1.00f;
-	}
-public:
 	float getVolumeLevel(int index) const { return volumeLevel[index % outputChannelCount]; }
 	void setVolumeLevel(int index, float newBalance) { volumeLevel[index % outputChannelCount] = newBalance; }
 	void setVolumeLevel(float newBalance) {

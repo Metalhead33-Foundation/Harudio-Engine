@@ -37,8 +37,12 @@ HEADERS += \
     harudio-headers/Sound/SoundStreamer.hpp \
     harudio-headers/AudioSystem.hpp \
     Sound/sndfile.hh \
-    Sound/SoundFile.hpp
+    Sound/SoundFile.hpp \
+    Audio/AudioMixer.hpp \
+    Audio/AudioBuffer.hpp
 
 SOURCES += \
     Audio/AudioImporter.cpp \
-    Sound/SoundFile.cpp
+    Sound/SoundFile.cpp \
+    Audio/AudioMixer.cpp \
+    Audio/AudioBuffer.cpp

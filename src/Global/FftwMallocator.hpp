@@ -16,12 +16,12 @@ struct FftwMallocator
 	if (n > std::numeric_limits<std::size_t>::max() / sizeof(T))
 	  throw std::bad_alloc();
 
-	if (auto p = static_cast<T*>(fftw_malloc(n*sizeof(T))))
+	if (auto p = static_cast<T*>(fftwf_malloc(n*sizeof(T))))
 	  return p;
 
 	throw std::bad_alloc();
   }
-  void deallocate(T* p, std::size_t) noexcept { fftw_free(p); }
+  void deallocate(T* p, std::size_t) noexcept { fftwf_free(p); }
 };
 
 template <class T, class U>

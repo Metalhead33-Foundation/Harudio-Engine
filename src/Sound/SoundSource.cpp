@@ -63,7 +63,7 @@ Audio::FrameCount_T Source::outputTo(const Audio::Output &dst)
 	const Audio::FrameCount_T framesToGo = std::min(in.frameCnt,dst.frameCnt);
 	std::memcpy(dst.dst,in.src,Audio::framesToBytes(framesToGo,dst.channelCnt));
 	cursor += framesToGo;
-	if(cursor >= buff->getTotalFrames())
+	if(cursor >= buff->getFrameCount())
 	{
 		if(!looping) state = Status::STOPPED;
 		cursor = 0;
@@ -119,7 +119,7 @@ double Source::seek(double seconds, SeekPos whence)
 		nframe = cursor + Audio::FrameCount_T(seconds*double(buff->getFramerate()));
 		break;
 	case SeekPos::END:
-		nframe = buff->getTotalFrames() - Audio::FrameCount_T(seconds*double(buff->getFramerate()));
+		nframe = buff->getFrameCount() - Audio::FrameCount_T(seconds*double(buff->getFramerate()));
 		break;
 	}
 	return double(nframe)/double(buff->getFramerate());
@@ -134,7 +134,7 @@ double Source::tell() const
 double Source::size() const
 {
 	if(!buff) return 0.0;
-	return double(buff->getTotalFrames())/double(buff->getFramerate());
+	return double(buff->getFrameCount())/double(buff->getFramerate());
 }
 
 }

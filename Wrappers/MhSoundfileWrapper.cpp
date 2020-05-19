@@ -54,7 +54,16 @@ struct SoundfileWrapper::SoundfileWrapper_imp {
 		  sound_handle( sf_open_virtual(&sndFileIO,(readOnly) ? SFM_READ : SFM_RDWR,&info,fio.get()),sf_close),
 		  file_handle( fio )
 	{
-		;
+		std::cout << "Audio File" << std::endl;
+		std::cout << "Channels: " << info.channels << std::endl;
+		std::cout << "Sections: " << info.sections << std::endl;
+		std::cout << "Samplerate: " << info.samplerate << std::endl;
+		std::cout << "Seekable: " << info.seekable << std::endl;
+		std::cout << "Frames by Info: " << info.frames << std::endl;
+		sf_count_t nframes = sf_seek(sound_handle.get(),0,SEEK_END);
+		std::cout << "Frames by seek: " << nframes << std::endl;
+		nframes = sf_seek(sound_handle.get(),nframes*-1,SEEK_CUR);
+		std::cout << "Frames by seek: " << nframes << std::endl;
 	}
 	SoundfileWrapper_imp(Abstract::sFIO fio, SoundFormat format, int samplerate, int channelCount, int mode)
 		: info{0,samplerate,channelCount,int(format),0,0},
@@ -574,13 +583,13 @@ sf_count_t sfSeek(sf_count_t offset, int whence, void *user_data)
 	switch(whence)
 	{
 		case SEEK_SET:
-			return sf_count_t(chandle->seek(offset));
+			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::SET));
 			break;
 		case SEEK_CUR:
-			return sf_count_t(chandle->seek(chandle->tell() + offset));
+			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::CUR));
 			break;
 		case SEEK_END:
-			return sf_count_t(chandle->seek(chandle->size() - offset));
+			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::END));
 			break;
 		default:
 			return 0;

@@ -462,13 +462,13 @@ int vfio_openmpt_seek( void * stream, int64_t offset, int whence )
 	switch(whence)
 	{
 		case OPENMPT_STREAM_SEEK_SET:
-			return int(chandle->seek(offset));
+			return int(chandle->seek(offset,Abstract::FIO::SeekPos::SET));
 			break;
 		case OPENMPT_STREAM_SEEK_CUR:
-			return int(chandle->seek(chandle->tell() + offset));
+			return int(chandle->seek(offset,Abstract::FIO::SeekPos::CUR));
 			break;
 		case OPENMPT_STREAM_SEEK_END:
-			return int(chandle->seek(chandle->size() - offset));
+			return int(chandle->seek(offset,Abstract::FIO::SeekPos::END));
 			break;
 		default:
 			return -1;

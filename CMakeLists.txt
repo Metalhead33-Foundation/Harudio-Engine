@@ -12,7 +12,7 @@ find_package(PkgConfig)
 pkg_check_modules(SndFile REQUIRED IMPORTED_TARGET sndfile)
 pkg_check_modules(OpenMPT REQUIRED IMPORTED_TARGET libopenmpt)
 pkg_check_modules(Samplerate REQUIRED IMPORTED_TARGET samplerate)
-pkg_check_modules(Fftw3 REQUIRED IMPORTED_TARGET fftw3f)
+pkg_check_modules(Fftw3 REQUIRED IMPORTED_TARGET fftw3 fftw3f)
 
 target_link_libraries(${PROJECT_NAME}
         SDL2::SDL2

@@ -46,9 +46,14 @@ Audio::ChannelCount_T Buffer::getChannels() const
 	return channels;
 }
 
-Audio::FrameCount_T Buffer::getTotalFrames() const
+Audio::FrameCount_T Buffer::getFrameCount() const
 {
 	return totalFrames;
+}
+
+Audio::SampleCount_T Buffer::getSampleCount() const
+{
+	return buff.size();
 }
 
 Buffer::Buffer(Audio::DynamicBuffer &&mov, Audio::Framerate_T nframerate, Audio::ChannelCount_T nchannelcnt, Audio::InterleavingType ninterleavingType)
@@ -102,4 +107,63 @@ void Buffer::setInput(Audio::Input &dst, Audio::FrameCount_T cursor) const
 	dst.interleavingType = interleavingType;
 	}
 }
+
+float& Buffer::at(std::size_t index)
+{
+	return buff.at(index);
+}
+const float& Buffer::at(std::size_t index) const
+{
+	return buff.at(index);
+}
+float& Buffer::operator[](std::size_t index)
+{
+	return buff[index];
+}
+const float& Buffer::operator[](std::size_t index) const
+{
+	return buff[index];
+}
+float* Buffer::data()
+{
+	return buff.data();
+}
+const float* Buffer::data() const
+{
+	return buff.data();
+}
+
+Buffer::iterator Buffer::begin()
+{
+	return buff.begin();
+}
+Buffer::const_iterator Buffer::begin() const
+{
+	return buff.begin();
+}
+Buffer::iterator Buffer::end()
+{
+	return buff.end();
+}
+Buffer::const_iterator Buffer::end() const
+{
+	return buff.end();
+}
+Buffer::reverse_iterator Buffer::rbegin()
+{
+	return buff.rbegin();
+}
+Buffer::const_reverse_iterator Buffer::rbegin() const
+{
+	return buff.rbegin();
+}
+Buffer::reverse_iterator Buffer::rend()
+{
+	return buff.rend();
+}
+Buffer::const_reverse_iterator Buffer::rend() const
+{
+	return buff.rend();
+}
+
 }

@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+my $target = shift @ARGV;
+
 sub scan_dir {
     my $path = shift @_;
 
@@ -29,12 +31,12 @@ sub scan_dir {
     my @incl_dirs = map { "add_subdirectory(".$_.")" } @dirs;
 
     print join("\n", @incl_dirs)."\n";
-    print "target_sources(\${PROJECT_NAME} PUBLIC\n".join("\n",@files)."\n)\n";
+    print "target_sources($target PRIVATE\n".join("\n",@files)."\n)\n";
 
     open my $CMAKE, '>', "$path/CMakeLists.txt";
     print $CMAKE join("\n", @incl_dirs)."\n";
-    print $CMAKE "target_sources(\${PROJECT_NAME} PUBLIC\n".join("\n",@files)."\n)\n";
+    print $CMAKE "target_sources($target PRIVATE\n".join("\n",@files)."\n)\n";
     close $CMAKE;
 }
 
-scan_dir("src");
+scan_dir("source");

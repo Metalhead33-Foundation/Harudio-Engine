@@ -1,6 +1,6 @@
 #ifndef AUDIOPLAYABLE_HPP
 #define AUDIOPLAYABLE_HPP
-#include "Global/Global.hpp"
+#include <Global/Global.hpp>
 #include "AudioPacket.hpp"
 
 namespace Audio {

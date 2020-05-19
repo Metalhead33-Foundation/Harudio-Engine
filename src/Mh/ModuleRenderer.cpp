@@ -1,4 +1,4 @@
-#include "MhModuleRenderer.hpp"
+#include "ModuleRenderer.hpp"
 #include <libopenmpt/libopenmpt.h>
 
 size_t vfio_openmpt_read( void * stream, void * dst, size_t bytes );

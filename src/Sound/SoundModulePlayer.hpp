@@ -2,7 +2,7 @@
 #define SOUNDMODULEPLAYER_HPP
 #include "../Abstract/AudioSeekable.hpp"
 #include "../Global/FIO.hpp"
-#include "../Wrappers/MhModuleRenderer.hpp"
+#include "Mh/ModuleRenderer.hpp"
 
 DEFINE_STRUCT(openmpt_module)
 

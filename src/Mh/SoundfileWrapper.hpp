@@ -1,6 +1,6 @@
 #ifndef MHSOUNDFILEWRAPPER_HPP
 #define MHSOUNDFILEWRAPPER_HPP
-#include "../Global/FIO.hpp"
+#include "Global/FIO.hpp"
 
 namespace Mh {
 

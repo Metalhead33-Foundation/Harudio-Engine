@@ -1,6 +1,6 @@
 #ifndef MHRESAMPLER_HPP
 #define MHRESAMPLER_HPP
-#include "../Global/Global.hpp"
+#include "Global/Global.hpp"
 namespace Mh {
 
 enum class ResampleType : int {

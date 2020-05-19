@@ -1,6 +1,6 @@
 #ifndef MHMODULERENDERER_HPP
 #define MHMODULERENDERER_HPP
-#include "../Global/FIO.hpp"
+#include "Global/FIO.hpp"
 namespace Mh {
 
 class ModuleRenderer

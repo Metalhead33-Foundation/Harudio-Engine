@@ -1,4 +1,4 @@
-#include "MhSoundfileWrapper.hpp"
+#include "SoundfileWrapper.hpp"
 #include <cstring>
 extern "C" {
 #include <sndfile.h>

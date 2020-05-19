@@ -1,7 +1,7 @@
 #ifndef SOUNDSTREAMER_HPP
 #define SOUNDSTREAMER_HPP
 #include "../Abstract/AudioSeekable.hpp"
-#include "../Wrappers/MhSoundfileWrapper.hpp"
+#include "Mh/SoundfileWrapper.hpp"
 
 namespace Sound {
 DEFINE_CLASS(Streamer)

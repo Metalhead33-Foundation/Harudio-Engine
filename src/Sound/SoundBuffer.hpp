@@ -2,7 +2,7 @@
 #define SOUNDBUFFER_HPP
 #include "../Abstract/AudioBuffer.hpp"
 #include "../Abstract/AudioPacket.hpp"
-#include "../Wrappers/MhSoundfileWrapper.hpp"
+#include "Mh/SoundfileWrapper.hpp"
 
 namespace Sound {
 DEFINE_CLASS(Buffer)

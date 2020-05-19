@@ -1,4 +1,4 @@
-#include "MhResampler.hpp"
+#include "Resampler.hpp"
 #include <cstring>
 extern "C" {
 #include <samplerate.h>

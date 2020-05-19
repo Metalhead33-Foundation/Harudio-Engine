@@ -9,15 +9,15 @@
 
 using namespace std;
 
-const char* sharedDig = "/home/dsonck/metalhead33/GameMusic/dig.s3m";
-const char* Title = "/home/dsonck/metalhead33/GameMusic/Unreal Tournament/mod/02 - Flight Castle (Unreal Menu) [Alexander Brandon].it";
-const char* digging = "/home/dsonck/metalhead33/GameMusic/Legacy of Kain/Soul Reaver - Ozar Midrashim 20th Anniversary Cover-9f9wiAiu_8E.ogg";
-const char* starwars_ogg = "/home/dsonck/metalhead33/GameMusic/converted_midis/rjedi_select.ogg";
-const char* starwars_opus = "/home/dsonck/metalhead33/GameMusic/rjedi_select.opus";
+const char* sharedDig = "/home/legacy/zene/GameMusic/Unreal Tournament/mod/05 - Shared Dig [Alexander Brandon].s3m";
+const char* Title = "/home/legacy/zene/GameMusic/Unreal Tournament/mod/02 - Flight Castle (Unreal Menu) [Alexander Brandon].it";
+const char* digging = "/home/legacy/zene/GameMusic/Legacy of Kain/Soul Reaver - Ozar Midrashim 20th Anniversary Cover-9f9wiAiu_8E.ogg";
+const char* starwars_ogg = "/home/legacy/zene/GameMusic/converted_midis/rjedi_select.ogg";
+const char* starwars_opus = "/home/legacy/zene/GameMusic/converted_midis/rjedi_select.opus";
 const char* motika = "/home/legacy/Vuze Downloads/Tropico5.tar/Tropico 5/Music/Motika.opus";
-const char* blastereo_wav = "/home/dsonck/metalhead33/GameMusic/blastereo.wav";
-const char* blastereo_ogg = "/home/dsonck/metalhead33/GameMusic/blastereo.ogg";
-const char* blastereo_opus = "/home/dsonck/metalhead33/GameMusic/blastereo.opus";
+const char* blastereo_wav = "/home/legacy/zene/GameMusic/blastereo.wav";
+const char* blastereo_ogg = "/home/legacy/zene/GameMusic/blastereo.ogg";
+const char* blastereo_opus = "/home/legacy/zene/GameMusic/blastereo.opus";
 
 int main()
 {
@@ -36,10 +36,11 @@ int main()
 	auto mixer = std::make_shared<Audio::Mixer>(1000,audioDev.getFreq(),audioDev.getChannels()) ;
 	audioDev.setPlayable(mixer);
 	mixer->insert(mod,0.5f);
+	mixer->insert(streamer,0.5f);
 	mixer->insert(snd,0.5f);
-        mod->play();
-	streamer->play();
 	snd->play();
+	mod->play();
+	//streamer->play();
 	//mixer->insert(tester,0.1f);
 	mixer->setActive(true);
 	audioDev.pause(false);

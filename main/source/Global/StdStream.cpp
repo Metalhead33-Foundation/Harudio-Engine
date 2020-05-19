@@ -73,6 +73,7 @@ int64_t StdStream::seek(int64_t position, SeekPos whence)
 		return fseek(chandle.get(),position,SEEK_END);
 		break;
 	}
+	return -1;
 }
 
 int64_t StdStream::tell()

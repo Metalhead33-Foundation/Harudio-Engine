@@ -64,16 +64,15 @@ int64_t StdStream::seek(int64_t position, SeekPos whence)
 	if(!active) return -1;
 	switch (whence) {
 	case SeekPos::SET:
-		fseek(chandle.get(),position,SEEK_SET);
+		return fseek(chandle.get(),position,SEEK_SET);
 		break;
 	case SeekPos::CUR:
-		fseek(chandle.get(),position,SEEK_CUR);
+		return fseek(chandle.get(),position,SEEK_CUR);
 		break;
 	case SeekPos::END:
-		fseek(chandle.get(),position,SEEK_END);
+		return fseek(chandle.get(),position,SEEK_END);
 		break;
 	}
-	return ftell(chandle.get());
 }
 
 int64_t StdStream::tell()

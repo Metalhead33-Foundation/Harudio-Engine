@@ -571,20 +571,23 @@ sf_count_t sfGetFilelen(void *user_data)
 sf_count_t sfSeek(sf_count_t offset, int whence, void *user_data)
 {
 	Abstract::pFIO chandle = reinterpret_cast<Abstract::pFIO>(user_data);
+	sf_count_t cunt = 0;
 	switch(whence)
 	{
 		case SEEK_SET:
-			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::SET));
+			cunt = sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::SET));
 			break;
 		case SEEK_CUR:
-			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::CUR));
+			cunt = sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::CUR));
 			break;
 		case SEEK_END:
-			return sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::END));
+			cunt = sf_count_t(chandle->seek(offset,Abstract::FIO::SeekPos::END));
 			break;
 		default:
-			return 0;
+			cunt = -1;
 	}
+	if(cunt != -1) return chandle->tell();
+	else return -1;
 }
 sf_count_t sfRead(void *ptr, sf_count_t count, void *user_data)
 {

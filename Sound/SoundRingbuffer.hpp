@@ -31,6 +31,7 @@ public:
 	Audio::FrameCount_T getTotalFrames() const;
 	bool getLooping() const;
 	void setLooping(bool value);
+	void seek(Audio::FrameCount_T frame);
 };
 
 }

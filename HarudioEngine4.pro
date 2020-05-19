@@ -19,7 +19,8 @@ SOURCES += \
     Sound/SoundModulePlayer.cpp \
     Wrappers/MhModuleRenderer.cpp \
     Sound/SoundSinewave.cpp \
-    Driver/SDL.cpp
+    Driver/SDL.cpp \
+    Sound/SoundStreamer.cpp
 
 HEADERS += \
     Global/FIO.hpp \
@@ -40,4 +41,5 @@ HEADERS += \
     Sound/SoundModulePlayer.hpp \
     Wrappers/MhModuleRenderer.hpp \
     Sound/SoundSinewave.hpp \
-    Driver/SDL.hpp
+    Driver/SDL.hpp \
+    Sound/SoundStreamer.hpp

@@ -11,6 +11,11 @@ void Ringbuffer::setLooping(bool value)
 	looping = value;
 }
 
+void Ringbuffer::seek(Audio::FrameCount_T frame)
+{
+	sound.seekCur(frame);
+}
+
 Ringbuffer::Ringbuffer(Mh::SoundfileWrapper &&mov, std::size_t buffsize)
 	: buff(buffsize), sound(std::move(mov)), readPtr(0), writePtr(0), looping(false)
 {
@@ -55,6 +60,7 @@ void Ringbuffer::setInput(Audio::Input &dst) const
 void Ringbuffer::advanceReadPtr(Audio::SampleCount_T reqSamples)
 {
 	readPtr += reqSamples;
+	if(readPtr >= buff.size()) readPtr = 0;
 	/*if(readPtr < writePtr)
 	{
 		readPtr = std::min(writePtr,readPtr + reqSamples);
@@ -66,10 +72,10 @@ void Ringbuffer::advanceReadPtr(Audio::SampleCount_T reqSamples)
 
 void Ringbuffer::checkQueue()
 {
-	while(writePtr != readPtr)
+	do
 	{
 		std::size_t totalSize;
-		if(writePtr < readPtr) // Write ptr is behind read ptr
+		if(writePtr < readPtr) // Write ptr is behind of read ptr
 		{
 			totalSize = readPtr - writePtr;  // We can only read readPtr - writePtr
 		}
@@ -86,7 +92,7 @@ void Ringbuffer::checkQueue()
 		if(writePtr >= buff.size()) {
 			writePtr = 0;
 		}
-	}
+	} while(writePtr != readPtr);
 }
 
 Audio::Framerate_T Ringbuffer::getFramerate() const

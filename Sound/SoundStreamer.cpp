@@ -91,7 +91,7 @@ double Streamer::seek(double seconds, SeekPos whence)
 
 double Streamer::tell() const
 {
-	return double(buff.seekCur(0));
+	return double(buff.seekCur(0))/double(buff.getSamplerate());
 }
 
 double Streamer::size() const

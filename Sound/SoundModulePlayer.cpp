@@ -70,7 +70,7 @@ void ModulePlayer::play()
 {
 	if(state == Status::STOPPED)
 	{
-		;
+		mod.setPosition(0.0);
 	}
 	state = Status::PLAYING;
 }
@@ -83,7 +83,7 @@ void ModulePlayer::pause()
 void ModulePlayer::stop()
 {
 	state = Status::STOPPED;
-	// buff.seekSet(0);
+	mod.setPosition(0.0);
 }
 
 bool ModulePlayer::isLooping() const

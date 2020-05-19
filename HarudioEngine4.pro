@@ -19,7 +19,8 @@ SOURCES += \
     Sound/SoundSinewave.cpp \
     Driver/SDL.cpp \
     Sound/SoundStreamer.cpp \
-    Abstract/AudioSeekable.cpp
+    Abstract/AudioSeekable.cpp \
+    Sound/SoundSource.cpp
 
 HEADERS += \
     Global/FIO.hpp \
@@ -40,4 +41,5 @@ HEADERS += \
     Sound/SoundSinewave.hpp \
     Driver/SDL.hpp \
     Sound/SoundStreamer.hpp \
-    Abstract/AudioSeekable.hpp
+    Abstract/AudioSeekable.hpp \
+    Sound/SoundSource.hpp

@@ -7,6 +7,7 @@
 DEFINE_STRUCT(openmpt_module)
 
 namespace Sound {
+DEFINE_CLASS(ModulePlayer)
 class ModulePlayer : public Audio::Seekable
 {
 private:

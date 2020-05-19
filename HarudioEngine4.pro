@@ -10,17 +10,16 @@ SOURCES += \
         main.cpp \
     Global/StdStream.cpp \
     Abstract/AudioMismatchError.cpp \
-    Abstract/AudioProvider.cpp \
     Util/AudioMixer.cpp \
     Sound/SoundBuffer.cpp \
     Wrappers/MhResampler.cpp \
     Wrappers/MhSoundfileWrapper.cpp \
-    Sound/SoundRingbuffer.cpp \
     Sound/SoundModulePlayer.cpp \
     Wrappers/MhModuleRenderer.cpp \
     Sound/SoundSinewave.cpp \
     Driver/SDL.cpp \
-    Sound/SoundStreamer.cpp
+    Sound/SoundStreamer.cpp \
+    Abstract/AudioSeekable.cpp
 
 HEADERS += \
     Global/FIO.hpp \
@@ -31,15 +30,14 @@ HEADERS += \
     Abstract/AudioPacket.hpp \
     Abstract/AudioPlayable.hpp \
     Abstract/AudioMismatchError.hpp \
-    Abstract/AudioProvider.hpp \
     Util/AudioMixer.hpp \
     Abstract/AudioBuffer.hpp \
     Sound/SoundBuffer.hpp \
     Wrappers/MhResampler.hpp \
     Wrappers/MhSoundfileWrapper.hpp \
-    Sound/SoundRingbuffer.hpp \
     Sound/SoundModulePlayer.hpp \
     Wrappers/MhModuleRenderer.hpp \
     Sound/SoundSinewave.hpp \
     Driver/SDL.hpp \
-    Sound/SoundStreamer.hpp
+    Sound/SoundStreamer.hpp \
+    Abstract/AudioSeekable.hpp

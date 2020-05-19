@@ -1,49 +1,47 @@
 #include "SoundStreamer.hpp"
+#include "../Abstract/AudioMismatchError.hpp"
 
 namespace Sound {
-Streamer::Streamer(Mh::SoundfileWrapper &&mov, std::size_t buffsize)
-	: buff(std::move(mov),buffsize), state(Status::STOPPED)
-{
-
-}
-Streamer::Streamer(Abstract::sFIO fio, std::size_t buffsize)
-	: buff(fio,buffsize), state(Status::STOPPED)
-{
-
-}
-Streamer::Streamer(Ringbuffer &&mov)
+Streamer::Streamer(Mh::SoundfileWrapper &&mov)
 	: buff(std::move(mov)), state(Status::STOPPED)
 {
 
+}
+Streamer::Streamer(Abstract::sFIO fio)
+	: buff(fio,true), state(Status::STOPPED)
+{
+
+}
+
+Audio::FrameCount_T Streamer::outputTo(const Audio::Output &dst)
+{
+	if(state != Status::PLAYING) return 0;
+	if( (dst.frameRate != buff.getSamplerate()) ||
+			(dst.channelCnt != buff.getChannels()) ||
+			( dst.interleavingType != Audio::InterleavingType::DONT_CARE && (dst.interleavingType != Audio::InterleavingType::INTERLEAVED)))
+	{
+		throw Audio::MismatchError(dst.frameRate,buff.getSamplerate(),dst.channelCnt,buff.getChannels(),dst.interleavingType,Audio::InterleavingType::INTERLEAVED);
+	}
+	const Audio::FrameCount_T readframes = Audio::FrameCount_T(buff.readf(dst.dst,dst.frameCnt));
+	if(!readframes)
+	{
+		if(!looping) state = Status::STOPPED;
+		buff.seekSet(0);
+	}
+	return readframes;
 }
 Streamer::Streamer(Streamer &&mov)
 	: buff(std::move(mov.buff)), state(mov.state)
 {
 	mov.state = Status::STOPPED;
 }
-void Streamer::receiveInput(Audio::Input &src) const
-{
-	buff.setInput(src);
-}
-
-void Streamer::outputFeedback(Audio::FrameCount_T frames)
-{
-	buff.advanceReadPtr(frames*buff.getChannels());
-}
-
-void Streamer::operator=(Ringbuffer &&mov)
-{
-	this->buff = std::move(mov);
-}
-
 void Streamer::operator=(Streamer &&mov)
 {
 	this->buff = std::move(mov.buff);
 	this->state = mov.state;
 	mov.state = Status::STOPPED;
 }
-
-Audio::Provider::Status Streamer::getState() const
+Streamer::Status Streamer::getState() const
 {
 	return state;
 }
@@ -52,7 +50,7 @@ void Streamer::play()
 {
 	if(state == Status::STOPPED)
 	{
-		buff.seek(0);
+		buff.seekSet(0);
 	}
 	state = Status::PLAYING;
 }
@@ -65,22 +63,40 @@ void Streamer::pause()
 void Streamer::stop()
 {
 	state = Status::STOPPED;
-	buff.seek(0);
+	buff.seekSet(0);
 }
 
 bool Streamer::isLooping() const
 {
-	return buff.getLooping();
+	return looping;
 }
 
 void Streamer::setLooping(bool looping)
 {
-	buff.setLooping(looping);
+	this->looping = looping;
 }
 
-void Streamer::checkQueue()
+double Streamer::seek(double seconds, SeekPos whence)
 {
-	buff.checkQueue();
+	switch (whence) {
+	case SeekPos::SET:
+		return double(buff.seekSet(long(seconds*double(buff.getSamplerate()))))/double(buff.getSamplerate());
+	case SeekPos::CUR:
+		return double(buff.seekCur(long(seconds*double(buff.getSamplerate()))))/double(buff.getSamplerate());
+	case SeekPos::END:
+		return double(buff.seekEnd(long(seconds*double(buff.getSamplerate()))))/double(buff.getSamplerate());
+	}
+	return 0;
+}
+
+double Streamer::tell() const
+{
+	return double(buff.seekCur(0));
+}
+
+double Streamer::size() const
+{
+	return double(buff.getFrameNum())/double(buff.getSamplerate());
 }
 
 }

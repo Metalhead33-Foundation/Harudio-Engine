@@ -16,25 +16,26 @@ int main()
 {
 	std::string str2;
 	SDL_Init(SDL_INIT_AUDIO);
-	Abstract::sFIO stream1(new StdStream(Title,true));
+	Abstract::sFIO stream1(new StdStream(sharedDig,true));
 	Abstract::sFIO stream2(new StdStream(digging,true));
 	auto mod = std::make_shared<Sound::ModulePlayer>(stream1);
-	auto streamer = std::make_shared<Sound::Streamer>(stream2,48000*2*3);
-	streamer->checkQueue();
+	auto streamer = std::make_shared<Sound::Streamer>(stream2);
+	//streamer->checkQueue();
 	auto tester = std::make_shared<Sound::Sinewave>(1200.0f,1.0f/48000.0f);
 	Driver::SDL audioDev(48000,2,2048);
 	auto mixer = std::make_shared<Audio::Mixer>(1000,audioDev.getFreq(),audioDev.getChannels()) ;
 	audioDev.setPlayable(mixer);
-	mixer->insert(streamer,0.5f);
-	streamer->play();
+	mixer->insert(mod,0.5f);
+	mod->play();
 	//mixer->insert(tester,0.1f);
 	mixer->setActive(true);
 	audioDev.pause(false);
 	cout << "Hello World!" << endl;
-	do {
+	/*do {
 		SDL_Delay(1000);
 		streamer->checkQueue();
-	} while(true);
+	} while(true);*/
+	cin >> str2;
 	SDL_Quit();
 	return 0;
 }

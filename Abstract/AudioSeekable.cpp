@@ -1,16 +1,16 @@
-#include "AudioProvider.hpp"
+#include "AudioSeekable.hpp"
 #include "AudioMismatchError.hpp"
 #include <cstring>
 #include <algorithm>
 
 namespace Audio {
 
-bool Provider::isPlaying() const
+bool Seekable::isPlaying() const
 {
 	return getState() == Status::PLAYING;
 }
 
-FrameCount_T Provider::outputTo(const Output &dst)
+/*FrameCount_T Provider::outputTo(const Output &dst)
 {
 	Input in;
 	receiveInput(in);
@@ -26,6 +26,6 @@ FrameCount_T Provider::outputTo(const Output &dst)
 	outputFeedback(framesToGo);
 	return framesToGo;
 	} else return 0; // Input is invalid
-}
+}*/
 
 }

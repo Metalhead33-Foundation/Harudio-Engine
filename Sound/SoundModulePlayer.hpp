@@ -1,16 +1,17 @@
 #ifndef SOUNDMODULEPLAYER_HPP
 #define SOUNDMODULEPLAYER_HPP
-#include "../Abstract/AudioPlayable.hpp"
+#include "../Abstract/AudioSeekable.hpp"
 #include "../Global/FIO.hpp"
 #include "../Wrappers/MhModuleRenderer.hpp"
 
 DEFINE_STRUCT(openmpt_module)
 
 namespace Sound {
-class ModulePlayer : public Audio::Playable
+class ModulePlayer : public Audio::Seekable
 {
 private:
 	Mh::ModuleRenderer mod;
+	Status state;
 	ModulePlayer(const ModulePlayer& cpy) = delete;
 	void operator=(const ModulePlayer& cpy) = delete;
 public:
@@ -18,7 +19,17 @@ public:
 	ModulePlayer(ModulePlayer&& mov);
 	void operator=(ModulePlayer&& mov);
 	Audio::FrameCount_T outputTo(const Audio::Output& dst); // Return value: frames transmitted
-	bool isPlaying() const; // Is this thing even on?
+
+	Status getState() const;
+	void play();
+	void pause();
+	void stop();
+	bool isLooping() const;
+	void setLooping(bool looping);
+
+	double seek(double seconds, SeekPos whence = SeekPos::SET);
+	double tell() const;
+	double size() const;
 };
 }
 

@@ -100,7 +100,7 @@ FrameCount_T Convolver::outputTo(const Output &dst)
 	toBuffer.interleavingType = Audio::InterleavingType::DONT_CARE;
 	auto received = ptim->outputTo(toBuffer);
 	convolve(inBuff.data(),received,convolved.data());
-	memcpy(dst.dst,convolved.data(),framesToBytes(received,1));
+	memcpy(dst.dst,convolved.data(),framesToBytes(std::min(received,dst.frameCnt),1));
 }
 
 bool Convolver::isPlaying() const

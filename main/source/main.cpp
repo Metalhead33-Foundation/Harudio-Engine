@@ -10,16 +10,16 @@
 
 using namespace std;
 
-const char* sharedDig = "/home/legacy/zene/GameMusic/Unreal Tournament/mod/05 - Shared Dig [Alexander Brandon].s3m";
-const char* Title = "/home/legacy/zene/GameMusic/Unreal Tournament/mod/02 - Flight Castle (Unreal Menu) [Alexander Brandon].it";
-const char* digging = "/home/legacy/zene/GameMusic/Legacy of Kain/Soul Reaver - Ozar Midrashim 20th Anniversary Cover-9f9wiAiu_8E.ogg";
-const char* starwars_ogg = "/home/legacy/zene/GameMusic/converted_midis/rjedi_select.ogg";
-const char* starwars_opus = "/home/legacy/zene/GameMusic/converted_midis/rjedi_select.opus";
-const char* motika = "/home/legacy/Vuze Downloads/Tropico5.tar/Tropico 5/Music/Motika.opus";
-const char* blastereo_wav = "/home/legacy/zene/GameMusic/blastereo.wav";
-const char* blastereo_ogg = "/home/legacy/zene/GameMusic/blastereo.ogg";
-const char* blastereo_opus = "/home/legacy/zene/GameMusic/blastereo.opus";
-const char* IR = "/home/legacy/zene/Projects/Red Wire Impulses/eloxl-wav01.wav";
+const char* sharedDig = "extra/05 - Shared Dig [Alexander Brandon].s3m";
+const char* Title = "extra/02 - Flight Castle (Unreal Menu) [Alexander Brandon].it";
+const char* digging = "extraSoul Reaver - Ozar Midrashim 20th Anniversary Cover-9f9wiAiu_8E.ogg";
+const char* starwars_ogg = "extra/rjedi_select.ogg";
+const char* starwars_opus = "extra/rjedi_select.opus";
+const char* motika = "extra/Motika.opus";
+const char* blastereo_wav = "extra/blastereo.wav";
+const char* blastereo_ogg = "extra/blastereo.ogg";
+const char* blastereo_opus = "extra/blastereo.opus";
+const char* IR = "extra/eloxl-wav01.wav";
 
 int main()
 {

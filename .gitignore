@@ -1,5 +1,7 @@
 cmake-build-debug
 HarudioEngine4.pro.user
+extra
+extra/
 nbproject
 nbproject/
 Makefile

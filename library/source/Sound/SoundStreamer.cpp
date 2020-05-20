@@ -10,7 +10,7 @@ namespace Sound {
     Audio::FrameCount_T Streamer::outputTo( const Audio::Output &dst ) {
         if ( state != Status::PLAYING )
             return 0;
-        if ( ( dst.frameRate != buff.getSamplerate( ) ) ||
+        if ( ( dst.frameRate != static_cast<Audio::FrameCount_T>(buff.getSamplerate( )) ) ||
              ( dst.channelCnt != buff.getChannels( ) ) ||
              ( dst.interleavingType != Audio::InterleavingType::DONT_CARE &&
                ( dst.interleavingType !=

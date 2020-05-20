@@ -135,19 +135,33 @@ namespace Audio {
             return value * sizeof( float );
         }
 
-        inline SampleCount operator-( const SampleCount &other ) const {
+		inline constexpr SampleCount operator-( const SampleCount &other ) const {
             return SampleCount{ value - other.value };
         }
-        inline SampleCount operator+( const SampleCount &other ) const {
+		inline constexpr SampleCount operator+( const SampleCount &other ) const {
             return SampleCount{ value + other.value };
         }
+		inline constexpr SampleCount operator*( const SampleCount &other ) const {
+			return SampleCount{ value * other.value };
+		}
+		inline constexpr SampleCount operator/( const SampleCount &other ) const {
+			return SampleCount{ value / other.value };
+		}
+		inline constexpr SampleCount operator%( const SampleCount &other ) const {
+			return SampleCount{ value % other.value };
+		}
 
         iterator begin() { return iterator{Sample::Zero()}; }
         iterator begin() const { return iterator{Sample::Zero()}; }
         iterator end() { return iterator{Sample{ value }}; }
         iterator end() const { return iterator{Sample{ value }}; }
 
-        bool operator <(SampleCount other) const { return value < other.value; }
+		inline constexpr bool operator <(SampleCount other) const { return value < other.value; }
+		inline constexpr bool operator >(SampleCount other) const { return value > other.value; }
+		inline constexpr bool operator <=(SampleCount other) const { return value <= other.value; }
+		inline constexpr bool operator >=(SampleCount other) const { return value >= other.value; }
+		inline constexpr bool operator ==(SampleCount other) const { return value == other.value; }
+		inline constexpr bool operator !=(SampleCount other) const { return value == other.value; }
     };
     struct FrameCount {
         typedef iterator_base<Frame> iterator;
@@ -173,12 +187,27 @@ namespace Audio {
         explicit constexpr FrameCount( double value )
             : value{ static_cast< Type >( value ) } {}
 
-        inline FrameCount operator-( const FrameCount &other ) const {
-            return FrameCount{ value - other.value };
-        }
-        inline FrameCount operator+( const FrameCount &other ) const {
-            return FrameCount{ value + other.value };
-        }
+		inline constexpr FrameCount operator-( const FrameCount &other ) const {
+			return FrameCount{ value - other.value };
+		}
+		inline constexpr FrameCount operator+( const FrameCount &other ) const {
+			return FrameCount{ value + other.value };
+		}
+		inline constexpr FrameCount operator*( const FrameCount &other ) const {
+			return FrameCount{ value * other.value };
+		}
+		inline constexpr FrameCount operator/( const FrameCount &other ) const {
+			return FrameCount{ value / other.value };
+		}
+		inline constexpr FrameCount operator%( const FrameCount &other ) const {
+			return FrameCount{ value % other.value };
+		}
+		inline constexpr bool operator <(FrameCount other) const { return value < other.value; }
+		inline constexpr bool operator >(FrameCount other) const { return value > other.value; }
+		inline constexpr bool operator <=(FrameCount other) const { return value <= other.value; }
+		inline constexpr bool operator >=(FrameCount other) const { return value >= other.value; }
+		inline constexpr bool operator ==(FrameCount other) const { return value == other.value; }
+		inline constexpr bool operator !=(FrameCount other) const { return value == other.value; }
 
         static constexpr FrameCount Zero( ) {
             return FrameCount{ static_cast< Type >( 0 ) };
@@ -243,7 +272,7 @@ namespace Audio {
     };
 
     constexpr FrameCount SampleCount::toFrames(ChannelCount channels) const {
-        return FrameCount{ value * channels.value };
+		return FrameCount{ value / channels.value };
     }
 
 } // namespace Audio

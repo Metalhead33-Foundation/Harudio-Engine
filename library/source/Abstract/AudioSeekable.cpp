@@ -2,9 +2,6 @@
 
 namespace Audio {
 
-bool Seekable::isPlaying() const
-{
-	return getState() == Status::PLAYING;
-}
+    bool Seekable::isPlaying( ) const { return getState( ) == Status::PLAYING; }
 
-}
+} // namespace Audio

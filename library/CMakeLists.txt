@@ -15,7 +15,7 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 add_library(${PROJECT_NAME})
 
-target_compile_options( ${PROJECT_NAME} PRIVATE -Wpedantic -Werror )
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
 
 #set_target_properties( ${PROJECT_NAME} PROPERTIES EXPORT_NAME HarudioEngine )
 
@@ -23,10 +23,10 @@ add_subdirectory(source)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/source)
+        ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 target_link_libraries(${PROJECT_NAME}
         SDL2::SDL2

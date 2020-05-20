@@ -3,6 +3,7 @@
 #include "Sound/SoundSinewave.hpp"
 #include "Sound/SoundSource.hpp"
 #include "Sound/SoundStreamer.hpp"
+#include "Util/AudioConvolver.hpp"
 #include "Util/AudioMixer.hpp"
 #include "Global/StdStream.hpp"
 #include <iostream>
@@ -18,27 +19,23 @@ const char* motika = "/home/legacy/Vuze Downloads/Tropico5.tar/Tropico 5/Music/M
 const char* blastereo_wav = "/home/legacy/zene/GameMusic/blastereo.wav";
 const char* blastereo_ogg = "/home/legacy/zene/GameMusic/blastereo.ogg";
 const char* blastereo_opus = "/home/legacy/zene/GameMusic/blastereo.opus";
+const char* IR = "/home/legacy/zene/Projects/Red Wire Impulses/eloxl-wav01.wav";
 
 int main()
 {
 	std::string str2;
 	SDL_Init(SDL_INIT_AUDIO);
 	Abstract::sFIO stream1(new StdStream(sharedDig,true));
-	Abstract::sFIO stream2(new StdStream(starwars_opus,true));
-	Abstract::sFIO stream3(new StdStream(blastereo_opus,true));
+	Abstract::sFIO irstream(new StdStream(IR,true));
 	auto mod = std::make_shared<Sound::ModulePlayer>(stream1);
-	auto streamer = std::make_shared<Sound::Streamer>(stream2);
-	auto buff = std::make_shared<Sound::Buffer>(stream3);
-	auto snd = std::make_shared<Sound::Source>(buff);
+	auto convolver = std::make_shared<Audio::Convolver>(irstream,1024);
 	//streamer->checkQueue();
 	auto tester = std::make_shared<Sound::Sinewave>(1200.0f,1.0f/48000.0f);
-	Driver::SDL audioDev(48000,2,2048);
+	Driver::SDL audioDev(48000,1,2048);
 	auto mixer = std::make_shared<Audio::Mixer>(1000,audioDev.getFreq(),audioDev.getChannels()) ;
 	audioDev.setPlayable(mixer);
-	mixer->insert(mod,0.5f);
-	mixer->insert(streamer,0.5f);
-	mixer->insert(snd,0.5f);
-	snd->play();
+	convolver->setPlayable(mod);
+	mixer->insert(convolver,0.5f);
 	mod->play();
 	//streamer->play();
 	//mixer->insert(tester,0.1f);

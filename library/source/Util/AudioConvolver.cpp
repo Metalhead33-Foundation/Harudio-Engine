@@ -1,6 +1,18 @@
 #include "Util/AudioConvolver.hpp"
+#include <cstring>
+#include <stdexcept>
 
 namespace Audio {
+Audio::sPlayable Convolver::getPlayable() const
+{
+	return playable.lock();
+}
+
+void Convolver::setPlayable(const sPlayable &value)
+{
+	playable = value;
+}
+
 void Convolver::convolve(const float *sigOne, SampleCount_T lenOne, float *convolvedSig)
 {
 	//zero-pad the dry signal
@@ -29,6 +41,7 @@ void Convolver::convolve(const float *sigOne, SampleCount_T lenOne, float *convo
 Convolver::Convolver(Sound::sBuffer &&mov, SampleCount_T sampleCnt)
 	: IR(std::move(mov)), inBuff(sampleCnt)
 {
+	if(!IR->getSampleCount()) throw std::runtime_error("Invalid IR!");
 	this->convSigLen = IR->getSampleCount() + sampleCnt - 1;
 	this->nc = convSigLen/2 + 1;
 	sigOnePadded.resize(convSigLen);
@@ -36,6 +49,7 @@ Convolver::Convolver(Sound::sBuffer &&mov, SampleCount_T sampleCnt)
 	outfftwOne.resize(convSigLen);
 	outfftwTwo.resize(convSigLen);
 	fftMulti.resize(nc);
+	convolved.resize(convSigLen);
 	//zero-pad the IR signal
 	auto lenTwo = IR->getSampleCount();
 	for (SampleCount_T i = 0; i < convSigLen; i++)
@@ -49,6 +63,7 @@ Convolver::Convolver(Sound::sBuffer &&mov, SampleCount_T sampleCnt)
 Convolver::Convolver(const Sound::sBuffer& cpy, SampleCount_T sampleCnt)
 	: IR(cpy), inBuff(sampleCnt)
 {
+	if(!IR->getSampleCount()) throw std::runtime_error("Invalid IR!");
 	this->convSigLen = IR->getSampleCount() + sampleCnt - 1;
 	this->nc = convSigLen/2 + 1;
 	sigOnePadded.resize(convSigLen);
@@ -56,6 +71,7 @@ Convolver::Convolver(const Sound::sBuffer& cpy, SampleCount_T sampleCnt)
 	outfftwOne.resize(convSigLen);
 	outfftwTwo.resize(convSigLen);
 	fftMulti.resize(nc);
+	convolved.resize(convSigLen);
 	//zero-pad the IR signal
 	auto lenTwo = IR->getSampleCount();
 	for (SampleCount_T i = 0; i < convSigLen; i++)
@@ -70,6 +86,27 @@ Convolver::Convolver(Abstract::sFIO fio, SampleCount_T sampleCnt)
 	: Convolver(std::make_shared<Sound::Buffer>(fio),sampleCnt)
 {
 
+}
+
+FrameCount_T Convolver::outputTo(const Output &dst)
+{
+	if(playable.expired()) return 0;
+	auto ptim = playable.lock();
+	Output toBuffer;
+	toBuffer.dst = inBuff.data();
+	toBuffer.frameCnt = inBuff.size();
+	toBuffer.frameRate = IR->getFramerate();
+	toBuffer.channelCnt = IR->getChannels();
+	toBuffer.interleavingType = Audio::InterleavingType::DONT_CARE;
+	auto received = ptim->outputTo(toBuffer);
+	convolve(inBuff.data(),received,convolved.data());
+	memcpy(dst.dst,convolved.data(),framesToBytes(received,1));
+}
+
+bool Convolver::isPlaying() const
+{
+	if(playable.expired()) return 0;
+	else return playable.lock()->isPlaying();
 }
 
 }

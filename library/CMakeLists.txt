@@ -15,6 +15,8 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 add_library(${PROJECT_NAME})
 
+target_compile_options( ${PROJECT_NAME} PRIVATE -Wpedantic -Werror )
+
 #set_target_properties( ${PROJECT_NAME} PROPERTIES EXPORT_NAME HarudioEngine )
 
 add_subdirectory(source)

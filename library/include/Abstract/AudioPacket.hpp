@@ -312,6 +312,7 @@ namespace Audio {
         ChannelCount channelCnt; // How many channels?
         InterleavingType interleavingType; // Should channels be interleaved, or
                                            // should they be separated?
+		WrapperRW getWrapper() { return WrapperRW(dst,frameCnt,channelCnt); }
 
         Output(
             float *ndst = nullptr, FrameCount nframeCnt = FrameCount::Zero( ),
@@ -336,6 +337,7 @@ namespace Audio {
         Framerate frameRate;               // Sampling rate of the audio
         ChannelCount channelCnt;           // How many channels do we have?
         InterleavingType interleavingType; // Is the source audio interleaved?
+		WrapperRO getWrapper() { return WrapperRO(src,frameCnt,channelCnt); }
 
         explicit Input(
             const float *nsrc = nullptr,

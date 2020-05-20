@@ -114,7 +114,7 @@ namespace Audio {
             return BaseSample{cnt.value * value, cnt};
         }
 
-        static constexpr Sample Zero() { return Sample{0}; }
+		static constexpr Frame Zero() { return Frame{0}; }
 
         bool operator!=(Frame other) const { return value != other.value; }
         Frame &operator++() {
@@ -173,7 +173,7 @@ namespace Audio {
         operator Type &( ) { return value; }
         operator const Type &( ) const { return value; }
         inline constexpr SampleCount toSamples( ChannelCount channels ) const {
-            return SampleCount{ value / channels.value };
+			return SampleCount{ value * channels.value };
         }
         inline constexpr std::size_t toBytes( ChannelCount channels ) const {
             return toSamples( channels ).toBytes( );
@@ -218,6 +218,91 @@ namespace Audio {
         iterator end() { return iterator{Frame{ value }}; }
         iterator end() const { return iterator{Frame{ value }}; }
     };
+
+	struct WrapperRW {
+		struct FrameWrapper {
+			float * const samples;
+			const ChannelCount channelCnt;
+			FrameWrapper(float* nsamples, ChannelCount nchannelCnt)
+				: samples(nsamples), channelCnt(nchannelCnt)
+			{
+
+			}
+			float& at(Channel chn) { return samples[chn]; }
+			float& operator[](Channel chn) { return samples[chn]; }
+			float* begin() { return samples; }
+			float* end() { return &samples[channelCnt.end().v]; }
+		};
+		struct iterator{
+			WrapperRW& parent;
+			Frame frameId;
+
+			FrameWrapper operator*() const { return parent.at(frameId); }
+			iterator& operator++() { ++frameId; return *this; }
+
+			bool operator!=(const iterator &other) const { return frameId != other.frameId; }
+			iterator(WrapperRW& nparent,Frame nframe)
+				: parent(nparent),frameId(nframe)
+			{
+
+			}
+		};
+		float * const samples;
+		const FrameCount frameCnt;
+		const ChannelCount channelCnt;
+		WrapperRW(float* nsamples, FrameCount nframeCnt, ChannelCount nchannelCnt)
+			: samples(nsamples), frameCnt(nframeCnt), channelCnt(nchannelCnt)
+		{
+
+		}
+		FrameWrapper at(Frame frm) { return FrameWrapper(&samples[frm.value*channelCnt.value],channelCnt); }
+		FrameWrapper operator[](Frame frm) { return FrameWrapper(&samples[frm.value*channelCnt.value],channelCnt); }
+		iterator begin() { return iterator(*this,frameCnt.begin().v); }
+		iterator end() { return iterator(*this,frameCnt.end().v); }
+
+	};
+	struct WrapperRO {
+		struct FrameWrapper {
+			const float * const samples;
+			const ChannelCount channelCnt;
+			FrameWrapper(const float* nsamples, ChannelCount nchannelCnt)
+				: samples(nsamples), channelCnt(nchannelCnt)
+			{
+
+			}
+			const float& at(Channel chn) const { return samples[chn]; }
+			const float& operator[](Channel chn) const { return samples[chn]; }
+			const float* begin() const { return samples; }
+			const float* end() const { return &samples[channelCnt.end().v]; }
+		};
+		struct iterator{
+			const WrapperRO& parent;
+			Frame frameId;
+
+			FrameWrapper operator*() const { return parent.at(frameId); }
+			iterator& operator++() { ++frameId; return *this; }
+
+			bool operator!=(const iterator &other) const { return frameId != other.frameId; }
+			iterator(const WrapperRO& nparent,Frame nframe)
+				: parent(nparent),frameId(nframe)
+			{
+
+			}
+		};
+		const float * const samples;
+		const FrameCount frameCnt;
+		const ChannelCount channelCnt;
+		WrapperRO(const float* nsamples, FrameCount nframeCnt, ChannelCount nchannelCnt)
+			: samples(nsamples), frameCnt(nframeCnt), channelCnt(nchannelCnt)
+		{
+
+		}
+		const FrameWrapper at(Frame frm) const { return FrameWrapper(&samples[frm.value*channelCnt.value],channelCnt); }
+		const FrameWrapper operator[](Frame frm) const { return FrameWrapper(&samples[frm.value*channelCnt.value],channelCnt); }
+		iterator begin() const { return iterator(*this,frameCnt.begin().v); }
+		iterator end() const { return iterator(*this,frameCnt.end().v); }
+
+	};
 
     struct Output {
 

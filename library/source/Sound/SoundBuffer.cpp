@@ -7,10 +7,10 @@ namespace Sound {
         : buff( std::move( mov.buff ) ), framerate( mov.framerate ),
           channels( mov.channels ), totalFrames( mov.totalFrames ),
           interleavingType( mov.interleavingType ) {
-        mov.framerate = 0;
-        mov.channels = 0;
+		mov.framerate = {0};
+		mov.channels = {0};
         mov.interleavingType = Audio::InterleavingType::DONT_CARE;
-        mov.totalFrames = 0;
+		mov.totalFrames = {0};
     }
     Buffer::Buffer( const Buffer &cpy )
         : buff( cpy.buff ), framerate( cpy.framerate ),
@@ -19,13 +19,13 @@ namespace Sound {
     void Buffer::operator=( Buffer &&mov ) {
         this->buff = std::move( mov.buff );
         this->framerate = mov.framerate;
-        mov.framerate = 0;
+		mov.framerate = {0};
         this->channels = mov.channels;
-        mov.channels = 0;
+		mov.channels = {0};
         this->interleavingType = mov.interleavingType;
         mov.interleavingType = Audio::InterleavingType::DONT_CARE;
         this->totalFrames = mov.totalFrames;
-        mov.totalFrames = 0;
+		mov.totalFrames = {0};
     }
     void Buffer::operator=( const Buffer &cpy ) {
         this->buff = cpy.buff;
@@ -35,44 +35,44 @@ namespace Sound {
         this->totalFrames = cpy.totalFrames;
     }
 
-    Audio::Framerate_T Buffer::getFramerate( ) const { return framerate; }
-    Audio::ChannelCount_T Buffer::getChannels( ) const { return channels; }
+    Audio::Framerate Buffer::getFramerate( ) const { return framerate; }
+    Audio::ChannelCount Buffer::getChannels( ) const { return channels; }
 
-    Audio::FrameCount_T Buffer::getFrameCount( ) const { return totalFrames; }
+    Audio::FrameCount Buffer::getFrameCount( ) const { return totalFrames; }
 
-    Audio::SampleCount_T Buffer::getSampleCount( ) const {
-        return buff.size( );
+    Audio::SampleCount Buffer::getSampleCount( ) const {
+		return {static_cast<Audio::SampleCount::__type>(buff.size( ))};
     }
 
-    Buffer::Buffer( Audio::DynamicBuffer &&mov, Audio::Framerate_T nframerate,
-                    Audio::ChannelCount_T nchannelcnt,
+    Buffer::Buffer( Audio::DynamicBuffer &&mov, Audio::Framerate nframerate,
+                    Audio::ChannelCount nchannelcnt,
                     Audio::InterleavingType ninterleavingType )
         : buff( mov ), framerate( nframerate ), channels( nchannelcnt ),
           interleavingType( ninterleavingType ) {
-        totalFrames = Audio::FrameCount_T( buff.size( ) / channels );
+		totalFrames = Audio::FrameCount{ static_cast<Audio::FrameCount::__type>(buff.size( ) / channels) };
     }
     Buffer::Buffer( const Audio::DynamicBuffer &cpy,
-                    Audio::Framerate_T nframerate,
-                    Audio::ChannelCount_T nchannelcnt,
+                    Audio::Framerate nframerate,
+                    Audio::ChannelCount nchannelcnt,
                     Audio::InterleavingType ninterleavingType )
         : buff( cpy ), framerate( nframerate ), channels( nchannelcnt ),
-          interleavingType( ninterleavingType ) {
-        totalFrames = Audio::FrameCount_T( buff.size( ) / channels );
+		  interleavingType( ninterleavingType ) {
+		totalFrames = Audio::FrameCount{ static_cast<Audio::FrameCount::__type>(buff.size( ) / channels) };
     }
-    Buffer::Buffer( const float *src, Audio::FrameCount_T nframes,
-                    Audio::Framerate_T nframerate,
-                    Audio::ChannelCount_T nchannelcnt,
+    Buffer::Buffer( const float *src, Audio::FrameCount nframes,
+                    Audio::Framerate nframerate,
+                    Audio::ChannelCount nchannelcnt,
                     Audio::InterleavingType ninterleavingType )
         : buff( nframes * nchannelcnt ), framerate( nframerate ),
           channels( nchannelcnt ), totalFrames( nframes ),
           interleavingType( ninterleavingType ) {
-        memcpy( buff.data( ), src, Audio::framesToBytes( nframes, channels ) );
+		memcpy( buff.data( ), src, nframes.toBytes(channels ) );
     }
 
     Buffer::Buffer( const Mh::SoundfileWrapper &soundfile ) {
-        this->totalFrames = Audio::FrameCount_T( soundfile.getFrameNum( ) );
-        this->channels = Audio::ChannelCount_T( soundfile.getChannels( ) );
-        this->framerate = Audio::Framerate_T( soundfile.getSamplerate( ) );
+		this->totalFrames = {Audio::FrameCount::__type( soundfile.getFrameNum( ) )};
+		this->channels = {Audio::ChannelCount::__type( soundfile.getChannels( ) )};
+		this->framerate = {Audio::Framerate::__type( soundfile.getSamplerate( ) )};
         this->interleavingType = Audio::InterleavingType::INTERLEAVED;
         Audio::DynamicBuffer tmpbuff(
             std::size_t( this->totalFrames * this->channels ) );
@@ -81,9 +81,9 @@ namespace Sound {
     }
     Buffer::Buffer( Abstract::sFIO fio ) {
         Mh::SoundfileWrapper soundfile( fio, true );
-        this->totalFrames = Audio::FrameCount_T( soundfile.getFrameNum( ) );
-        this->channels = Audio::ChannelCount_T( soundfile.getChannels( ) );
-        this->framerate = Audio::Framerate_T( soundfile.getSamplerate( ) );
+        this->totalFrames = Audio::FrameCount( soundfile.getFrameNum( ) );
+        this->channels = Audio::ChannelCount( soundfile.getChannels( ) );
+        this->framerate = Audio::Framerate( soundfile.getSamplerate( ) );
         this->interleavingType = Audio::InterleavingType::INTERLEAVED;
         Audio::DynamicBuffer tmpbuff(
             std::size_t( this->totalFrames * this->channels ) );
@@ -92,7 +92,7 @@ namespace Sound {
     }
 
     void Buffer::setInput( Audio::Input &dst,
-                           Audio::FrameCount_T cursor ) const {
+                           Audio::FrameCount cursor ) const {
         if ( cursor >= totalFrames ) {
             memset( &dst, 0, sizeof( Audio::Input ) );
         } else {

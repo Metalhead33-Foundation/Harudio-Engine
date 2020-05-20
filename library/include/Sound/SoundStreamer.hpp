@@ -10,7 +10,7 @@ namespace Sound {
         void
         receiveInput( Audio::Input &src ) const; // Gain access to the buffer
         void outputFeedback(
-            Audio::FrameCount_T frames ); // Needed for things like advancing
+            Audio::FrameCount frames ); // Needed for things like advancing
                                           // the a ringbuffer's pointer
       private:
         Mh::SoundfileWrapper buff;
@@ -21,7 +21,7 @@ namespace Sound {
       public:
         Streamer( Mh::SoundfileWrapper &&mov );
         Streamer( Abstract::sFIO fio );
-        Audio::FrameCount_T outputTo(
+        Audio::FrameCount outputTo(
             const Audio::Output &dst );   // Return value: frames transmitted
         Streamer( Streamer &&mov );       // Move constructor
         void operator=( Streamer &&mov ); // Move assignment

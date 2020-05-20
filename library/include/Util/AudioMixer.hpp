@@ -16,29 +16,29 @@ namespace Audio {
         typedef ElementType::const_reverse_iterator const_reverse_iterator;
 
       private:
-        FrameCount_T frameCnt;
-        Framerate_T framerate;
-        ChannelCount_T channelCnt;
+        FrameCount frameCnt;
+        Framerate framerate;
+        ChannelCount channelCnt;
         bool isActive;
 
         ElementType elements;
         DynamicBuffer buffA;
         Mixer( const Mixer &cpy ) = delete;          // No copying
         void operator=( const Mixer &cpy ) = delete; // No copying
-        FrameCount_T fillBuffers( FrameCount_T maxFrames, float *buffB );
+        FrameCount fillBuffers( FrameCount maxFrames, float *buffB );
 
       public:
-        Mixer( FrameCount_T nframeCnt, Framerate_T nframerate,
-               ChannelCount_T nchannelCnt );
+        Mixer( FrameCount nframeCnt, Framerate nframerate,
+               ChannelCount nchannelCnt );
         Mixer( Mixer &&mov );          // Move constructor
         void operator=( Mixer &&mov ); // Move assignment
 
-        FrameCount_T
+        FrameCount
         outputTo( const Output &dst ); // Return value: frames transmitted
         bool isPlaying( ) const;       // Is this thing even on?
-        FrameCount_T getFrameCnt( ) const;
-        Framerate_T getFramerate( ) const;
-        ChannelCount_T getChannelCnt( ) const;
+        FrameCount getFrameCnt( ) const;
+        Framerate getFramerate( ) const;
+        ChannelCount getChannelCnt( ) const;
         float getVolume( const sPlayable &playable ) const;
         float isPresent( const sPlayable &playable ) const;
         void clearExpired( );

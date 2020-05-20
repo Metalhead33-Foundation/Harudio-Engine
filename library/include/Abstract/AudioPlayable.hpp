@@ -8,7 +8,7 @@ namespace Audio {
     class Playable {
       public:
         virtual ~Playable( ) = default;
-        virtual FrameCount_T
+		virtual FrameCount
         outputTo( const Output &dst ) = 0;   // Return value: frames transmitted
         virtual bool isPlaying( ) const = 0; // Is this thing even on?
     };

@@ -7,10 +7,10 @@ namespace Sound {
     Streamer::Streamer( Abstract::sFIO fio )
         : buff( fio, true ), state( Status::STOPPED ) {}
 
-    Audio::FrameCount_T Streamer::outputTo( const Audio::Output &dst ) {
+    Audio::FrameCount Streamer::outputTo( const Audio::Output &dst ) {
         if ( state != Status::PLAYING )
-            return 0;
-        if ( ( dst.frameRate != static_cast<Audio::FrameCount_T>(buff.getSamplerate( )) ) ||
+			return {0};
+		if ( ( dst.frameRate != buff.getSamplerate( ) ) ||
              ( dst.channelCnt != buff.getChannels( ) ) ||
              ( dst.interleavingType != Audio::InterleavingType::DONT_CARE &&
                ( dst.interleavingType !=
@@ -20,8 +20,8 @@ namespace Sound {
                                         dst.interleavingType,
                                         Audio::InterleavingType::INTERLEAVED );
         }
-        const Audio::FrameCount_T readframes =
-            Audio::FrameCount_T( buff.readf( dst.dst, dst.frameCnt ) );
+        const Audio::FrameCount readframes =
+            Audio::FrameCount( buff.readf( dst.dst, dst.frameCnt ) );
         if ( !readframes ) {
             if ( !looping )
                 state = Status::STOPPED;

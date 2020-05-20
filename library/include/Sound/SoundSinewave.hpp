@@ -19,7 +19,7 @@ namespace Sound {
         void setT( float value );
         void setBnT( float nB, float nT );
 
-        Audio::FrameCount_T outputTo(
+        Audio::FrameCount outputTo(
             const Audio::Output &dst ); // Return value: frames transmitted
         bool isPlaying( ) const;        // Is this thing even on?
     };

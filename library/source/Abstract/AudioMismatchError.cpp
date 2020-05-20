@@ -1,10 +1,10 @@
 #include "Abstract/AudioMismatchError.hpp"
 
 namespace Audio {
-    MismatchError::MismatchError( Framerate_T expectedFramerate,
-                                  Framerate_T receivedFramerate,
-                                  ChannelCount_T expectedChannelCnt,
-                                  ChannelCount_T receivedChannelCnt,
+	MismatchError::MismatchError( Framerate expectedFramerate,
+								  Framerate receivedFramerate,
+								  ChannelCount expectedChannelCnt,
+								  ChannelCount receivedChannelCnt,
                                   InterleavingType expectedInterleavingType,
                                   InterleavingType receivedInterleavingType ) {
         errMsg = "Mismatch in audio attributes!\n";

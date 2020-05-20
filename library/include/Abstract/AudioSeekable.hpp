@@ -13,7 +13,7 @@ namespace Audio {
         virtual ~Seekable( ) = default;
         virtual bool
         isPlaying( ) const; // Basically return getState() == Status::PLAYING
-        virtual FrameCount_T
+		virtual FrameCount
         outputTo( const Output &dst ) = 0; // Still needs implementation
 
         virtual Status getState( ) const = 0;

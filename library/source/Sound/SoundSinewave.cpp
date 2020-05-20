@@ -22,11 +22,11 @@ namespace Sound {
         calculateForBnT( );
     }
 
-    Audio::FrameCount_T Sinewave::outputTo( const Audio::Output &dst ) {
-        for ( Audio::FrameCount_T i = 0; i < dst.frameCnt; ++i ) {
-            const Audio::SampleCount_T index = i * dst.channelCnt;
+    Audio::FrameCount Sinewave::outputTo( const Audio::Output &dst ) {
+		for ( Audio::FrameCount i = {0}; i < dst.frameCnt; ++i ) {
+			const Audio::SampleCount index = {i * dst.channelCnt};
             y[0] = ( sinTb * x[1] ) + ( cosTb2 * y[1] ) - y[2];
-            for ( Audio::ChannelCount_T j = 0; j < dst.channelCnt; ++j ) {
+			for ( Audio::ChannelCount j = {0}; j < dst.channelCnt; ++j ) {
                 dst.dst[index + j] = y[0];
             }
             x[1] = x[0];

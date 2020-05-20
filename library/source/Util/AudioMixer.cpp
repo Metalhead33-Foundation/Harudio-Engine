@@ -4,8 +4,8 @@
 
 namespace Audio {
 
-    Mixer::Mixer( FrameCount_T nframeCnt, Framerate_T nframerate,
-                  ChannelCount_T nchannelCnt )
+    Mixer::Mixer( FrameCount nframeCnt, Framerate nframerate,
+                  ChannelCount nchannelCnt )
         : frameCnt( nframeCnt ), framerate( nframerate ),
           channelCnt( nchannelCnt ), buffA( nframeCnt * nchannelCnt ) {}
 
@@ -18,11 +18,11 @@ namespace Audio {
         mov.channelCnt = 0;
     }
 
-    FrameCount_T Mixer::getFrameCnt( ) const { return frameCnt; }
+    FrameCount Mixer::getFrameCnt( ) const { return frameCnt; }
 
-    Framerate_T Mixer::getFramerate( ) const { return framerate; }
+    Framerate Mixer::getFramerate( ) const { return framerate; }
 
-    ChannelCount_T Mixer::getChannelCnt( ) const { return channelCnt; }
+    ChannelCount Mixer::getChannelCnt( ) const { return channelCnt; }
 
     bool Mixer::getActive( ) const { return isActive; }
 
@@ -39,7 +39,7 @@ namespace Audio {
         mov.channelCnt = 0;
     }
 
-    FrameCount_T Mixer::outputTo( const Output &dst ) {
+    FrameCount Mixer::outputTo( const Output &dst ) {
         if ( ( dst.frameRate != this->framerate ) ||
              ( dst.channelCnt != this->channelCnt ) ||
              ( dst.interleavingType != InterleavingType::DONT_CARE &&
@@ -49,10 +49,10 @@ namespace Audio {
                                  InterleavingType::INTERLEAVED );
         }
         if ( isActive && elements.size( ) ) {
-            FrameCount_T toOutput = dst.frameCnt;
-            FrameCount_T outFrames = 0;
+            FrameCount toOutput = dst.frameCnt;
+            FrameCount outFrames = 0;
             while ( toOutput ) {
-                const FrameCount_T recFrames =
+                const FrameCount recFrames =
                     fillBuffers( toOutput, &dst.dst[outFrames * channelCnt] );
                 if ( recFrames ) {
                     // memcpy(&dst.dst[outFrames*channelCnt],buffB.data(),framesToBytes(recFrames,channelCnt));
@@ -76,9 +76,9 @@ namespace Audio {
             return false;
     }
 
-    FrameCount_T Mixer::fillBuffers( FrameCount_T maxFrames, float *buffB ) {
+    FrameCount Mixer::fillBuffers( FrameCount maxFrames, float *buffB ) {
         Output receiver;
-        FrameCount_T finalFrameCnt = 0;
+        FrameCount finalFrameCnt = 0;
         receiver.dst = buffA.data( ); // Set pointer to receiving buffer
         receiver.frameCnt = std::min( maxFrames, frameCnt );
         receiver.frameRate = framerate;
@@ -89,11 +89,11 @@ namespace Audio {
             if ( !it->first.expired( ) ) {
                 auto source = it->first.lock( );
                 if ( source->isPlaying( ) ) {
-                    FrameCount_T receivedFrames = source->outputTo( receiver );
+                    FrameCount receivedFrames = source->outputTo( receiver );
                     finalFrameCnt = std::max( finalFrameCnt, receivedFrames );
-                    for ( FrameCount_T i = 0; i < receivedFrames; ++i ) {
-                        const SampleCount_T index = i * channelCnt;
-                        for ( ChannelCount_T j = 0; j < channelCnt; ++j )
+                    for ( FrameCount i = 0; i < receivedFrames; ++i ) {
+                        const SampleCount index = i * channelCnt;
+                        for ( ChannelCount j = 0; j < channelCnt; ++j )
                             buffB[index + j] += buffA[index + j] * it->second;
                     }
                 }

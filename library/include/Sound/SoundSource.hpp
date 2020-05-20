@@ -8,7 +8,7 @@ namespace Sound {
     class Source : public Audio::Seekable {
       private:
         sBuffer buff;
-        Audio::FrameCount_T cursor;
+        Audio::FrameCount cursor;
         Status state;
         bool looping;
         Source( const Source &cpy ) = delete;         // No copying
@@ -19,7 +19,7 @@ namespace Sound {
         void operator=( Source &&mov );
         Source( const sBuffer &nbuff );
         Source( sBuffer &&nbuff );
-        Audio::FrameCount_T outputTo( const Audio::Output &dst );
+        Audio::FrameCount outputTo( const Audio::Output &dst );
         Status getState( ) const;
         void play( );
         void pause( );

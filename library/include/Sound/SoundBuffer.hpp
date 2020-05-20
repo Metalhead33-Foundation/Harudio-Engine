@@ -9,9 +9,9 @@ namespace Sound {
     class Buffer {
       private:
         Audio::DynamicBuffer buff;
-        Audio::Framerate_T framerate;
-        Audio::ChannelCount_T channels;
-        Audio::FrameCount_T totalFrames;
+        Audio::Framerate framerate;
+        Audio::ChannelCount channels;
+        Audio::FrameCount totalFrames;
         Audio::InterleavingType interleavingType;
 
       public:
@@ -21,15 +21,15 @@ namespace Sound {
         typedef Audio::DynamicBuffer::const_reverse_iterator
             const_reverse_iterator;
 
-        Buffer( Audio::DynamicBuffer &&mov, Audio::Framerate_T nframerate,
-                Audio::ChannelCount_T nchannelcnt,
+        Buffer( Audio::DynamicBuffer &&mov, Audio::Framerate nframerate,
+                Audio::ChannelCount nchannelcnt,
                 Audio::InterleavingType ninterleavingType );
-        Buffer( const Audio::DynamicBuffer &cpy, Audio::Framerate_T nframerate,
-                Audio::ChannelCount_T nchannelcnt,
+        Buffer( const Audio::DynamicBuffer &cpy, Audio::Framerate nframerate,
+                Audio::ChannelCount nchannelcnt,
                 Audio::InterleavingType ninterleavingType );
-        Buffer( const float *src, Audio::FrameCount_T nframes,
-                Audio::Framerate_T nframerate,
-                Audio::ChannelCount_T nchannelcnt,
+        Buffer( const float *src, Audio::FrameCount nframes,
+                Audio::Framerate nframerate,
+                Audio::ChannelCount nchannelcnt,
                 Audio::InterleavingType ninterleavingType );
         Buffer( const Mh::SoundfileWrapper &soundfile );
         Buffer( Abstract::sFIO fio );
@@ -39,12 +39,12 @@ namespace Sound {
         void operator=( Buffer &&mov );
         void operator=( const Buffer &cpy );
         // Functions
-        void setInput( Audio::Input &dst, Audio::FrameCount_T cursor ) const;
+        void setInput( Audio::Input &dst, Audio::FrameCount cursor ) const;
         // Getters
-        Audio::Framerate_T getFramerate( ) const;
-        Audio::ChannelCount_T getChannels( ) const;
-        Audio::FrameCount_T getFrameCount( ) const;
-        Audio::SampleCount_T getSampleCount( ) const;
+        Audio::Framerate getFramerate( ) const;
+        Audio::ChannelCount getChannels( ) const;
+        Audio::FrameCount getFrameCount( ) const;
+        Audio::SampleCount getSampleCount( ) const;
         // Iterator stuff - necessary for convolution later down the line
         float &at( std::size_t index );
         const float &at( std::size_t index ) const;

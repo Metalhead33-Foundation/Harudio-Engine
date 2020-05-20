@@ -19,7 +19,7 @@ namespace Sound {
         ModulePlayer( Abstract::sFIO fio );
         ModulePlayer( ModulePlayer &&mov );
         void operator=( ModulePlayer &&mov );
-        Audio::FrameCount_T outputTo(
+        Audio::FrameCount outputTo(
             const Audio::Output &dst ); // Return value: frames transmitted
 
         Status getState( ) const;

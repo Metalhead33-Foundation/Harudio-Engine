@@ -38,7 +38,7 @@ int main( ) {
                                                    audioDev.getChannels( ) );
     audioDev.setPlayable( mixer );
     convolver->setPlayable( mod );
-    mixer->insert( mod, 0.5f );
+	mixer->insert( mod, 0.5f );
     mod->play( );
     // streamer->play();
     // mixer->insert(tester,0.1f);

@@ -9,10 +9,10 @@ namespace Audio {
 
     void Convolver::setPlayable( const sPlayable &value ) { playable = value; }
 
-    void Convolver::convolve( const float *sigOne, SampleCount_T lenOne,
+    void Convolver::convolve( const float *sigOne, SampleCount lenOne,
                               float *convolvedSig ) {
         // zero-pad the dry signal
-        for ( SampleCount_T i = 0; i < convSigLen; i++ ) {
+        for ( SampleCount i = 0; i < convSigLen; i++ ) {
             sigOnePadded[i] = ( i < lenOne ) ? sigOne[i] : 0;
         }
         // create and execute forward FFT plans
@@ -23,7 +23,7 @@ namespace Audio {
         fftwf_execute( forward_sigOne );
         // Backward (inverse) FFT plan
         // Complex multiplication
-        for ( SampleCount_T i = 0; i < nc; i++ ) {
+        for ( SampleCount i = 0; i < nc; i++ ) {
             // real component
             fftMulti[i][0] = outfftwOne[i][0] * outfftwTwo[i][0] -
                              outfftwOne[i][1] * outfftwTwo[i][1];
@@ -39,7 +39,7 @@ namespace Audio {
         fftwf_destroy_plan( backward_convolution );
     }
 
-    Convolver::Convolver( Sound::sBuffer &&mov, SampleCount_T sampleCnt )
+    Convolver::Convolver( Sound::sBuffer &&mov, SampleCount sampleCnt )
         : IR( std::move( mov ) ), inBuff( sampleCnt ) {
         if ( !IR->getSampleCount( ) )
             throw std::runtime_error( "Invalid IR!" );
@@ -53,7 +53,7 @@ namespace Audio {
         convolved.resize( convSigLen );
         // zero-pad the IR signal
         auto lenTwo = IR->getSampleCount( );
-        for ( SampleCount_T i = 0; i < convSigLen; i++ ) {
+        for ( SampleCount i = 0; i < convSigLen; i++ ) {
             sigTwoPadded[i] = ( i < lenTwo ) ? ( *IR )[i] : 0;
         }
         fftwf_plan forward_sigTwo = fftwf_plan_dft_r2c_1d(
@@ -63,7 +63,7 @@ namespace Audio {
         fftwf_execute( forward_sigTwo );
         fftwf_destroy_plan( forward_sigTwo );
     }
-    Convolver::Convolver( const Sound::sBuffer &cpy, SampleCount_T sampleCnt )
+    Convolver::Convolver( const Sound::sBuffer &cpy, SampleCount sampleCnt )
         : IR( cpy ), inBuff( sampleCnt ) {
         if ( !IR->getSampleCount( ) )
             throw std::runtime_error( "Invalid IR!" );
@@ -77,7 +77,7 @@ namespace Audio {
         convolved.resize( convSigLen );
         // zero-pad the IR signal
         auto lenTwo = IR->getSampleCount( );
-        for ( SampleCount_T i = 0; i < convSigLen; i++ ) {
+        for ( SampleCount i = 0; i < convSigLen; i++ ) {
             sigTwoPadded[i] = ( i < lenTwo ) ? ( *IR )[i] : 0;
         }
         fftwf_plan forward_sigTwo = fftwf_plan_dft_r2c_1d(
@@ -87,10 +87,10 @@ namespace Audio {
         fftwf_execute( forward_sigTwo );
         fftwf_destroy_plan( forward_sigTwo );
     }
-    Convolver::Convolver( Abstract::sFIO fio, SampleCount_T sampleCnt )
+    Convolver::Convolver( Abstract::sFIO fio, SampleCount sampleCnt )
         : Convolver( std::make_shared< Sound::Buffer >( fio ), sampleCnt ) {}
 
-    FrameCount_T Convolver::outputTo( const Output &dst ) {
+    FrameCount Convolver::outputTo( const Output &dst ) {
         if ( playable.expired( ) )
             return 0;
         auto ptim = playable.lock( );

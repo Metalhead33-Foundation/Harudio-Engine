@@ -10,22 +10,22 @@ namespace Sound {
         this->mod = std::move( mov.mod );
     }
 
-    Audio::FrameCount_T ModulePlayer::outputTo( const Audio::Output &dst ) {
+    Audio::FrameCount ModulePlayer::outputTo( const Audio::Output &dst ) {
         if ( state != Status::PLAYING )
-            return 0;
-        Audio::FrameCount_T readFrames = 0;
+			return {0};
+		Audio::FrameCount readFrames = {0};
         if ( dst.interleavingType == Audio::InterleavingType::INTERLEAVED ) {
             switch ( dst.channelCnt ) {
             case 1:
-                readFrames =
+				readFrames.__value =
                     mod.readMono( dst.frameRate, dst.frameCnt, dst.dst );
                 break;
             case 2:
-                readFrames = mod.readInterleavedStereo( dst.frameRate,
+				readFrames.__value = mod.readInterleavedStereo( dst.frameRate,
                                                         dst.frameCnt, dst.dst );
                 break;
             case 4:
-                readFrames = mod.readInterleavedQuad( dst.frameRate,
+				readFrames.__value = mod.readInterleavedQuad( dst.frameRate,
                                                       dst.frameCnt, dst.dst );
                 break;
             default:
@@ -34,16 +34,16 @@ namespace Sound {
         } else {
             switch ( dst.channelCnt ) {
             case 1:
-                readFrames =
+				readFrames.__value =
                     mod.readMono( dst.frameRate, dst.frameCnt, dst.dst );
                 break;
             case 2:
-                readFrames =
+				readFrames.__value =
                     mod.readStereo( dst.frameRate, dst.frameCnt, &dst.dst[0],
                                     &dst.dst[dst.frameCnt] );
                 break;
             case 4:
-                readFrames = mod.readQuad( dst.frameRate, dst.frameCnt,
+				readFrames.__value = mod.readQuad( dst.frameRate, dst.frameCnt,
                                            &dst.dst[0], &dst.dst[dst.frameCnt],
                                            &dst.dst[dst.frameCnt * 2],
                                            &dst.dst[dst.frameCnt * 3] );

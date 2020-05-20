@@ -11,51 +11,86 @@ namespace Audio {
             0, // Each channels are stored separately, channel by channel
         INTERLEAVED = 1 // Each channels are stored together frame by frame
     };
-    typedef std::uint32_t FrameCount_T;
-    typedef std::uint32_t Framerate_T;
-    typedef std::uint32_t SampleCount_T;
-    typedef std::uint8_t ChannelCount_T;
-
-    inline constexpr SampleCount_T
-    framesToSamples( FrameCount_T frameCnt, ChannelCount_T channelCnt ) {
-        return frameCnt * channelCnt;
-    }
-    inline constexpr std::size_t samplesToBytes( SampleCount_T sampleCnt ) {
-        return std::size_t( sampleCnt ) * sizeof( float );
-    }
-    inline constexpr std::size_t framesToBytes( FrameCount_T frameCnt,
-                                                ChannelCount_T channelCnt ) {
-        return samplesToBytes( framesToSamples( frameCnt, channelCnt ) );
-    }
+	//typedef std::uint32_t FrameCount;
+	struct Framerate {
+		typedef std::uint32_t __type;
+		__type __value;
+		// operator std::uint32_t() { return __value; }
+		operator __type&() { return __value; }
+		operator const __type&() const { return __value; }
+	};
+	struct SampleCount {
+		typedef std::uint32_t __type;
+		__type __value;
+		// operator std::uint32_t() { return __value; }
+		operator __type&() { return __value; }
+		operator const __type&() const { return __value; }
+		inline constexpr std::size_t toBytes() const { return __value*sizeof(float); }
+	};
+	struct ChannelCount {
+		typedef std::uint8_t __type;
+		__type __value;
+		// operator std::uint8_t() { return __value; }
+		operator __type&() { return __value; }
+		operator const __type&() const { return __value; }
+	};
+	struct FrameCount {
+		typedef std::uint32_t __type;
+		__type __value;
+		// operator std::uint32_t() { return __value; }
+		operator __type&() { return __value; }
+		operator const __type&() const { return __value; }
+		inline constexpr SampleCount toSamples(ChannelCount channels) const { return SampleCount{__value*channels.__value}; }
+		inline constexpr std::size_t toBytes(ChannelCount channels) const { return toSamples(channels).toBytes(); }
+	};
 
     struct Output {
 
         float *dst;                // Destination
-        FrameCount_T frameCnt;     // How many frames requested/allowed at max?
-        Framerate_T frameRate;     // Sampling rate of the audio
-        ChannelCount_T channelCnt; // How many channels?
+		FrameCount frameCnt;     // How many frames requested/allowed at max?
+		Framerate frameRate;     // Sampling rate of the audio
+		ChannelCount channelCnt; // How many channels?
         InterleavingType interleavingType; // Should channels be interleaved, or
                                            // should they be separated?
 
-        inline constexpr SampleCount_T sampleCnt( ) const {
-            return framesToSamples( frameCnt, channelCnt );
+		Output(float* ndst=nullptr,FrameCount nframeCnt={0},
+			   Framerate nframeRate={0},ChannelCount nChannelCnt={0},
+			   InterleavingType nInterleavingType=InterleavingType::DONT_CARE)
+			: dst(ndst),frameCnt(nframeCnt),frameRate(nframeRate),channelCnt(nChannelCnt),
+			  interleavingType(nInterleavingType)
+		{
+
+		}
+
+		inline constexpr SampleCount sampleCnt( ) const {
+			return frameCnt.toSamples(channelCnt);
         }
         inline constexpr std::size_t byteCnt( ) const {
-            return framesToBytes( frameCnt, channelCnt );
+			return sampleCnt().toBytes();
         }
     };
     struct Input {
         const float *src;                  // Source
-        FrameCount_T frameCnt;             // How many frames do we have?
-        Framerate_T frameRate;             // Sampling rate of the audio
-        ChannelCount_T channelCnt;         // How many channels do we have?
+		FrameCount frameCnt;             // How many frames do we have?
+		Framerate frameRate;             // Sampling rate of the audio
+		ChannelCount channelCnt;         // How many channels do we have?
         InterleavingType interleavingType; // Is the source audio interleaved?
 
-        inline constexpr SampleCount_T sampleCnt( ) const {
-            return framesToSamples( frameCnt, channelCnt );
+
+		Input(const float* nsrc=nullptr,FrameCount nframeCnt={0},
+			   Framerate nframeRate={0},ChannelCount nChannelCnt={0},
+			   InterleavingType nInterleavingType=InterleavingType::DONT_CARE)
+			: src(nsrc),frameCnt(nframeCnt),frameRate(nframeRate),channelCnt(nChannelCnt),
+			  interleavingType(nInterleavingType)
+		{
+
+		}
+
+		inline constexpr SampleCount sampleCnt( ) const {
+			return frameCnt.toSamples(channelCnt);
         }
-        inline constexpr std::size_t byteCnt( ) const {
-            return framesToBytes( frameCnt, channelCnt );
+		inline constexpr std::size_t byteCnt( ) const {
+			return sampleCnt().toBytes();
         }
     };
 

@@ -12,7 +12,7 @@ namespace Audio {
     void Convolver::convolve( const float *sigOne, SampleCount lenOne,
                               float *convolvedSig ) {
         // zero-pad the dry signal
-        for ( SampleCount i = 0; i < convSigLen; i++ ) {
+        for ( Sample i : convSigLen ) {
             sigOnePadded[i] = ( i < lenOne ) ? sigOne[i] : 0;
         }
         // create and execute forward FFT plans
@@ -23,7 +23,7 @@ namespace Audio {
         fftwf_execute( forward_sigOne );
         // Backward (inverse) FFT plan
         // Complex multiplication
-        for ( SampleCount i = 0; i < nc; i++ ) {
+        for ( Sample i : SampleCount{nc} ) {
             // real component
             fftMulti[i][0] = outfftwOne[i][0] * outfftwTwo[i][0] -
                              outfftwOne[i][1] * outfftwTwo[i][1];
@@ -43,8 +43,8 @@ namespace Audio {
         : IR( std::move( mov ) ), inBuff( sampleCnt ) {
         if ( !IR->getSampleCount( ) )
             throw std::runtime_error( "Invalid IR!" );
-        this->convSigLen = IR->getSampleCount( ) + sampleCnt - 1;
-        this->nc = convSigLen / 2 + 1;
+        this->convSigLen = IR->getSampleCount( ) + sampleCnt - SampleCount{1};
+        nc = convSigLen / 2 + 1;
         sigOnePadded.resize( convSigLen );
         sigTwoPadded.resize( convSigLen );
         outfftwOne.resize( convSigLen );
@@ -53,7 +53,7 @@ namespace Audio {
         convolved.resize( convSigLen );
         // zero-pad the IR signal
         auto lenTwo = IR->getSampleCount( );
-        for ( SampleCount i = 0; i < convSigLen; i++ ) {
+        for ( Sample i : convSigLen ) {
             sigTwoPadded[i] = ( i < lenTwo ) ? ( *IR )[i] : 0;
         }
         fftwf_plan forward_sigTwo = fftwf_plan_dft_r2c_1d(
@@ -67,8 +67,8 @@ namespace Audio {
         : IR( cpy ), inBuff( sampleCnt ) {
         if ( !IR->getSampleCount( ) )
             throw std::runtime_error( "Invalid IR!" );
-        this->convSigLen = IR->getSampleCount( ) + sampleCnt - 1;
-        this->nc = convSigLen / 2 + 1;
+        this->convSigLen = IR->getSampleCount( ) + sampleCnt - SampleCount{1};
+        nc = convSigLen / 2 + 1;
         sigOnePadded.resize( convSigLen );
         sigTwoPadded.resize( convSigLen );
         outfftwOne.resize( convSigLen );
@@ -77,7 +77,7 @@ namespace Audio {
         convolved.resize( convSigLen );
         // zero-pad the IR signal
         auto lenTwo = IR->getSampleCount( );
-        for ( SampleCount i = 0; i < convSigLen; i++ ) {
+        for ( Sample i : convSigLen ) {
             sigTwoPadded[i] = ( i < lenTwo ) ? ( *IR )[i] : 0;
         }
         fftwf_plan forward_sigTwo = fftwf_plan_dft_r2c_1d(
@@ -92,19 +92,19 @@ namespace Audio {
 
     FrameCount Convolver::outputTo( const Output &dst ) {
         if ( playable.expired( ) )
-            return 0;
+            return FrameCount::Zero();
         auto ptim = playable.lock( );
         Output toBuffer;
         toBuffer.dst = inBuff.data( );
-        toBuffer.frameCnt = inBuff.size( );
+        toBuffer.frameCnt = FrameCount{inBuff.size( )};
         toBuffer.frameRate = IR->getFramerate( );
         toBuffer.channelCnt = IR->getChannels( );
         toBuffer.interleavingType = Audio::InterleavingType::DONT_CARE;
-        auto received = ptim->outputTo( toBuffer );
+        auto received = SampleCount{ptim->outputTo( toBuffer )};
         convolve( inBuff.data( ), received, convolved.data( ) );
         memcpy( dst.dst, convolved.data( ),
-                framesToBytes( std::min( received, dst.frameCnt ), 1 ) );
-        return framesToBytes( std::min( received, dst.frameCnt ), 1 );
+                 std::min( received, dst.frameCnt.toSamples(ChannelCount{1}) ).toBytes( ) );
+        return  std::min( received, dst.frameCnt.toSamples(ChannelCount{1}) ).toFrames(ChannelCount{1});
     }
 
     bool Convolver::isPlaying( ) const {

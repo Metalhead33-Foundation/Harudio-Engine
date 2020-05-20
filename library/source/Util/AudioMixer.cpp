@@ -13,9 +13,6 @@ namespace Audio {
         : frameCnt( mov.frameCnt ), framerate( mov.framerate ),
           channelCnt( mov.channelCnt ), elements( std::move( mov.elements ) ),
           buffA( std::move( mov.buffA ) ) {
-        mov.frameCnt = 0;
-        mov.framerate = 0;
-        mov.channelCnt = 0;
     }
 
     FrameCount Mixer::getFrameCnt( ) const { return frameCnt; }
@@ -32,11 +29,8 @@ namespace Audio {
         this->elements = std::move( mov.elements );
         this->buffA = std::move( mov.buffA );
         this->frameCnt = mov.frameCnt;
-        mov.frameCnt = 0;
         this->framerate = mov.framerate;
-        mov.framerate = 0;
         this->channelCnt = mov.channelCnt;
-        mov.channelCnt = 0;
     }
 
     FrameCount Mixer::outputTo( const Output &dst ) {
@@ -50,7 +44,7 @@ namespace Audio {
         }
         if ( isActive && elements.size( ) ) {
             FrameCount toOutput = dst.frameCnt;
-            FrameCount outFrames = 0;
+            FrameCount outFrames = FrameCount::Zero();
             while ( toOutput ) {
                 const FrameCount recFrames =
                     fillBuffers( toOutput, &dst.dst[outFrames * channelCnt] );
@@ -63,7 +57,7 @@ namespace Audio {
             }
             return outFrames;
         } else
-            return 0;
+            return FrameCount::Zero();
     }
 
     bool Mixer::isPlaying( ) const {
@@ -78,7 +72,7 @@ namespace Audio {
 
     FrameCount Mixer::fillBuffers( FrameCount maxFrames, float *buffB ) {
         Output receiver;
-        FrameCount finalFrameCnt = 0;
+        FrameCount finalFrameCnt = FrameCount::Zero();
         receiver.dst = buffA.data( ); // Set pointer to receiving buffer
         receiver.frameCnt = std::min( maxFrames, frameCnt );
         receiver.frameRate = framerate;
@@ -91,10 +85,9 @@ namespace Audio {
                 if ( source->isPlaying( ) ) {
                     FrameCount receivedFrames = source->outputTo( receiver );
                     finalFrameCnt = std::max( finalFrameCnt, receivedFrames );
-                    for ( FrameCount i = 0; i < receivedFrames; ++i ) {
-                        const SampleCount index = i * channelCnt;
-                        for ( ChannelCount j = 0; j < channelCnt; ++j )
-                            buffB[index + j] += buffA[index + j] * it->second;
+                    for ( Frame i : receivedFrames ) {
+                        for ( Sample j : i.samples(channelCnt) )
+                            buffB[j] += buffA[j] * it->second;
                     }
                 }
             }

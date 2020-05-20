@@ -29,13 +29,13 @@ int main( ) {
     Abstract::sFIO stream1( new StdStream( sharedDig, true ) );
     Abstract::sFIO irstream( new StdStream( IR, true ) );
     auto mod = std::make_shared< Sound::ModulePlayer >( stream1 );
-    auto convolver = std::make_shared< Audio::Convolver >( irstream, 1024 );
+    auto convolver = std::make_shared< Audio::Convolver >( irstream, Audio::SampleCount{1024} );
     // streamer->checkQueue();
     auto tester =
         std::make_shared< Sound::Sinewave >( 1200.0f, 1.0f / 48000.0f );
     Driver::SDL audioDev( 48000, 1, 2048 );
-    auto mixer = std::make_shared< Audio::Mixer >( 1000, audioDev.getFreq( ),
-                                                   audioDev.getChannels( ) );
+    auto mixer = std::make_shared< Audio::Mixer >( Audio::FrameCount{1000U}, Audio::Framerate{audioDev.getFreq( )},
+                                                   Audio::ChannelCount{audioDev.getChannels( )} );
     audioDev.setPlayable( mixer );
     convolver->setPlayable( mod );
 	mixer->insert( mod, 0.5f );

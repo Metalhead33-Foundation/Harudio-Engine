@@ -12,20 +12,20 @@ namespace Sound {
 
     Audio::FrameCount ModulePlayer::outputTo( const Audio::Output &dst ) {
         if ( state != Status::PLAYING )
-			return {0};
-		Audio::FrameCount readFrames = {0};
+			return Audio::FrameCount::Zero();
+		Audio::FrameCount readFrames = Audio::FrameCount::Zero();
         if ( dst.interleavingType == Audio::InterleavingType::INTERLEAVED ) {
             switch ( dst.channelCnt ) {
             case 1:
-				readFrames.__value =
+				readFrames.value =
                     mod.readMono( dst.frameRate, dst.frameCnt, dst.dst );
                 break;
             case 2:
-				readFrames.__value = mod.readInterleavedStereo( dst.frameRate,
+				readFrames.value = mod.readInterleavedStereo( dst.frameRate,
                                                         dst.frameCnt, dst.dst );
                 break;
             case 4:
-				readFrames.__value = mod.readInterleavedQuad( dst.frameRate,
+				readFrames.value = mod.readInterleavedQuad( dst.frameRate,
                                                       dst.frameCnt, dst.dst );
                 break;
             default:
@@ -34,16 +34,16 @@ namespace Sound {
         } else {
             switch ( dst.channelCnt ) {
             case 1:
-				readFrames.__value =
+				readFrames.value =
                     mod.readMono( dst.frameRate, dst.frameCnt, dst.dst );
                 break;
             case 2:
-				readFrames.__value =
+				readFrames.value =
                     mod.readStereo( dst.frameRate, dst.frameCnt, &dst.dst[0],
                                     &dst.dst[dst.frameCnt] );
                 break;
             case 4:
-				readFrames.__value = mod.readQuad( dst.frameRate, dst.frameCnt,
+				readFrames.value = mod.readQuad( dst.frameRate, dst.frameCnt,
                                            &dst.dst[0], &dst.dst[dst.frameCnt],
                                            &dst.dst[dst.frameCnt * 2],
                                            &dst.dst[dst.frameCnt * 3] );

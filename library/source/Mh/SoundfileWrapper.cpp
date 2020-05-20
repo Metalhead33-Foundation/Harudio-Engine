@@ -1,4 +1,5 @@
 #include "Mh/SoundfileWrapper.hpp"
+#include <Abstract/AudioPacket.hpp>
 #include <cassert>
 #include <cstring>
 #include <sndfile.h>
@@ -339,13 +340,13 @@ namespace Mh {
         assert( pimpl );
         return long( pimpl->getFrameNum( ) );
     }
-    int SoundfileWrapper::getSamplerate( ) const {
+    Audio::Framerate SoundfileWrapper::getSamplerate( ) const {
         assert( pimpl );
-        return pimpl->getSamplerate( );
+        return Audio::Framerate{pimpl->getSamplerate( )};
     }
-    int SoundfileWrapper::getChannels( ) const {
+    Audio::ChannelCount SoundfileWrapper::getChannels( ) const {
         assert( pimpl );
-        return pimpl->getChannels( );
+        return Audio::ChannelCount{pimpl->getChannels( )};
     }
     int SoundfileWrapper::getFormat( ) const {
         assert( pimpl );

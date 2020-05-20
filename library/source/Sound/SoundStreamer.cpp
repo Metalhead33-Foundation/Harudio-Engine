@@ -9,19 +9,19 @@ namespace Sound {
 
     Audio::FrameCount Streamer::outputTo( const Audio::Output &dst ) {
         if ( state != Status::PLAYING )
-			return {0};
+			return Audio::FrameCount::Zero();
 		if ( ( dst.frameRate != buff.getSamplerate( ) ) ||
              ( dst.channelCnt != buff.getChannels( ) ) ||
              ( dst.interleavingType != Audio::InterleavingType::DONT_CARE &&
                ( dst.interleavingType !=
                  Audio::InterleavingType::INTERLEAVED ) ) ) {
             throw Audio::MismatchError( dst.frameRate, buff.getSamplerate( ),
-                                        dst.channelCnt, buff.getChannels( ),
+                                        dst.channelCnt, Audio::ChannelCount{buff.getChannels( )},
                                         dst.interleavingType,
                                         Audio::InterleavingType::INTERLEAVED );
         }
         const Audio::FrameCount readframes =
-            Audio::FrameCount( buff.readf( dst.dst, dst.frameCnt ) );
+            Audio::FrameCount{ buff.readf( dst.dst, dst.frameCnt ) };
         if ( !readframes ) {
             if ( !looping )
                 state = Status::STOPPED;

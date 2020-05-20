@@ -9,23 +9,21 @@ namespace Sound {
     void Source::setBuff( const sBuffer &value ) { buff = value; }
     void Source::setBuff( sBuffer &&value ) { buff = std::move( value ); }
 
-	Source::Source( ) : buff( nullptr ), cursor{ 0 } {}
+	Source::Source( ) : buff( nullptr ), cursor{ Audio::FrameCount::Zero() } {}
 
     Source::Source( Source &&mov )
-		: buff( std::move( mov.buff ) ), cursor{ 0 } {}
+		: buff( std::move( mov.buff ) ), cursor{ Audio::FrameCount::Zero() } {}
 
     void Source::operator=( Source &&mov ) { buff = std::move( mov.buff ); }
 
-	Source::Source( const sBuffer &nbuff ) : buff( nbuff ), cursor{ 0 } {}
+	Source::Source( const sBuffer &nbuff ) : buff( nbuff ), cursor{ Audio::FrameCount::Zero() } {}
 
     Source::Source( sBuffer &&nbuff )
-		: buff( std::move( nbuff ) ), cursor{ 0 } {}
+		: buff( std::move( nbuff ) ), cursor{ Audio::FrameCount::Zero() } {}
 
     Audio::FrameCount Source::outputTo( const Audio::Output &dst ) {
-        if ( !buff )
-			return {0};
-        if ( state != Status::PLAYING )
-			return {0};
+        if ( !buff || state != Status::PLAYING )
+			return Audio::FrameCount::Zero();
         Audio::Input in;
         buff->setInput( in, cursor );
         if ( in.src ) { // Input is valid
@@ -45,18 +43,18 @@ namespace Sound {
             if ( cursor >= buff->getFrameCount( ) ) {
                 if ( !looping )
                     state = Status::STOPPED;
-				cursor = {0};
+				cursor = Audio::FrameCount::Zero();
             }
             return framesToGo;
         } else
-			return {0}; // Input is invalid
+			return Audio::FrameCount::Zero(); // Input is invalid
     }
 
     Source::Status Source::getState( ) const { return state; }
 
     void Source::play( ) {
         if ( state == Status::STOPPED ) {
-			cursor = {0};
+			cursor = Audio::FrameCount::Zero();
         }
         state = Status::PLAYING;
     }
@@ -68,7 +66,7 @@ namespace Sound {
 
     void Source::stop( ) {
         state = Status::STOPPED;
-		cursor = {0};
+		cursor = Audio::FrameCount::Zero();
     }
 
     bool Source::isLooping( ) const { return looping; }
@@ -78,20 +76,20 @@ namespace Sound {
     double Source::seek( double seconds, SeekPos whence ) {
         if ( !buff )
             return 0.0;
-        Audio::FrameCount nframe;
+        Audio::FrameCount nframe = Audio::FrameCount::Zero();
         switch ( whence ) {
         case SeekPos::SET:
-            nframe = Audio::FrameCount( seconds *
-                                          double( buff->getFramerate( ) ) );
+            nframe = Audio::FrameCount{
+                ( seconds * double( buff->getFramerate( ) ) ) };
             break;
         case SeekPos::CUR:
-            nframe = cursor + Audio::FrameCount(
-                                  seconds * double( buff->getFramerate( ) ) );
+            nframe = cursor + Audio::FrameCount{ (
+                                  seconds * double( buff->getFramerate( ) ) ) };
             break;
         case SeekPos::END:
             nframe = buff->getFrameCount( ) -
-                     Audio::FrameCount( seconds *
-                                          double( buff->getFramerate( ) ) );
+                     Audio::FrameCount{
+                         ( seconds * double( buff->getFramerate( ) ) ) };
             break;
         }
         return double( nframe ) / double( buff->getFramerate( ) );

@@ -23,11 +23,10 @@ namespace Sound {
     }
 
     Audio::FrameCount Sinewave::outputTo( const Audio::Output &dst ) {
-		for ( Audio::FrameCount i = {0}; i < dst.frameCnt; ++i ) {
-			const Audio::SampleCount index = {i * dst.channelCnt};
+        for ( Audio::Frame i : dst.frameCnt ) {
             y[0] = ( sinTb * x[1] ) + ( cosTb2 * y[1] ) - y[2];
-			for ( Audio::ChannelCount j = {0}; j < dst.channelCnt; ++j ) {
-                dst.dst[index + j] = y[0];
+            for ( Audio::Sample c : i.samples( dst.channelCnt ) ) {
+                dst.dst[c] = y[0];
             }
             x[1] = x[0];
             x[0] = 0.0f;

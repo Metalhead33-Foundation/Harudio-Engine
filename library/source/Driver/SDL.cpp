@@ -36,9 +36,9 @@ namespace Driver {
             if ( chandle->playable ) {
                 Audio::Output out;
                 out.dst = reinterpret_cast< float * >( stream );
-                out.frameRate = chandle->have.freq;
-                out.channelCnt = chandle->have.channels;
-                out.frameCnt = len / sizeof( float ) / out.channelCnt;
+                out.frameRate = Audio::Framerate{chandle->have.freq};
+                out.channelCnt = Audio::ChannelCount{chandle->have.channels};
+                out.frameCnt = Audio::FrameCount{len / sizeof( float ) / out.channelCnt};
                 out.interleavingType = Audio::InterleavingType::INTERLEAVED;
                 chandle->playable->outputTo( out );
             }

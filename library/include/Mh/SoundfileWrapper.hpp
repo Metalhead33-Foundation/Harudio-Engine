@@ -1,6 +1,7 @@
 #ifndef MHSOUNDFILEWRAPPER_HPP
 #define MHSOUNDFILEWRAPPER_HPP
 #include <Global/FIO.hpp>
+#include <Abstract/AudioPacket.hpp>
 
 namespace Mh {
 
@@ -797,8 +798,8 @@ namespace Mh {
 
         // Getters of non-text data
         long getFrameNum( ) const;
-        int getSamplerate( ) const;
-        int getChannels( ) const;
+        Audio::Framerate getSamplerate( ) const;
+        Audio::ChannelCount getChannels( ) const;
         int getFormat( ) const;
         int getSections( ) const;
         int getSeekable( ) const;

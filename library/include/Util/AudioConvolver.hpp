@@ -7,7 +7,7 @@
 namespace Audio {
     class Convolver : public Playable {
       private:
-        SampleCount nc;
+        SampleCount::Type nc;
         SampleCount convSigLen;
         Audio::wPlayable playable;
         // Buffers

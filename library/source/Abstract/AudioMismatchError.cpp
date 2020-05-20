@@ -10,10 +10,10 @@ namespace Audio {
         errMsg = "Mismatch in audio attributes!\n";
         if ( expectedFramerate != receivedFramerate ) {
             errMsg +=
-                "Expected framerate: " + std::to_string( expectedFramerate ) +
+                "Expected framerate: " + static_cast<std::string>( expectedFramerate ) +
                 "\n";
             errMsg +=
-                "Received framerate: " + std::to_string( receivedFramerate ) +
+                "Received framerate: " + static_cast<std::string>( receivedFramerate ) +
                 "\n";
         }
         if ( expectedChannelCnt != receivedChannelCnt ) {

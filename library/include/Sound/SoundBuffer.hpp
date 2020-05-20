@@ -32,7 +32,6 @@ namespace Sound {
                 Audio::ChannelCount nchannelcnt,
                 Audio::InterleavingType ninterleavingType );
         Buffer( const Mh::SoundfileWrapper &soundfile );
-        Buffer( Abstract::sFIO fio );
         // Copy and move constructors + assignments
         Buffer( Buffer &&mov );
         Buffer( const Buffer &cpy );

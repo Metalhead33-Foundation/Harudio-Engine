@@ -4,7 +4,7 @@
 namespace Effect {
 
 DEFINE_CLASS(Clamp)
-class Clamp : public Audio::SingleAttributeEffect {
+class Clamp : public Audio::SingleAttributeEffect<float> {
 public:
 	Clamp(float nlevel = 1.0f);
 	void doEffect(float& target);

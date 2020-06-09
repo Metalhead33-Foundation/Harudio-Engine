@@ -4,7 +4,7 @@
 namespace Effect {
 
 DEFINE_CLASS(Gate)
-class Gate : public Audio::SingleAttributeEffect {
+class Gate : public Audio::SingleAttributeEffect<float> {
 public:
 	Gate(float nlevel = 1.0f);
 	void doEffect(float& target);

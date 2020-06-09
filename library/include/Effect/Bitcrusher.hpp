@@ -4,7 +4,7 @@
 namespace Effect {
 
 DEFINE_CLASS(Bitcrusher)
-class Bitcrusher : public Audio::SingleAttributeEffect {
+class Bitcrusher : public Audio::SingleAttributeEffect<float> {
 private:
 	float levelReciprocal;
 public:

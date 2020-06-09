@@ -7,7 +7,7 @@ void Bitcrusher::doEffect(float& target)
 	target = sgn(target) * std::round(std::abs(target)*level)*levelReciprocal;
 }
 Bitcrusher::Bitcrusher(float nlevel)
-	: SingleAttributeEffect(nlevel), levelReciprocal(1.0f/nlevel)
+	: SingleAttributeEffect<float>(nlevel), levelReciprocal(1.0f/nlevel)
 {
 	
 }

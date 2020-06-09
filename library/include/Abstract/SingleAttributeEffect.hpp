@@ -3,14 +3,14 @@
 #include "AudioEffect.hpp"
 
 namespace Audio {
-DEFINE_CLASS(SingleAttributeEffect)
-class SingleAttributeEffect : public Effect {
+
+template <typename T> class SingleAttributeEffect : public Effect {
 protected:
-	float level;
+	T level;
 public:
-	SingleAttributeEffect(float nlevel = 1.0f);
-	float getLevel() const;
-	virtual void setLevel(float nlevel);
+	SingleAttributeEffect(T nlevel = 1);
+	T getLevel() const { return level; }
+	virtual void setLevel(T nlevel) { level = nlevel; }
 	virtual void doEffect(float& target) = 0;
 };
 } // namespace Audio

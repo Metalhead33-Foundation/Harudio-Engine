@@ -42,6 +42,9 @@
     DEFINE_PTR( klass )
 
 typedef std::shared_ptr< std::thread > ThreadPointer;
+template <typename T> constexpr int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}
 
 // End of former util.h
 

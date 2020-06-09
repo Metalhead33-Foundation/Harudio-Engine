@@ -300,18 +300,20 @@ namespace Mh {
             else
                 return nullptr;
         }
-        const char *ctl_get( const char *ctl ) {
+        // Deprecated function!
+        /*const char *ctl_get( const char *ctl ) {
             if ( mod )
                 return openmpt_module_ctl_get( mod.get( ), ctl );
             else
                 return nullptr;
-        }
-        int ctl_set( const char *ctl, const char *value ) {
+        }*/
+        // Deprecated function!
+        /*int ctl_set( const char *ctl, const char *value ) {
             if ( mod )
                 return openmpt_module_ctl_set( mod.get( ), ctl, value );
             else
                 return 0;
-        }
+        }*/
     };
     ModuleRenderer::~ModuleRenderer( ) = default;
     ModuleRenderer::ModuleRenderer( Abstract::sFIO fio )
